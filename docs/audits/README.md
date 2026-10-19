@@ -11,6 +11,7 @@ Each milestone stores its verification evidence here so completion claims can be
 
 ## Index
 
-| Milestone | Document                                   |
-| --------- | ------------------------------------------ |
-| M01       | [M01-verification.md](M01-verification.md) |
+| Milestone | Document                                                                                         |
+| --------- | ------------------------------------------------------------------------------------------------ |
+| M01       | [M01-verification.md](M01-verification.md)                                                       |
+| M02       | [M02-verification.md](M02-verification.md) (screenshots in [m02-screenshots/](m02-screenshots/)) |

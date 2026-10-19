@@ -8,26 +8,44 @@ This describes the repository **as it is now**. Planned folders are listed separ
 .
 ├── .github/workflows/ci.yml     CI: format, typecheck, lint, unit, build, e2e
 ├── docs/                        Engineering knowledge base (see below)
-├── public/brand/                Original EACH logo (each-logo.jpeg) and asset rules
+├── public/
+│   ├── brand/                   Original EACH logo (each-logo.jpeg) and asset rules
+│   └── images/                  Licensed stand-in photography (README lists licences)
 ├── src/
 │   ├── app/
-│   │   ├── layout.tsx           Root layout: fonts, metadata (incl. metadataBase), <html>/<body>
-│   │   ├── not-found.tsx        Global 404
-│   │   ├── globals.css          Tailwind, design tokens, reduced-motion baseline
-│   │   ├── favicon.ico          Scaffold favicon (replace in M02)
-│   │   ├── (public)/page.tsx    Homepage (placeholder; cinematic homepage in M03)
+│   │   ├── layout.tsx           Root layout: fonts (Geist, Fraunces), metadata, <html>/<body>
+│   │   ├── not-found.tsx        Global 404, rendered inside the site header and footer
+│   │   ├── globals.css          Tailwind, design tokens, keyframes, reduced-motion baseline
+│   │   ├── icon.png, apple-icon.png  Favicons resized from the original logo
+│   │   ├── (public)/
+│   │   │   ├── layout.tsx       Public shell: SiteHeader + page + SiteFooter
+│   │   │   ├── template.tsx     Page entrance on client navigation (PageTransition)
+│   │   │   ├── page.tsx         Homepage: cinematic hero and focus section (full story in M03)
+│   │   │   └── design-system/page.tsx  Design system preview (noindex)
 │   │   └── (admin)/admin/page.tsx  Admin entry, guarded by requireAdmin() (denies all until M04)
-│   ├── components/ui/           Shared UI primitives (Container); shadcn/ui components from M02
+│   ├── components/
+│   │   ├── ui/                  Primitives: Button (shadcn), Container, Section, SectionHeading,
+│   │   │                        Eyebrow, Grid, MediaCard, PhotoCredit, icons
+│   │   ├── layout/              SiteHeader, SiteFooter, BrandMark
+│   │   ├── navigation/          DesktopNav, MegaMenuPanel, MobileNav
+│   │   ├── motion/              GSAP client leaves: Reveal, HeroMotion, PageTransition
+│   │   └── sections/            Hero
 │   ├── config/
 │   │   ├── site.ts              Site identity
+│   │   ├── navigation.ts        Typed navigation: mega menus, mobile menu, footer
+│   │   ├── media.ts             Photography registry with alt text and credits
 │   │   └── env.ts               Validated server environment (server-only)
+│   ├── hooks/                   useScrolled, useBodyScrollLock
+│   ├── lib/                     utils.ts (cn), motion.ts (easings, durations, media queries)
 │   ├── features/README.md       Feature-module contract (no features yet)
 │   ├── services/admin-auth.ts   requireAdmin() authorisation guard (server-only)
 │   └── validation/env.ts        Env schema and parseServerEnv() (pure, tested)
 ├── tests/
-│   ├── unit/                    Vitest: homepage render, env validation
-│   └── e2e/                     Playwright: navigation, 404, security headers, admin denial
+│   ├── unit/                    Vitest (node; jsdom per file): pages, config, Button, navs, Reveal
+│   └── e2e/                     Playwright: navigation, header, mega menu, mobile, motion,
+│                                layout/axe, platform; screenshots.spec.ts (opt-in evidence)
 ├── AGENTS.md  CLAUDE.md  ROADMAP.md  README.md
+├── components.json              shadcn/ui configuration (aliases, new-york style)
 ├── .env.example                 Documented environment variables
 ├── .gitattributes               LF line endings; binary images
 ├── .prettierrc.json  .prettierignore
@@ -39,30 +57,23 @@ This describes the repository **as it is now**. Planned folders are listed separ
 
 ## Planned
 
-| Folder                             | Purpose                                                | Expected |
-| ---------------------------------- | ------------------------------------------------------ | -------- |
-| `src/components/layout/`           | Header, footer, page shells                            | M02      |
-| `src/components/navigation/`       | Mega menus, mobile navigation                          | M02      |
-| `src/components/motion/`           | Shared animation client leaves (ADR 0003)              | M02      |
-| `src/components/sections/`         | Reusable page sections                                 | M02–M03  |
-| `src/hooks/`                       | Shared client hooks                                    | M02      |
-| `src/lib/`                         | Framework-agnostic helpers (for example shadcn `cn()`) | M02      |
-| `src/features/<feature>/`          | Business modules                                       | M03–M05  |
-| `src/app/(public)/layout.tsx`      | Public shell (header and footer)                       | M02      |
-| `src/app/(admin)/admin/layout.tsx` | Admin shell                                            | M04      |
-| `public/images/`                   | Optimised, licensed photography                        | M03      |
+| Folder                             | Purpose                                         | Expected |
+| ---------------------------------- | ----------------------------------------------- | -------- |
+| `src/features/<feature>/`          | Business modules                                | M03–M05  |
+| `src/content/`                     | Typed static page content (replaced by the CMS) | M03      |
+| `src/app/(admin)/admin/layout.tsx` | Admin shell                                     | M04      |
 
 ## Docs
 
-| Folder               | Contents                                       |
-| -------------------- | ---------------------------------------------- |
-| `docs/architecture/` | Overview, design tokens, tech stack, this file |
-| `docs/roadmap/`      | Master roadmap                                 |
-| `docs/milestones/`   | One specification per milestone                |
-| `docs/decisions/`    | ADRs                                           |
-| `docs/components/`   | Component inventory                            |
-| `docs/audits/`       | Verification evidence                          |
-| `docs/deployment/`   | Deployment expectations                        |
+| Folder               | Contents                                                |
+| -------------------- | ------------------------------------------------------- |
+| `docs/architecture/` | Overview, design tokens, tech stack, this file          |
+| `docs/roadmap/`      | Master roadmap                                          |
+| `docs/milestones/`   | One specification per milestone                         |
+| `docs/decisions/`    | ADRs                                                    |
+| `docs/components/`   | Component inventory                                     |
+| `docs/audits/`       | Verification evidence (M02 includes `m02-screenshots/`) |
+| `docs/deployment/`   | Deployment expectations                                 |
 
 ## Import alias
 

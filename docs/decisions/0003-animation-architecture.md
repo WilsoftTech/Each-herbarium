@@ -1,6 +1,6 @@
 # 0003. Animation architecture and reduced motion
 
-- **Status:** Accepted (libraries installed in M02 at first use)
+- **Status:** Accepted (libraries installed in M02; implementation notes below)
 - **Date:** 2026-10-19
 - **Milestone:** M01 (revision 2)
 
@@ -37,3 +37,13 @@ None of these is installed in M01. GSAP, `@gsap/react` and Motion are installed 
 - Animation bundles load only on routes that use them.
 - A no-JavaScript or reduced-motion visitor gets the full content.
 - Contributors must follow these rules; reviewers check them for every animated component.
+
+## M02 implementation notes (2026-10-19)
+
+How the rules were applied when the libraries were introduced:
+
+- **Leaves.** GSAP lives in three client leaves in `src/components/motion/`: `Reveal`, `HeroMotion` and `PageTransition`. Each registers its own plugins, uses `useGSAP` with a `scope`, and builds animations only inside `gsap.matchMedia()` under `(prefers-reduced-motion: no-preference)`. Motion is used only in the header (mega-menu presence, staggered panel content, the mobile dialog), wrapped once in `LazyMotion features={domAnimation} strict` and `MotionConfig reducedMotion="user"`.
+- **CSS for entrance reveals that are visible on first paint.** The hero's masked headline, copy fade and photo settle are CSS keyframes (`animate-mask-rise`, `animate-fade-rise`, `animate-settle`). A GSAP `from()` there would flash the server-rendered text, hide it, and then reveal it again after hydration. CSS runs from first paint, needs no JavaScript and ends in the server-rendered state. GSAP handles only scroll-linked effects (parallax, scroll-out), which start from the natural state.
+- **Page entrances.** `(public)/template.tsx` wraps pages in `PageTransition`. It skips the first page of a visit (no paint delay) and fades in pages reached by client-side navigation.
+- **Reduced motion** is also verified end to end: the hero is static, there is no parallax, reveal content stays at opacity 1, and menus open with opacity only (`tests/e2e/motion.spec.ts`).
+- **Lenis: not adopted.** The scroll effects are scrubbed against native scroll and work without smooth scrolling. Lenis would take over keyboard, anchor and assistive-technology scrolling for no demonstrated benefit. Revisit only with a separate ADR.

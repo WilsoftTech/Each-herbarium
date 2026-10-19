@@ -36,3 +36,4 @@ Trade-offs, follow-ups, what becomes easier or harder.
 | [0002](0002-modular-monolith.md)       | Modular monolith, route groups and environment validation | Accepted |
 | [0003](0003-animation-architecture.md) | Animation architecture and reduced motion                 | Accepted |
 | [0004](0004-platform-and-ui-stack.md)  | Platform and UI stack                                     | Accepted |
+| [0005](0005-interim-photography.md)    | Interim photography from openly licensed sources          | Accepted |

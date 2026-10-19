@@ -30,6 +30,8 @@ Brand verification against the logo; typography; spacing tokens; shadcn/ui initi
 
 Cinematic homepage; About, Conservation, Herbarium, Medicinal Plants, Research and Education, Get Involved, Partners (including Bitwiire as an independent partner), Contact. Content is static and typed in this milestone.
 
+Carried over from M02. The hero and the first focus section already exist on `/`; M03 extends the homepage around them. The navigation in `src/config/navigation.ts` defines provisional routes under the seven M02 top-level sections (About EACH, Our Work, Herbarium, Research & Learning, Projects & Impact, Get Involved). Agree the final route list at the start of M03, update that one file, and build every linked page so that no navigation link returns 404.
+
 ### M04 — Database, CMS and editorial workflows
 
 Content models (projects, articles, resources, partners, media), Prisma + Neon persistence, R2 media, admin authentication behind `requireAdmin()`, draft, review and publish workflow. Static content moves to the CMS.

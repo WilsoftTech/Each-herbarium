@@ -16,8 +16,8 @@ Rules for every AI coding agent (Codex, Claude Code, others) working in this rep
 
 - **Project:** EACH — East African Community Herbariums. An independent conservation, herbarium and botanical-knowledge initiative for East Africa, operating first in Uganda.
 - **Partner brand:** Bitwiire Herbarium Cafe is an _independent_ partner. Never imply either organisation owns the other. Keep the brands visually and verbally distinct.
-- **Stack (installed):** Next.js 16 (App Router, Turbopack, Cache Components), React 19, TypeScript 5 (strict), Tailwind CSS 4, Zod, ESLint 9, Prettier, Vitest, Playwright. npm only.
-- **Stack (planned, install only at first use):** shadcn/ui, GSAP + ScrollTrigger, Motion (M02); Prisma + Neon, Cloudflare R2 (M04); Resend (M05); Vercel hosting. See [docs/architecture/tech-stack.md](docs/architecture/tech-stack.md) and [ADR 0004](docs/decisions/0004-platform-and-ui-stack.md).
+- **Stack (installed):** Next.js 16 (App Router, Turbopack, Cache Components), React 19, TypeScript 5 (strict), Tailwind CSS 4, Zod, shadcn/ui conventions (`Button`, `cn()`), GSAP + ScrollTrigger (`@gsap/react`), Motion, ESLint 9, Prettier, Vitest (+ jsdom, Testing Library), Playwright (+ axe). npm only.
+- **Stack (planned, install only at first use):** Prisma + Neon, Cloudflare R2 (M04); Resend (M05); Vercel hosting. See [docs/architecture/tech-stack.md](docs/architecture/tech-stack.md) and [ADR 0004](docs/decisions/0004-platform-and-ui-stack.md).
 - **Architecture:** a modular monolith ([overview](docs/architecture/overview.md), [ADR 0002](docs/decisions/0002-modular-monolith.md)). **Folders:** [docs/architecture/folder-structure.md](docs/architecture/folder-structure.md).
 - **Current phase:** see [ROADMAP.md](ROADMAP.md). Work only on the current milestone.
 

@@ -41,11 +41,11 @@ Browser ──► Next.js on Vercel
 
 ## Design system
 
-Tokens and their verification status are in [design-tokens.md](design-tokens.md). Typography is currently Geist Sans (via `next/font`) as a placeholder; editorial typefaces are chosen in M02.
+Tokens, typography (Fraunces display, Geist text), contrast measurements and their verification status are in [design-tokens.md](design-tokens.md). Primitives and navigation are listed in the [component inventory](../components/inventory.md). The public shell is `(public)/layout.tsx`: `SiteHeader` (desktop mega menus from `xl`, a full-screen mobile dialog below it), the page, and `SiteFooter`. All navigation renders from the typed `src/config/navigation.ts`.
 
 ## Animation
 
-GSAP + ScrollTrigger and Motion are used only in client leaf components, with scoped cleanup and reduced-motion handling, and are never initialised globally. Full rules: [ADR 0003](../decisions/0003-animation-architecture.md). The CSS reduced-motion baseline is already in `globals.css`.
+GSAP + ScrollTrigger and Motion are used only in client leaf components, with scoped cleanup and reduced-motion handling, and are never initialised globally. Full rules and the M02 implementation notes: [ADR 0003](../decisions/0003-animation-architecture.md). Entrance reveals visible on first paint are CSS keyframes; GSAP handles scroll-linked effects; Motion handles menu presence.
 
 ## Dependency philosophy
 
