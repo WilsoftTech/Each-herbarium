@@ -131,7 +131,7 @@ Run on 2026-10-19 after deleting `node_modules` and `.next` and running `npm ci`
 
 Detailed evidence: [docs/audits/M01-verification.md](../audits/M01-verification.md).
 
-**Milestone commits:** `0de7d2c` (initial). Revision 2 is in the commit `feat(m01): …`, recorded in [ROADMAP.md](../../ROADMAP.md).
+**Milestone commits:** `0de7d2c` (initial). Revision 2: `68c4aca` — `feat(m01): apply revised foundation brief`.
 
 ## Risks
 

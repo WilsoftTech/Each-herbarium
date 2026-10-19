@@ -9,7 +9,7 @@ Progress dashboard for the **East African Community Herbariums** website. Detail
 | **Current milestone**      | M01 complete (revision 2) — awaiting approval to start M02     |
 | **Overall progress**       | 1 of 7 milestones completed                                    |
 | **Latest verified commit** | `0de7d2c` — chore(m01): initialize EACH engineering foundation |
-| **M01 revision 2**         | Recorded in the commit after `fca40b7` (`feat(m01): …`)        |
+| **M01 revision 2**         | `68c4aca` — feat(m01): apply revised foundation brief          |
 | **Outstanding blockers**   | None blocking M02. Open risks below.                           |
 
 ## Milestones
