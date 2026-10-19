@@ -83,7 +83,7 @@ Run on 2026-10-19 (Windows 11, Node 24.13.0, npm 11.6.2). Details: [M03-verifica
 | Screen reader | —                                               | NOT VERIFIED                                     |
 | GitHub CI     | —                                               | NOT VERIFIED (no remote)                         |
 
-Milestone commit: recorded in a follow-up `docs(m03)` commit.
+Milestone commit: `dc8578f` — feat(m03): cinematic homepage, public pages and typed content contracts.
 
 ### Conditions
 

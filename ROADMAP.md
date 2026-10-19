@@ -8,7 +8,7 @@ Progress dashboard for the **East African Community Herbariums** website. Detail
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | **Current milestone**      | M03 complete (PASS WITH CONDITIONS), awaiting approval to start M04                                                           |
 | **Overall progress**       | 3 of 7 milestones completed                                                                                                   |
-| **Latest verified commit** | M03 milestone commit, recorded in the follow-up `docs(m03)` commit                                                            |
+| **Latest verified commit** | `dc8578f` — feat(m03): cinematic homepage, public pages and typed content contracts                                           |
 | **Previous milestone**     | M02 `07684f9`; M01 `0de7d2c`, revision 2 `68c4aca`                                                                            |
 | **Outstanding blockers**   | None blocking M04. Content awaiting EACH is listed in [awaiting-approval.md](docs/content/awaiting-approval.md). Risks below. |
 
