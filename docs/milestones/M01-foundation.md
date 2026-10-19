@@ -79,7 +79,7 @@ Run on 2026-10-19, Windows 11, Node 24.12.0, npm 11.6.2.
 
 Detailed evidence: [docs/audits/M01-verification.md](../audits/M01-verification.md).
 
-**Milestone commit:** recorded in the follow-up commit (see `git log --grep "chore(m01)"`).
+**Milestone commit:** `0de7d2c` — `chore(m01): initialize EACH engineering foundation`.
 
 ## Risks
 
