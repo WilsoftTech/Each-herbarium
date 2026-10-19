@@ -16,17 +16,23 @@ Short records of significant, hard-to-reverse decisions: the choice of a library
 - **Milestone:** MXX
 
 ## Context
+
 What forces the decision.
 
 ## Decision
+
 What we chose.
 
 ## Consequences
+
 Trade-offs, follow-ups, what becomes easier or harder.
 ```
 
 ## Index
 
-| ADR | Title | Status |
-|---|---|---|
-| [0001](0001-foundation-stack.md) | Foundation stack and minimal test tooling | Accepted |
+| ADR                                    | Title                                                     | Status   |
+| -------------------------------------- | --------------------------------------------------------- | -------- |
+| [0001](0001-foundation-stack.md)       | Foundation stack and minimal test tooling                 | Accepted |
+| [0002](0002-modular-monolith.md)       | Modular monolith, route groups and environment validation | Accepted |
+| [0003](0003-animation-architecture.md) | Animation architecture and reduced motion                 | Accepted |
+| [0004](0004-platform-and-ui-stack.md)  | Platform and UI stack                                     | Accepted |

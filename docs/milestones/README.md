@@ -2,14 +2,14 @@
 
 One executable specification per milestone. Status lives in [ROADMAP.md](../../ROADMAP.md).
 
-| ID | Document |
-|---|---|
-| M01 | [M01-foundation.md](M01-foundation.md) |
-| M02 | [M02-design-system.md](M02-design-system.md) |
-| M03 | [M03-public-website.md](M03-public-website.md) |
-| M04 | [M04-cms-database.md](M04-cms-database.md) |
-| M05 | [M05-communications.md](M05-communications.md) |
-| M06 | [M06-quality-audit.md](M06-quality-audit.md) |
+| ID  | Document                                               |
+| --- | ------------------------------------------------------ |
+| M01 | [M01-foundation.md](M01-foundation.md)                 |
+| M02 | [M02-design-system.md](M02-design-system.md)           |
+| M03 | [M03-public-website.md](M03-public-website.md)         |
+| M04 | [M04-cms-database.md](M04-cms-database.md)             |
+| M05 | [M05-communications.md](M05-communications.md)         |
+| M06 | [M06-quality-audit.md](M06-quality-audit.md)           |
 | M07 | [M07-production-release.md](M07-production-release.md) |
 
 ## Specification format

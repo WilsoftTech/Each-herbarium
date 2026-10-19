@@ -1,15 +1,23 @@
 # Deployment
 
-**Status: not configured.** No hosting, staging, domain, remote repository or production environment exists yet. Deployment is planned for [M07](../milestones/M07-production-release.md).
+**Status: not configured.** No Vercel project, domain, GitHub remote, database or production environment exists yet. Setup happens in [M07](../milestones/M07-production-release.md). Earlier preview deployments need explicit approval.
 
-## Expectations
+## Target platform ([ADR 0004](../decisions/0004-platform-and-ui-stack.md))
 
-- **Environments:** local → staging → production. Staging mirrors production configuration.
-- **Build:** `npm ci && npm run build`. Run with `npm run start` on Node 24 or a platform-native Next.js runtime.
-- **Gate:** CI (typecheck, lint, unit, build, e2e) must pass on the exact commit being deployed.
-- **Secrets:** stored in the hosting platform's secret store per environment, never in Git. Every variable is documented in `.env.example`.
+| Concern                | Platform                                                        |
+| ---------------------- | --------------------------------------------------------------- |
+| Hosting, previews, CDN | Vercel (native Next.js 16 support, including Cache Components)  |
+| Database               | Neon PostgreSQL. Use a Neon branch per preview where practical. |
+| Media                  | Cloudflare R2                                                   |
+| Email                  | Resend                                                          |
+| CI                     | GitHub Actions (`.github/workflows/ci.yml`)                     |
+
+## Assumptions
+
+- **Build:** Vercel runs `npm ci` and `npm run build` on Node 24 (`engines.node`). No `vercel.json` is needed yet.
+- **Environments:** local → Vercel preview (per pull request) → production. Preview uses its own database branch and storage prefix, and never production data.
+- **Site URL:** set `SITE_URL` in production once the domain exists. Until then, `src/validation/env.ts` falls back to `VERCEL_PROJECT_PRODUCTION_URL` in production and `VERCEL_URL` for previews.
+- **Secrets:** stored in Vercel environment variables, scoped per environment, never in Git. Every variable is documented in `.env.example` and validated at build time.
+- **Gate:** CI (format, typecheck, lint, unit, build, e2e) must pass on the commit being promoted.
 - **Approval:** production deploys, DNS changes and database migrations require explicit human approval.
-- **Rollback:** every release must be revertible to the previous build. Database migrations must be backward-compatible or have a documented recovery path.
-- **Candidates:** Vercel (native Next.js support) or Cloudflare (Workers via OpenNext, plus R2 for media). Decided by ADR in M07.
-
-This document is replaced with the real configuration once M07 delivers it.
+- **Rollback:** Vercel instant rollback to the previous deployment. Database migrations must be backward-compatible or have a documented recovery path.

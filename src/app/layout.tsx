@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { env } from "@/config/env";
 import { siteConfig } from "@/config/site";
 import "./globals.css";
 
@@ -9,6 +10,7 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(env.siteUrl),
   title: {
     default: siteConfig.name,
     template: `%s | ${siteConfig.shortName}`,

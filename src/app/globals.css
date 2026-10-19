@@ -1,30 +1,92 @@
 @import "tailwindcss";
 
 /*
- * EACH design tokens (M01, provisional).
- * Brand values are unverified against the authoritative logo — see
- * docs/architecture/overview.md#design-tokens. Components must use the
- * semantic tokens (background, foreground, primary, accent, muted), not the
- * raw brand values.
+ * EACH design tokens.
+ *
+ * Brand palette: provisional, sampled against public/brand/each-logo.jpeg.
+ * See docs/architecture/design-tokens.md before changing any value.
+ * Components use semantic utilities (bg-background, text-primary, …), never
+ * raw hex values. Semantic names follow shadcn/ui conventions so its
+ * components adopt the EACH palette without remapping.
  */
-@theme {
-  --color-botanical-green: #176b28;
-  --color-globe-blue: #087db9;
-  --color-charcoal: #151a18;
-  --color-warm-ivory: #f6f7f2;
-  --color-moss-grey: #4a524e;
+:root {
+  --brand-green: #176b28;
+  --brand-green-light: #6fbf4a;
+  --brand-blue: #087db9;
+  --brand-blue-light: #4fb3e8;
+  --brand-charcoal: #151a18;
+  --brand-ivory: #f6f7f2;
+
+  --background: var(--brand-ivory);
+  --foreground: var(--brand-charcoal);
+  --primary: var(--brand-green);
+  --primary-foreground: var(--brand-ivory);
+  --accent: var(--brand-blue);
+  --accent-foreground: #ffffff;
+  --muted: #e8ebe3;
+  --muted-foreground: #4a524e;
+  --border: #d9ddd3;
+  --ring: var(--brand-blue);
+
+  --motion-duration-fast: 150ms;
+  --motion-duration-base: 300ms;
+  --motion-duration-slow: 700ms;
+  --motion-duration-cinematic: 1200ms;
+}
+
+/* Dark cinematic sections: apply data-surface="dark" to any container. */
+[data-surface="dark"] {
+  --background: var(--brand-charcoal);
+  --foreground: var(--brand-ivory);
+  --primary: var(--brand-green-light);
+  --primary-foreground: var(--brand-charcoal);
+  --accent: var(--brand-blue-light);
+  --accent-foreground: var(--brand-charcoal);
+  --muted: #232a27;
+  --muted-foreground: #b7beb9;
+  --border: #2c3330;
+  --ring: var(--brand-blue-light);
+
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 @theme inline {
-  --color-background: var(--color-warm-ivory);
-  --color-foreground: var(--color-charcoal);
-  --color-primary: var(--color-botanical-green);
-  --color-accent: var(--color-globe-blue);
-  --color-muted: var(--color-moss-grey);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
   --font-sans: var(--font-geist-sans);
 }
 
+@theme {
+  --ease-cinematic: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 body {
-  background: var(--color-background);
-  color: var(--color-foreground);
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/*
+ * Reduced-motion baseline. CSS transitions and animations collapse to their
+ * end state. JavaScript animation (GSAP, Motion) must also honour the
+ * preference; see docs/decisions/0003-animation-architecture.md.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

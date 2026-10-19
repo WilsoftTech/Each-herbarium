@@ -13,7 +13,8 @@ A cinematic, premium design system and navigation for EACH, with an interaction 
 - Core primitives: `Button` (including link variant), `SectionHeading`, responsive media (`next/image` wrapper only if it adds real value).
 - Layout: site header, footer and page shell.
 - Navigation: a single typed navigation config (`src/config/navigation.ts`); animated desktop mega menus; premium full-screen mobile navigation.
-- Animation architecture: an ADR choosing the minimum library set; a reduced-motion strategy; client-only animation leaves.
+- Animation: install `gsap` + `@gsap/react` (and `motion` only if a menu needs it) with the first component that uses them, following [ADR 0003](../decisions/0003-animation-architecture.md).
+- shadcn/ui: run `shadcn init` while keeping the EACH tokens ([ADR 0004](../decisions/0004-platform-and-ui-stack.md)). Add only the components in use.
 - Brand favicon and logo placement, using the original logo only.
 
 ## Out of scope
@@ -23,7 +24,8 @@ Full page content (M03), CMS (M04), forms (M05).
 ## Tasks
 
 - [ ] Obtain a vector (SVG) or transparent PNG master of the logo. The JPEG original is already in `public/brand/`.
-- [ ] ADR: animation library choice (Motion / GSAP / CSS-only) and smooth scrolling (Lenis or none).
+- [ ] Initialise shadcn/ui and add `Button`; replace manual class joining with `cn()`.
+- [ ] First GSAP client leaf (for example a section reveal) per ADR 0003, with reduced-motion branches.
 - [ ] Finalise tokens and record contrast measurements.
 - [ ] Build primitives and add them to the component inventory.
 - [ ] Build header, mega menus, mobile navigation and footer from the navigation config.
@@ -33,6 +35,8 @@ Full page content (M03), CMS (M04), forms (M05).
 ## Acceptance criteria
 
 - [ ] Logo is used unaltered; tokens are verified against it.
+- [ ] No global animation initialisation; every GSAP use is scoped with `useGSAP` and cleans up on route change (e2e navigates away and back without errors).
+- [ ] Content is visible with JavaScript disabled and with `reducedMotion: "reduce"` (e2e).
 - [ ] Mega menus are operable by keyboard: open/close, arrow or tab movement, Escape, focus return.
 - [ ] Mobile navigation traps focus while open, locks scroll and restores focus on close.
 - [ ] All motion respects `prefers-reduced-motion`.

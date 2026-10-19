@@ -8,7 +8,7 @@ Ship EACH to production safely, with a tested way back.
 
 ## Scope
 
-- ADR: hosting platform (Vercel or Cloudflare), media and CDN, database hosting, domain and DNS.
+- Vercel project setup (hosting chosen in [ADR 0004](../decisions/0004-platform-and-ui-stack.md)); Neon production branch; R2 bucket and public domain; domain and DNS.
 - GitHub remote and CI running on GitHub (requires approval), with branch protection.
 - Staging environment with production-like configuration.
 - Secrets management per environment.

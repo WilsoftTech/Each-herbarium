@@ -4,6 +4,8 @@ The website of East African Community Herbariums, an independent initiative for 
 
 > **Status:** engineering foundation (M01). See [ROADMAP.md](ROADMAP.md).
 
+Copy `.env.example` to `.env.local` if you need to override defaults. No variables are required for local development.
+
 ## Requirements
 
 - Node.js 24 or later
@@ -20,15 +22,16 @@ Open <http://localhost:3000>.
 
 ## Scripts
 
-| Command | Purpose |
-|---|---|
-| `npm run dev` | Development server |
-| `npm run build` | Production build |
-| `npm run start` | Serve the production build |
-| `npm run typecheck` | Generate route types and run `tsc --noEmit` |
-| `npm run lint` | ESLint |
-| `npm test` | Vitest unit tests (`tests/unit`) |
-| `npm run test:e2e` | Playwright browser tests (`tests/e2e`); run `npm run build` first. First time: `npx playwright install chromium` |
+| Command                                   | Purpose                                                                                                          |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`                             | Development server                                                                                               |
+| `npm run build`                           | Production build                                                                                                 |
+| `npm run start`                           | Serve the production build                                                                                       |
+| `npm run typecheck`                       | Generate route types and run `tsc --noEmit`                                                                      |
+| `npm run lint`                            | ESLint                                                                                                           |
+| `npm run format` / `npm run format:check` | Prettier (with Tailwind class sorting)                                                                           |
+| `npm test`                                | Vitest unit tests (`tests/unit`)                                                                                 |
+| `npm run test:e2e`                        | Playwright browser tests (`tests/e2e`); run `npm run build` first. First time: `npx playwright install chromium` |
 
 ## Documentation
 

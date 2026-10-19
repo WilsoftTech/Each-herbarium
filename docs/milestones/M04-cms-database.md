@@ -8,9 +8,9 @@ Let authorised EACH staff manage content securely without code changes.
 
 ## Scope
 
-- ADR: CMS approach (custom admin on Prisma + PostgreSQL, or a headless CMS), hosting of the database and media.
+- ADR: CMS approach (custom admin on Prisma + Neon PostgreSQL, or a headless CMS) and admin identity provider. Media goes to Cloudflare R2 ([ADR 0004](../decisions/0004-platform-and-ui-stack.md)).
 - Content models: conservation projects, articles and news, resources, partners, team, media assets, page sections where justified.
-- Admin authentication (planned: Clerk) with server-side role checks on every mutation.
+- Admin authentication: implement `requireAdmin()` (`src/services/admin-auth.ts`) against the chosen provider, with server-side role checks on every page, action and mutation. Add a `(admin)/admin/layout.tsx` shell.
 - Draft, review and publish workflow; preview of drafts.
 - Migration of M03 static content into the CMS.
 - Caching strategy with Cache Components (`"use cache"`, tags, revalidation on publish).

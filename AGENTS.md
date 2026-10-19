@@ -15,9 +15,10 @@ Rules for every AI coding agent (Codex, Claude Code, others) working in this rep
 ## 1. Repository
 
 - **Project:** EACH — East African Community Herbariums. An independent conservation, herbarium and botanical-knowledge initiative for East Africa, operating first in Uganda.
-- **Partner brand:** Bitwiire Herbarium Cafe is an *independent* partner. Never imply either organisation owns the other. Keep the brands visually and verbally distinct.
-- **Stack (installed):** Next.js 16 (App Router, Turbopack), React 19, TypeScript 5 (strict), Tailwind CSS 4, ESLint 9, Vitest, Playwright. npm only. Full list: [docs/architecture/tech-stack.md](docs/architecture/tech-stack.md).
-- **Architecture:** [docs/architecture/overview.md](docs/architecture/overview.md). **Folders:** [docs/architecture/folder-structure.md](docs/architecture/folder-structure.md).
+- **Partner brand:** Bitwiire Herbarium Cafe is an _independent_ partner. Never imply either organisation owns the other. Keep the brands visually and verbally distinct.
+- **Stack (installed):** Next.js 16 (App Router, Turbopack, Cache Components), React 19, TypeScript 5 (strict), Tailwind CSS 4, Zod, ESLint 9, Prettier, Vitest, Playwright. npm only.
+- **Stack (planned, install only at first use):** shadcn/ui, GSAP + ScrollTrigger, Motion (M02); Prisma + Neon, Cloudflare R2 (M04); Resend (M05); Vercel hosting. See [docs/architecture/tech-stack.md](docs/architecture/tech-stack.md) and [ADR 0004](docs/decisions/0004-platform-and-ui-stack.md).
+- **Architecture:** a modular monolith ([overview](docs/architecture/overview.md), [ADR 0002](docs/decisions/0002-modular-monolith.md)). **Folders:** [docs/architecture/folder-structure.md](docs/architecture/folder-structure.md).
 - **Current phase:** see [ROADMAP.md](ROADMAP.md). Work only on the current milestone.
 
 ## 2. Operating rules
@@ -45,7 +46,8 @@ Rules for every AI coding agent (Codex, Claude Code, others) working in this rep
 - Search before creating. Extend an existing component when the change is natural; create a new one only for a genuinely different responsibility.
 - One primitive per job: one `Button`, one `Container`, one `SectionHeading`, one navigation config. No near-duplicates.
 - Do not build "universal" components with sprawling conditional props to avoid a justified specialised component.
-- Style with semantic design tokens (`bg-background`, `text-foreground`, `text-primary`, `text-accent`, `text-muted`). Never hardcode brand hex values in components.
+- Style with semantic design tokens (`bg-background`, `text-foreground`, `text-primary`, `text-accent`, `text-muted-foreground`, `border-border`; dark sections use `data-surface="dark"`). Never hardcode brand hex values in components. See [design-tokens.md](docs/architecture/design-tokens.md).
+- shadcn/ui components are added with the CLI into `src/components/ui/` and must keep the EACH tokens.
 - Accessibility is required: semantic HTML, one `h1` per page, keyboard operability, visible focus, text alternatives, WCAG 2.2 AA contrast, and `prefers-reduced-motion` respected for all animation.
 - Add every new reusable component to the inventory in the same commit.
 
@@ -54,7 +56,11 @@ Rules for every AI coding agent (Codex, Claude Code, others) working in this rep
 - **Server Components by default.** Add `"use client"` only to the smallest leaf that needs state, effects, browser APIs or animation. Never mark a layout or page client-side for a nested need.
 - Keep server-only code (secrets, database, email) out of client modules; use the `server-only` package when such modules appear.
 - TypeScript strict mode stays on. No `any`, no `@ts-ignore` without a written reason.
-- Organise by feature (`src/features/<feature>/`) once a feature has more than one file of its own logic; shared UI stays in `src/components/`.
+- Organise business capabilities as feature modules (`src/features/<feature>/`, public API via `index.ts`); see [src/features/README.md](src/features/README.md). Shared layers (`components`, `services`, `validation`, `config`, `lib`) never import features.
+- Public routes live in `src/app/(public)/`, admin in `src/app/(admin)/admin/`. **Every admin page, Server Action and Route Handler calls `requireAdmin()`** from `@/services/admin-auth`. Never rely on layout checks.
+- Read environment variables only through `@/config/env` (validated by `@/validation/env`). Never read `process.env` directly elsewhere. Never put secrets in `NEXT_PUBLIC_` variables.
+- Animation follows [ADR 0003](docs/decisions/0003-animation-architecture.md): client leaf components only, no global initialisation, `useGSAP` with a scope, server renders the visible final state, and reduced motion is handled in CSS, GSAP (`gsap.matchMedia`) and Motion (`MotionConfig reducedMotion="user"`).
+- Do not fabricate institutional information (staff, partners, statistics, history, plant claims). Use clearly marked placeholders and ask.
 - Validate all external input (forms, params, webhooks) on the server. Authorise protected operations on the server.
 - No secrets in source control. Document every environment variable in `.env.example` without real values.
 - Do not create empty folders, placeholder `index.ts` files, stub components or fake integrations.
@@ -67,6 +73,7 @@ Rules for every AI coding agent (Codex, Claude Code, others) working in this rep
 Run after every change, before every commit:
 
 ```bash
+npm run format:check   # npm run format to fix
 npm run typecheck
 npm run lint
 npm test

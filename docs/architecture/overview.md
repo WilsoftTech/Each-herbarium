@@ -2,74 +2,51 @@
 
 ## Summary
 
-EACH is a single Next.js App Router application. It is server-rendered by default, statically prerendered where possible, and deployed as one unit. There are no microservices, no separate API server and no client-side global state.
+EACH is a **modular monolith**: a single Next.js App Router application, deployed as one unit (Vercel). It is server-rendered by default and statically prerendered where possible. There are no microservices, no separate API server and no client-side global state. Decision records: [0002](../decisions/0002-modular-monolith.md), [0003](../decisions/0003-animation-architecture.md), [0004](../decisions/0004-platform-and-ui-stack.md).
 
 ```text
-Browser ──► Next.js (App Router)
-              ├─ Server Components (default): pages, layouts, data access
-              ├─ Client Components (leaf only): menus, animation, form state
-              └─ Route Handlers / Server Actions (from M04/M05): CMS, forms, email
-                       └─ Database, email provider, media storage (planned)
+Browser ──► Next.js on Vercel
+              ├─ app/(public)          public site — Server Components
+              ├─ app/(admin)/admin     admin — every entry point calls requireAdmin()
+              ├─ features/<feature>    business modules (from M03)
+              ├─ components/           shared UI; client leaves for interaction and animation
+              ├─ services/             server-only adapters: auth (now); db, storage, email (later)
+              ├─ validation/           Zod schemas (env now; forms and content later)
+              └─ config/               site identity, validated env
+                    └─► Neon PostgreSQL (Prisma), Cloudflare R2, Resend   [planned]
 ```
+
+## Module boundaries
+
+| Layer      | Location               | May import                                     | Rule                                                |
+| ---------- | ---------------------- | ---------------------------------------------- | --------------------------------------------------- |
+| Routes     | `src/app/`             | everything                                     | Thin: compose features and sections, set metadata.  |
+| Features   | `src/features/<name>/` | shared layers, other features' `index.ts` only | Own their components, actions, queries and schemas. |
+| Shared UI  | `src/components/`      | `lib`, `config`                                | Presentational and reusable; no data access.        |
+| Services   | `src/services/`        | `validation`, `config`, `lib`                  | `server-only`. Infrastructure adapters.             |
+| Validation | `src/validation/`      | `zod`                                          | Pure and side-effect free, so it is unit-testable.  |
+| Config     | `src/config/`          | `validation`                                   | Static site data; `env.ts` is `server-only`.        |
 
 ## Rendering strategy
 
-- **Server Components by default.** Pages and layouts render on the server and ship no component JavaScript unless they need interactivity.
-- **Client Components at the leaves.** `"use client"` goes only on the smallest component that needs state, effects, browser APIs or animation (for example a mega-menu panel, not the header that contains it).
-- **Cache Components enabled.** `next.config.ts` sets `cacheComponents: true`, the Next.js 16 default from `create-next-app`. Routes are prerendered statically unless they read request data. Dynamic data from M04 onward must use `"use cache"` or `<Suspense>` correctly. See `node_modules/next/dist/docs/01-app/02-guides/migrating-to-cache-components.md`.
-- **Partial prefetching** (`partialPrefetching: true`) is also a scaffold default and is kept.
-- Current routes (`/`, 404) are fully static.
+- **Server Components by default.** `"use client"` goes only on the smallest leaf that needs state, effects, browser APIs or animation.
+- **Cache Components** (`cacheComponents: true`) and **partial prefetching** are enabled, as Next.js 16 defaults. Routes are prerendered unless they read request data. Request-time reads (sessions, cookies) go behind `<Suspense>` and follow `node_modules/next/dist/docs/01-app/02-guides/authentication-with-cache-components.md`.
+- Current routes (`/`, `/admin` → 404, not-found) are all static.
 
-## Application boundaries
+## Security baseline
 
-| Layer | Location | Rule |
-|---|---|---|
-| Routes | `src/app/` | Thin: compose sections, set metadata. |
-| Shared UI | `src/components/` | Presentational and reusable; no data fetching. |
-| Features | `src/features/<name>/` | Feature-owned components, logic and validation. |
-| Configuration | `src/config/` | Static site data (identity, navigation). |
-| Server utilities | `src/lib/` | Framework-agnostic helpers; server-only modules import `server-only`. |
+- Admin is deny-by-default: `requireAdmin()` returns 404 until M04 adds identity. Admin metadata reveals nothing.
+- Environment variables are validated at build time. Secrets are never `NEXT_PUBLIC_`, and server modules import `server-only`.
+- Response headers: `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options: DENY` and `Permissions-Policy`. `X-Powered-By` is disabled. CSP comes in M06.
 
-## Design tokens
+## Design system
 
-Tokens are defined in `src/app/globals.css` with Tailwind CSS v4 `@theme`. Components use **semantic** tokens only.
+Tokens and their verification status are in [design-tokens.md](design-tokens.md). Typography is currently Geist Sans (via `next/font`) as a placeholder; editorial typefaces are chosen in M02.
 
-| Semantic token | Utility | Maps to | Value |
-|---|---|---|---|
-| background | `bg-background` | warm ivory | `#F6F7F2` |
-| foreground | `text-foreground` | charcoal | `#151A18` |
-| primary | `text-primary` | botanical green | `#176B28` |
-| accent | `text-accent` | globe blue | `#087DB9` |
-| muted | `text-muted` | moss grey | `#4A524E` |
+## Animation
 
-Measured contrast on ivory: charcoal 16.35:1, moss grey 7.48:1, botanical green 6.15:1, globe blue **4.20:1**. Globe blue is AA-compliant only for large text (≥24px, or ≥18.66px bold) and non-text use.
-
-**Status: provisional.** The authoritative logo is at `public/brand/each-logo.jpeg`. Median colours sampled from it during M01 (JPEG, so approximate):
-
-| Logo element | Sampled | Provisional token |
-|---|---|---|
-| "EACH" wordmark | `#1E6000` | botanical green `#176B28` |
-| Leaf | `#3F9003` | — |
-| Globe ocean (gradient) | `#069BD5` (light) → `#0D2D76` (dark) | globe blue `#087DB9` (within range) |
-| Tagline text | near-black `#010101` | charcoal `#151A18` |
-
-The tokens are in the right family but not exact matches. Finalise them in M02, preferably from a vector master or official brand values, and re-measure contrast.
-
-Typography uses Geist Sans via `next/font` (self-hosted at build time) as a neutral placeholder. Editorial typography is chosen in M02.
+GSAP + ScrollTrigger and Motion are used only in client leaf components, with scoped cleanup and reduced-motion handling, and are never initialised globally. Full rules: [ADR 0003](../decisions/0003-animation-architecture.md). The CSS reduced-motion baseline is already in `globals.css`.
 
 ## Dependency philosophy
 
-Install only what the current milestone's code uses, prefer native platform features, and record every dependency's purpose in [tech-stack.md](tech-stack.md). See [AGENTS.md §3](../../AGENTS.md#3-dependencies).
-
-## Planned integrations
-
-These are planned, not installed. Each will be decided by an ADR when its milestone starts.
-
-| Concern | Milestone | Candidate |
-|---|---|---|
-| Animation / scroll | M02 | Motion and/or GSAP, Lenis (choose the minimum) |
-| Database and ORM | M04 | Prisma with PostgreSQL |
-| Authentication (admin) | M04 | Clerk |
-| CMS | M04 | Decided in M04 ADR |
-| Transactional email | M05 | Resend |
-| Hosting, media, CDN | M07 | Decided in M07 (Cloudflare or Vercel) |
+Install only what the current milestone's code uses, prefer native features, and record every dependency's purpose in [tech-stack.md](tech-stack.md). See [AGENTS.md §3](../../AGENTS.md#3-dependencies).
