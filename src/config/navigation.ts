@@ -4,10 +4,9 @@ import { media, type MediaAsset } from "./media";
  * The single source of truth for site navigation. The desktop mega menus, the
  * mobile menu and the footer all render from this file.
  *
- * Section landing pages and sub-pages are built in M03, where the final route
- * names are agreed. Until then these routes return the 404 page. Link labels
- * and descriptions are provisional information architecture, not statements
- * about EACH's programmes; confirm them with EACH before M03 content work.
+ * Routes follow the M03 route list. Link labels and descriptions are
+ * navigation copy, not statements about EACH's programmes; EACH reviews them
+ * with the rest of the site copy (docs/content/awaiting-approval.md).
  */
 export type NavLink = {
   label: string;
@@ -55,26 +54,30 @@ export const primaryNavigation = [
         heading: "Who we are",
         links: [
           {
-            label: "Our story",
-            href: "/about/story",
-            description: "Why EACH was founded and where it is going.",
-          },
-          {
             label: "Mission and values",
             href: "/about/mission",
-            description: "The principles that guide our work.",
+            description: "The purpose and principles behind our work.",
+          },
+          {
+            label: "Leadership",
+            href: "/about/leadership",
+            description: "The people who guide EACH.",
           },
         ],
       },
       {
-        heading: "Connect",
+        heading: "Partners",
         links: [
           {
             label: "Partners",
-            href: "/partners",
+            href: "/about/partners",
             description: "Organisations we work alongside.",
           },
-          { label: "Contact", href: "/contact", description: "How to reach the EACH team." },
+          {
+            label: "Bitwiire Herbarium Cafe",
+            href: "/bitwiire-herbarium-cafe",
+            description: "An independent partner of EACH.",
+          },
         ],
       },
     ],
@@ -91,13 +94,13 @@ export const primaryNavigation = [
         links: [
           {
             label: "Plant conservation",
-            href: "/our-work/conservation",
+            href: "/our-work/plant-conservation",
             description: "Protecting native plants and the places they grow.",
           },
           {
-            label: "Community engagement",
-            href: "/our-work/communities",
-            description: "Working with the people who know these landscapes best.",
+            label: "Environmental conservation",
+            href: "/our-work/environmental-conservation",
+            description: "Caring for the forests, wetlands and grasslands plants depend on.",
           },
         ],
       },
@@ -105,8 +108,13 @@ export const primaryNavigation = [
         heading: "Knowledge",
         links: [
           {
-            label: "Medicinal plants and traditional knowledge",
-            href: "/our-work/traditional-knowledge",
+            label: "Medicinal plants",
+            href: "/our-work/medicinal-plants",
+            description: "Plant knowledge in its scientific and cultural context.",
+          },
+          {
+            label: "Indigenous knowledge",
+            href: "/our-work/indigenous-knowledge",
             description: "Recording plant knowledge with respect for its custodians.",
           },
         ],
@@ -115,39 +123,39 @@ export const primaryNavigation = [
     feature: {
       eyebrow: "Afromontane flora",
       title: "Conserving the plants of East Africa's mountains and forests",
-      href: "/our-work/conservation",
+      href: "/our-work/plant-conservation",
       image: media.rwenzoriVegetation,
     },
   },
   {
     id: "herbarium",
-    label: "Herbarium",
+    label: "Herbarium & Research",
     href: "/herbarium",
     summary:
-      "Building herbarium collections that document East African plants for science, education and conservation.",
+      "Building herbarium collections and botanical knowledge that document East African plants for science, education and conservation.",
     groups: [
       {
-        heading: "The herbarium",
+        heading: "Herbarium",
         links: [
           {
-            label: "About the herbarium",
-            href: "/herbarium/about",
-            description: "What a herbarium is and why it matters.",
-          },
-          {
-            label: "Collections",
-            href: "/herbarium/collections",
-            description: "Preserved plant specimens and their records.",
+            label: "The herbarium",
+            href: "/herbarium",
+            description: "What a herbarium is and how EACH is building one.",
           },
         ],
       },
       {
-        heading: "Develop",
+        heading: "Knowledge",
         links: [
           {
-            label: "Herbarium development",
-            href: "/herbarium/development",
-            description: "Establishing and strengthening community herbariums.",
+            label: "Research",
+            href: "/research",
+            description: "Botanical study across East African ecosystems.",
+          },
+          {
+            label: "Resources",
+            href: "/resources",
+            description: "Publications, guides and stories.",
           },
         ],
       },
@@ -155,62 +163,23 @@ export const primaryNavigation = [
     feature: {
       eyebrow: "Specimens",
       title: "Every pressed plant is a lasting scientific record",
-      href: "/herbarium/collections",
+      href: "/herbarium",
       image: media.herbariumSheet,
-    },
-  },
-  {
-    id: "research-learning",
-    label: "Research & Learning",
-    href: "/research-learning",
-    summary: "Sharing botanical knowledge through research, education and open resources.",
-    groups: [
-      {
-        heading: "Research",
-        links: [
-          {
-            label: "Research",
-            href: "/research-learning/research",
-            description: "Botanical study across East African ecosystems.",
-          },
-        ],
-      },
-      {
-        heading: "Learning",
-        links: [
-          {
-            label: "Education",
-            href: "/research-learning/education",
-            description: "Learning opportunities for students and communities.",
-          },
-          {
-            label: "Resources",
-            href: "/research-learning/resources",
-            description: "Guides and materials to explore and download.",
-          },
-        ],
-      },
-    ],
-    feature: {
-      eyebrow: "Field study",
-      title: "Learning from East Africa's forests",
-      href: "/research-learning/research",
-      image: media.budongoTree,
     },
   },
   {
     id: "projects-impact",
     label: "Projects & Impact",
-    href: "/projects-impact",
+    href: "/projects",
     summary: "Follow EACH's projects and the difference they make for plants and people.",
     groups: [
       {
         heading: "Projects",
         links: [
           {
-            label: "Current projects",
-            href: "/projects-impact/projects",
-            description: "Work under way across the region.",
+            label: "Conservation projects",
+            href: "/projects",
+            description: "Case studies from the field.",
           },
         ],
       },
@@ -219,47 +188,43 @@ export const primaryNavigation = [
         links: [
           {
             label: "Our impact",
-            href: "/projects-impact/impact",
-            description: "What our work has achieved so far.",
-          },
-          {
-            label: "News and stories",
-            href: "/projects-impact/news",
-            description: "Updates from the field and the herbarium.",
+            href: "/impact",
+            description: "How we will measure and report what our work achieves.",
           },
         ],
       },
     ],
+    feature: {
+      eyebrow: "Case studies",
+      title: "Project stories, told through the landscapes they protect",
+      href: "/projects",
+      image: media.kidepoEuphorbia,
+    },
   },
   {
     id: "get-involved",
     label: "Get Involved",
     href: "/get-involved",
-    summary: "Volunteer, partner or support EACH to help protect East Africa's plant heritage.",
+    summary: "Volunteer, partner or get in touch to help protect East Africa's plant heritage.",
     groups: [
       {
         heading: "Take part",
         links: [
           {
             label: "Volunteer",
-            href: "/get-involved/volunteer",
+            href: "/volunteer",
             description: "Give your time and skills.",
           },
           {
-            label: "Partner with us",
-            href: "/get-involved/partner",
+            label: "Partnerships",
+            href: "/partnerships",
             description: "Collaborate as an institution or organisation.",
           },
         ],
       },
       {
-        heading: "Support",
+        heading: "Talk to us",
         links: [
-          {
-            label: "Support our work",
-            href: "/get-involved/support",
-            description: "Ways to help sustain EACH.",
-          },
           { label: "Contact", href: "/contact", description: "Start a conversation with us." },
         ],
       },
@@ -273,6 +238,13 @@ export const primaryNavigation = [
   },
 ] as const satisfies readonly NavItem[];
 
+/** Policy pages, linked from the footer. */
+export const legalNavigation = [
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms of use", href: "/terms" },
+  { label: "Accessibility", href: "/accessibility" },
+] as const satisfies readonly NavLink[];
+
 export function hasMenu(item: NavItem): item is NavItemWithMenu {
   return Boolean(item.groups?.length && item.summary);
 }
@@ -281,6 +253,18 @@ export function hasMenu(item: NavItem): item is NavItemWithMenu {
 export function isActivePath(item: Pick<NavItem, "href">, pathname: string): boolean {
   if (item.href === "/") return pathname === "/";
   return pathname === item.href || pathname.startsWith(`${item.href}/`);
+}
+
+/**
+ * Whether `pathname` belongs to a top-level section: its landing page, or any
+ * page its menu links to (sections group routes that do not share a prefix,
+ * such as `/herbarium` and `/research`).
+ */
+export function isActiveSection(item: NavItem, pathname: string): boolean {
+  return (
+    isActivePath(item, pathname) ||
+    (item.groups ?? []).some((group) => group.links.some((link) => isActivePath(link, pathname)))
+  );
 }
 
 /** Element id of the mega menu panel controlled by an item's trigger. */

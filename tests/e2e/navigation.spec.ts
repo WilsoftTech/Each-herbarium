@@ -17,7 +17,9 @@ test("homepage renders the hero and organisation identity", async ({ page }) => 
     ),
   ).toBeVisible();
   await expect(page.getByRole("link", { name: "Explore the herbarium" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Get involved", exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("main").getByRole("link", { name: "Get involved", exact: true }),
+  ).toBeVisible();
   tracker.expectNone();
 });
 
@@ -62,16 +64,21 @@ test("client-side navigation away and back re-initialises animation without erro
   await page.mouse.wheel(0, 500);
   await expect.poll(() => media.evaluate((el) => getComputedStyle(el).transform)).not.toBe("none");
 
-  // Into a pending section through the menu, then back home.
+  // Into a section page through the menu, then back home with the logo.
   await page.mouse.wheel(0, -2000);
-  await page.getByRole("button", { name: /^Herbarium/ }).click();
+  await page.getByRole("button", { name: /^Herbarium & Research/ }).click();
   await page
     .locator("#mega-menu-herbarium")
-    .getByRole("link", { name: /^Collections/ })
+    .getByRole("link", { name: /^Research/ })
     .click();
-  await expect(page).toHaveURL("/herbarium/collections");
-  await expect(page.getByRole("heading", { level: 1, name: "Page not found" })).toBeVisible();
-  await page.getByRole("link", { name: "Return to the homepage" }).click();
+  await expect(page).toHaveURL("/research");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Botanical research for East Africa" }),
+  ).toBeVisible();
+  await page
+    .getByRole("banner")
+    .getByRole("link", { name: "EACH, East African Community Herbariums, home" })
+    .click();
   await expect(page).toHaveURL("/");
 
   tracker.expectNone();

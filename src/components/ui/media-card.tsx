@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { MediaAsset } from "@/config/media";
@@ -14,7 +15,13 @@ type MediaCardProps = {
   image: MediaAsset;
   /** `sizes` hint for the responsive image. */
   sizes?: string;
-  aspect?: "portrait" | "landscape";
+  aspect?: "portrait" | "landscape" | "wide";
+  /** Extra line above the title, for example a location. */
+  meta?: ReactNode;
+  /** Shown over the image corner, for example a placeholder label. */
+  badge?: ReactNode;
+  /** Visual call to action under the description. */
+  cta?: string;
   headingLevel?: "h2" | "h3";
   className?: string;
 };
@@ -32,6 +39,9 @@ export function MediaCard({
   sizes = "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw",
   aspect = "portrait",
   headingLevel: Heading = "h3",
+  meta,
+  badge,
+  cta = "Explore",
   className,
 }: MediaCardProps) {
   return (
@@ -39,7 +49,7 @@ export function MediaCard({
       <div
         className={cn(
           "relative overflow-hidden rounded-sm bg-muted",
-          aspect === "portrait" ? "aspect-4/5" : "aspect-3/2",
+          { portrait: "aspect-4/5", landscape: "aspect-3/2", wide: "aspect-16/10" }[aspect],
         )}
         data-reveal-media
       >
@@ -50,9 +60,18 @@ export function MediaCard({
           sizes={sizes}
           className="object-cover transition-transform duration-(--motion-duration-cinematic) ease-cinematic group-hover/card:scale-105"
         />
+        {badge ? (
+          <div
+            data-surface="dark"
+            className="absolute top-4 left-4 rounded-full bg-background/80 backdrop-blur-sm"
+          >
+            {badge}
+          </div>
+        ) : null}
       </div>
       <div className="mt-6 flex flex-1 flex-col">
         {eyebrow ? <Eyebrow className="mb-3">{eyebrow}</Eyebrow> : null}
+        {meta ? <div className="mb-3 text-sm text-muted-foreground">{meta}</div> : null}
         <Heading className="font-display text-heading">
           <Link
             href={href}
@@ -68,7 +87,7 @@ export function MediaCard({
           aria-hidden="true"
           className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-primary"
         >
-          Explore
+          {cta}
           <ArrowRightIcon className="transition-transform duration-(--motion-duration-base) ease-cinematic group-hover/card:translate-x-1" />
         </span>
         <PhotoCredit image={image} className="relative z-10 mt-4" />

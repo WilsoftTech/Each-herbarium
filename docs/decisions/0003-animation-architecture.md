@@ -47,3 +47,17 @@ How the rules were applied when the libraries were introduced:
 - **Page entrances.** `(public)/template.tsx` wraps pages in `PageTransition`. It skips the first page of a visit (no paint delay) and fades in pages reached by client-side navigation.
 - **Reduced motion** is also verified end to end: the hero is static, there is no parallax, reveal content stays at opacity 1, and menus open with opacity only (`tests/e2e/motion.spec.ts`).
 - **Lenis: not adopted.** The scroll effects are scrubbed against native scroll and work without smooth scrolling. Lenis would take over keyboard, anchor and assistive-technology scrolling for no demonstrated benefit. Revisit only with a separate ADR.
+
+## M03 implementation notes (2026-10-19)
+
+- **New leaves.**
+  - `Parallax`: a scrubbed `yPercent` drift for `data-parallax` photographs, which overhang their clipping parent.
+  - `ScrollText`: statement words brighten from 0.2 to full opacity on scroll.
+
+  Both follow the rules above: `useGSAP` with a scope, `gsap.matchMedia` under `MOTION_OK`, and the final state rendered on the server.
+
+- **Nested reveals.** A section's `Reveal` may contain components that have their own `Reveal` (`ActionPanels`, `NumberedList`). Each `Reveal` animates only the targets whose nearest `[data-reveal-scope]` is itself. Two `gsap.from()` tweens on one element left it stuck at opacity 0. This was found in M03 and is covered by a unit test.
+- **Above-the-fold entrances stay CSS.** `PageHeader` uses `animate-fade-rise` and the new `animate-clip-reveal` keyframes, for the same reason as the hero.
+- **The pinned story uses CSS `position: sticky`**, not ScrollTrigger pinning. `StoryScroller` and `ProgramExplorer` are small client components whose only state is the active item: an IntersectionObserver picks it for the story, focus and mouse hover for the explorer. Crossfades are CSS transitions, which the reduced-motion baseline collapses. Native scrolling is never taken over, and the homepage has only one pinned section.
+- **No route `loading.tsx`.** It streamed every page's content into a hidden element that a script reveals, so the content disappeared without JavaScript ([ADR 0006](0006-content-contracts-and-placeholders.md)).
+- **Page transitions** remain `PageTransition`, a fade on client navigation. Next.js announces the new page title to assistive technology on each navigation.

@@ -71,17 +71,17 @@ describe("MobileNav", () => {
 
     const back = await screen.findByRole("button", { name: "Back to main menu" });
     await waitFor(() => expect(document.activeElement).toBe(back));
-    expect(screen.getByRole("heading", { level: 2, name: "Herbarium" })).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 2, name: "Herbarium & Research" })).toBeTruthy();
 
     // The first group starts expanded; the second can be toggled.
-    const first = screen.getByRole("button", { name: "The herbarium" });
-    const second = screen.getByRole("button", { name: "Develop" });
+    const first = screen.getByRole("button", { name: "Herbarium" });
+    const second = screen.getByRole("button", { name: "Knowledge" });
     expect(first.getAttribute("aria-expanded")).toBe("true");
     expect(document.getElementById(first.getAttribute("aria-controls") ?? "")).not.toBeNull();
     expect(second.getAttribute("aria-expanded")).toBe("false");
     await user.click(second);
     expect(second.getAttribute("aria-expanded")).toBe("true");
-    expect(screen.getByRole("link", { name: /Herbarium development/ })).toBeTruthy();
+    expect(screen.getByRole("link", { name: /^Research/ })).toBeTruthy();
 
     await user.click(back);
     const herbarium = await screen.findByRole("button", { name: /^Herbarium/ });

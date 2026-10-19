@@ -10,8 +10,23 @@ import { useScrolled } from "@/hooks/use-scrolled";
 import { cn } from "@/lib/utils";
 import { BrandMark } from "./brand-mark";
 
-/** Routes that open with a full-bleed hero, where the header starts transparent. */
-const HERO_ROUTES: ReadonlySet<string> = new Set(["/"]);
+/**
+ * Routes that open with the full-bleed `Hero`, where the header starts
+ * transparent. Keep in sync with the pages that render `Hero` (e2e:
+ * tests/e2e/header.spec.ts).
+ */
+const HERO_ROUTES: ReadonlySet<string> = new Set([
+  "/",
+  "/our-work",
+  "/our-work/plant-conservation",
+  "/our-work/environmental-conservation",
+]);
+/** Project case studies (`/projects/[slug]`) also open with a hero. */
+const HERO_PREFIXES = ["/projects/"] as const;
+
+function opensWithHero(pathname: string): boolean {
+  return HERO_ROUTES.has(pathname) || HERO_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+}
 
 type SiteHeaderProps = {
   /**
@@ -38,7 +53,7 @@ export function SiteHeader({ notFound = false }: SiteHeaderProps) {
     [pathname],
   );
 
-  const overHero = HERO_ROUTES.has(pathname);
+  const overHero = opensWithHero(pathname);
   const solid = !overHero || scrolled || menuOpenOn === pathname;
 
   return (

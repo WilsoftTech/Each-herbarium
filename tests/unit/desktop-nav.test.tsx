@@ -38,7 +38,7 @@ describe("DesktopNav", () => {
     expect(button.getAttribute("aria-expanded")).toBe("true");
     const panel = document.getElementById(button.getAttribute("aria-controls") ?? "");
     expect(panel).not.toBeNull();
-    expect(panel?.textContent).toContain("Collections");
+    expect(panel?.textContent).toContain("Resources");
     expect(onOpenChange).toHaveBeenLastCalledWith(true);
   });
 

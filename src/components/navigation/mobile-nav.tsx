@@ -21,7 +21,13 @@ import {
   MenuIcon,
   PlusIcon,
 } from "@/components/ui/icons";
-import { hasMenu, isActivePath, primaryNavigation, type NavItem } from "@/config/navigation";
+import {
+  hasMenu,
+  isActivePath,
+  isActiveSection,
+  primaryNavigation,
+  type NavItem,
+} from "@/config/navigation";
 import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
 import { EASE_CINEMATIC } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -300,7 +306,7 @@ export function MobileNav({ pathname }: MobileNavProps) {
                   <nav aria-label="Primary">
                     <m.ul variants={list} initial="hidden" animate="visible">
                       {items.map((item) => {
-                        const active = isActivePath(item, pathname);
+                        const active = isActiveSection(item, pathname);
                         const itemClass =
                           "flex min-h-16 w-full items-center justify-between gap-4 border-b border-border py-3 text-left font-display text-3xl sm:text-4xl";
                         return (

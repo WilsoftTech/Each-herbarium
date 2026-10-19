@@ -15,3 +15,4 @@ Each milestone stores its verification evidence here so completion claims can be
 | --------- | ------------------------------------------------------------------------------------------------ |
 | M01       | [M01-verification.md](M01-verification.md)                                                       |
 | M02       | [M02-verification.md](M02-verification.md) (screenshots in [m02-screenshots/](m02-screenshots/)) |
+| M03       | [M03-verification.md](M03-verification.md) (screenshots in [m03-screenshots/](m03-screenshots/)) |

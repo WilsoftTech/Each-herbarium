@@ -74,7 +74,7 @@ function SurfacePalette() {
 
 export default function DesignSystemPage() {
   return (
-    <main id="main" tabIndex={-1} className="flex-1 outline-none">
+    <>
       <Section spacing="compact">
         <Container>
           <SectionHeading
@@ -173,6 +173,6 @@ export default function DesignSystemPage() {
           </Container>
         </Reveal>
       </Section>
-    </main>
+    </>
   );
 }

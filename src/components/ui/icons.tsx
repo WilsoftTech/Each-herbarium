@@ -78,3 +78,30 @@ export function PlusIcon(props: IconProps) {
     </Icon>
   );
 }
+
+export function MapPinIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z" />
+      <circle cx="12" cy="9.5" r="2.5" />
+    </Icon>
+  );
+}
+
+/** Marks placeholder and draft content. */
+export function PendingIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="9" strokeDasharray="3 3" />
+      <path d="M12 7.5V12l3 2" />
+    </Icon>
+  );
+}
+
+export function ArrowUpRightIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M7 17 17 7M8 7h9v9" />
+    </Icon>
+  );
+}

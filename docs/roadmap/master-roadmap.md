@@ -30,7 +30,7 @@ Brand verification against the logo; typography; spacing tokens; shadcn/ui initi
 
 Cinematic homepage; About, Conservation, Herbarium, Medicinal Plants, Research and Education, Get Involved, Partners (including Bitwiire as an independent partner), Contact. Content is static and typed in this milestone.
 
-Carried over from M02. The hero and the first focus section already exist on `/`; M03 extends the homepage around them. The navigation in `src/config/navigation.ts` defines provisional routes under the seven M02 top-level sections (About EACH, Our Work, Herbarium, Research & Learning, Projects & Impact, Get Involved). Agree the final route list at the start of M03, update that one file, and build every linked page so that no navigation link returns 404.
+Delivered (2026-10-19). The route list in the M03 brief was adopted unchanged (25 routes, including `/projects/[slug]` and `/resources/[slug]`). The navigation now has six top-level sections: Home, About EACH, Our Work, Herbarium & Research, Projects & Impact, Get Involved. Policy pages are linked from the footer. Every linked route exists. Content is typed and static behind async queries ([ADR 0006](../decisions/0006-content-contracts-and-placeholders.md)). Everything EACH has not supplied is a labelled placeholder listed in [awaiting-approval.md](../content/awaiting-approval.md).
 
 ### M04 — Database, CMS and editorial workflows
 

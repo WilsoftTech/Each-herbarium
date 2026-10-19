@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 import { HeroMotion } from "@/components/motion/hero-motion";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
@@ -8,6 +8,7 @@ import { Eyebrow } from "@/components/ui/eyebrow";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import { PhotoCredit } from "@/components/ui/photo-credit";
 import type { MediaAsset } from "@/config/media";
+import { cn } from "@/lib/utils";
 
 type HeroAction = { label: string; href: string };
 
@@ -16,10 +17,16 @@ type HeroProps = {
   title: string;
   description: string;
   image: MediaAsset;
-  primaryAction: HeroAction;
-  secondaryAction: HeroAction;
+  primaryAction?: HeroAction;
+  secondaryAction?: HeroAction;
   /** Id of the section that follows, for the scroll cue. */
   nextSectionId?: string;
+  /** `full`: the homepage's full viewport. `tall`: inner pages, so the next section peeks in. */
+  size?: "full" | "tall";
+  /** Shown above the eyebrow on inner pages. */
+  breadcrumbs?: ReactNode;
+  /** CSS object-position for the photograph. */
+  focus?: string;
 };
 
 /**
@@ -36,12 +43,20 @@ export function Hero({
   primaryAction,
   secondaryAction,
   nextSectionId,
+  size = "full",
+  breadcrumbs,
+  focus = "50% 35%",
 }: HeroProps) {
   const words = title.split(" ");
 
   return (
     <section data-surface="dark" aria-labelledby="hero-title" className="relative isolate">
-      <HeroMotion className="relative flex min-h-svh flex-col justify-end overflow-hidden">
+      <HeroMotion
+        className={cn(
+          "relative flex flex-col justify-end overflow-hidden",
+          size === "full" ? "min-h-svh" : "min-h-[82svh] md:min-h-[88svh]",
+        )}
+      >
         <div data-hero-media className="absolute inset-0 -z-10">
           <div className="absolute inset-0 animate-settle">
             <Image
@@ -51,7 +66,8 @@ export function Hero({
               preload
               sizes="100vw"
               quality={70}
-              className="object-cover object-[50%_35%]"
+              className="object-cover"
+              style={{ objectPosition: focus }}
             />
           </div>
         </div>
@@ -78,6 +94,11 @@ export function Hero({
         />
 
         <Container data-hero-content className="pt-header pb-32 md:pb-36">
+          {breadcrumbs ? (
+            <div className="mb-10 animate-fade-rise [&_a]:text-foreground/85 [&_li]:text-foreground/85">
+              {breadcrumbs}
+            </div>
+          ) : null}
           <Eyebrow className="animate-fade-rise text-foreground [animation-delay:100ms]">
             {eyebrow}
           </Eyebrow>
@@ -102,17 +123,23 @@ export function Hero({
           <p className="mt-8 max-w-2xl animate-fade-rise text-lead text-pretty text-foreground/90 [animation-delay:700ms]">
             {description}
           </p>
-          <div className="mt-10 flex animate-fade-rise flex-wrap gap-4 [animation-delay:850ms]">
-            <Button asChild variant="contrast" size="lg">
-              <Link href={primaryAction.href}>
-                {primaryAction.label}
-                <ArrowRightIcon className="transition-transform duration-(--motion-duration-base) ease-cinematic group-hover/button:translate-x-1" />
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link href={secondaryAction.href}>{secondaryAction.label}</Link>
-            </Button>
-          </div>
+          {primaryAction || secondaryAction ? (
+            <div className="mt-10 flex animate-fade-rise flex-wrap gap-4 [animation-delay:850ms]">
+              {primaryAction ? (
+                <Button asChild variant="contrast" size="lg">
+                  <Link href={primaryAction.href}>
+                    {primaryAction.label}
+                    <ArrowRightIcon className="transition-transform duration-(--motion-duration-base) ease-cinematic group-hover/button:translate-x-1" />
+                  </Link>
+                </Button>
+              ) : null}
+              {secondaryAction ? (
+                <Button asChild variant="outline" size="lg">
+                  <Link href={secondaryAction.href}>{secondaryAction.label}</Link>
+                </Button>
+              ) : null}
+            </div>
+          ) : null}
         </Container>
 
         <Container className="absolute inset-x-0 bottom-0 flex animate-fade-rise items-end justify-between gap-6 pb-8 [animation-delay:1100ms]">

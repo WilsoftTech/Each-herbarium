@@ -21,7 +21,7 @@ test.describe("desktop mega menus", () => {
     );
     const panel = page.locator("#mega-menu-herbarium");
     await expect(panel).toBeVisible();
-    await expect(panel.getByRole("link", { name: /^Collections/ })).toBeVisible();
+    await expect(panel.getByRole("link", { name: /^Research/ })).toBeVisible();
     await expect(panel.locator("img")).toBeVisible();
     await expect(panel.getByRole("link", { name: "Royal Botanic Gardens, Kew" })).toBeVisible();
 
@@ -62,7 +62,7 @@ test.describe("desktop mega menus", () => {
     await expect(page.getByRole("link", { name: "Explore About EACH" })).toBeFocused();
     await page.keyboard.press("Tab");
     await expect(
-      page.locator("#mega-menu-about").getByRole("link", { name: /^Our story/ }),
+      page.locator("#mega-menu-about").getByRole("link", { name: /^Mission and values/ }),
     ).toBeFocused();
 
     await page.keyboard.press("Escape");
@@ -92,7 +92,7 @@ test.describe("desktop mega menus", () => {
     await page.goto("/");
     await trigger(page, "Herbarium").focus();
     await page.keyboard.press("ArrowRight");
-    const outline = await trigger(page, "Research & Learning").evaluate(
+    const outline = await trigger(page, "Projects & Impact").evaluate(
       (el) => getComputedStyle(el).outlineStyle,
     );
     expect(outline).toBe("solid");
@@ -113,9 +113,12 @@ test.describe("desktop mega menus", () => {
     await trigger(page, "Projects & Impact").click();
     await page
       .locator("#mega-menu-projects-impact")
-      .getByRole("link", { name: /^News and stories/ })
+      .getByRole("link", { name: /^Our impact/ })
       .click();
-    await expect(page).toHaveURL("/projects-impact/news");
+    await expect(page).toHaveURL("/impact");
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Measuring what matters" }),
+    ).toBeVisible();
     await expect(page.locator("[data-mega-panel]")).toHaveCount(0);
   });
 });

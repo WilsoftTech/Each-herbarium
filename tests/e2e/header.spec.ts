@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { heroRoutes } from "../routes";
 import { desktop } from "./helpers";
 
 test.use({ viewport: desktop });
@@ -41,4 +42,30 @@ test("skip link is the first focusable element and moves focus to main", async (
   await expect(skip).toBeInViewport();
   await page.keyboard.press("Enter");
   await expect(page.locator("main")).toBeFocused();
+});
+
+test("header starts transparent on every route that opens with a hero", async ({ page }) => {
+  for (const route of heroRoutes) {
+    await page.goto(route);
+    await expect(header(page), route).toHaveAttribute("data-appearance", "transparent");
+  }
+});
+
+test("header is solid on routes that open with a typographic header", async ({ page }) => {
+  for (const route of ["/about", "/herbarium", "/research", "/bitwiire-herbarium-cafe"]) {
+    await page.goto(route);
+    await expect(header(page), route).toHaveAttribute("data-appearance", "solid");
+    const headerBox = await header(page).boundingBox();
+    const h1Box = await page.getByRole("heading", { level: 1 }).boundingBox();
+    expect(h1Box!.y, route).toBeGreaterThan(headerBox!.y + headerBox!.height);
+  }
+});
+
+test("the current section is marked in the primary navigation", async ({ page }) => {
+  await page.goto("/research");
+  const nav = page.getByRole("navigation", { name: "Primary" });
+  await expect(
+    nav.getByRole("button", { name: "Herbarium & Research (current section)" }),
+  ).toBeVisible();
+  await expect(nav.getByRole("button", { name: /current section/ })).toHaveCount(1);
 });

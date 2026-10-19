@@ -17,7 +17,7 @@ import {
 import { ChevronDownIcon } from "@/components/ui/icons";
 import {
   hasMenu,
-  isActivePath,
+  isActiveSection,
   megaMenuPanelId,
   primaryNavigation,
   type NavItem,
@@ -136,7 +136,7 @@ export function DesktopNav({ pathname, onOpenChange }: DesktopNavProps) {
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
   // Sliding indicator under the open item, or under the current section.
-  const activeId = items.find((item) => isActivePath(item, pathname))?.id;
+  const activeId = items.find((item) => isActiveSection(item, pathname))?.id;
   const indicatorTarget = open?.id ?? activeId;
   useLayoutEffect(() => {
     const list = listRef.current;
@@ -270,7 +270,7 @@ export function DesktopNav({ pathname, onOpenChange }: DesktopNavProps) {
     >
       <ul ref={listRef} className="relative flex h-full items-stretch" onKeyDown={onListKeyDown}>
         {items.map((item) => {
-          const active = isActivePath(item, pathname);
+          const active = isActiveSection(item, pathname);
           const controlClass = cn(
             "group/control relative inline-flex h-full items-center gap-1.5 px-3 text-sm font-medium tracking-wide transition-opacity duration-(--motion-duration-fast) 2xl:px-4",
             "opacity-90 hover:opacity-100 aria-expanded:opacity-100",

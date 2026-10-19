@@ -57,6 +57,27 @@
   --ring: var(--brand-blue-light);
 }
 
+/*
+ * Warm surface for sections about the Bitwiire Herbarium Cafe, an independent
+ * partner. It keeps the partner visually distinct from EACH's green and blue.
+ * These are EACH presentation tokens, not Bitwiire brand colours. Contrast:
+ * docs/architecture/design-tokens.md.
+ */
+[data-surface="warm"] {
+  --background: #f2e9dc;
+  --foreground: #2b201a;
+  --card: #fbf6ef;
+  --card-foreground: #2b201a;
+  --primary: #8b4a22;
+  --primary-foreground: #fbf6ef;
+  --accent: #5e6b2e;
+  --accent-foreground: #fbf6ef;
+  --muted: #e8dccb;
+  --muted-foreground: #5c4a3d;
+  --border: #d9c7b0;
+  --ring: #8b4a22;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -107,6 +128,16 @@
   --animate-fade-rise: fade-rise 0.9s var(--ease-cinematic) both;
   --animate-settle: settle 2.6s var(--ease-cinematic) both;
   --animate-scroll-cue: scroll-cue 2.4s var(--ease-standard) infinite;
+  --animate-clip-reveal: clip-reveal 1.4s var(--ease-cinematic) both;
+
+  @keyframes clip-reveal {
+    from {
+      clip-path: inset(100% 0% 0% 0%);
+    }
+    to {
+      clip-path: inset(0% 0% 0% 0%);
+    }
+  }
 
   @keyframes mask-rise {
     from {
@@ -158,7 +189,8 @@
   }
 
   /* In the base layer so utilities such as bg-transparent can override it. */
-  [data-surface="dark"] {
+  [data-surface="dark"],
+  [data-surface="warm"] {
     background-color: var(--background);
     color: var(--foreground);
   }
@@ -167,6 +199,14 @@
     outline: 2px solid var(--ring);
     outline-offset: 3px;
   }
+}
+
+/* Fine ruled grid, like the cutting mat of a herbarium mounting bench. Decorative. */
+@utility bg-specimen-grid {
+  background-image:
+    linear-gradient(to right, var(--border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+  background-size: 2.5rem 2.5rem;
 }
 
 /*

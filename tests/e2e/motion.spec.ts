@@ -22,7 +22,7 @@ test.describe("reduced motion", () => {
     await page.waitForTimeout(400);
     await expect(page.locator("[data-hero-media]")).toHaveCSS("transform", "none");
 
-    await page.locator("#focus").scrollIntoViewIfNeeded();
+    await page.locator("#programmes").scrollIntoViewIfNeeded();
     for (const opacity of await page
       .locator("[data-reveal]")
       .evaluateAll((els) => els.map((el) => getComputedStyle(el).opacity))) {
@@ -44,7 +44,7 @@ test.describe("motion allowed", () => {
 
   test("cards reveal as they scroll into view", async ({ page }) => {
     await page.goto("/");
-    const firstCard = page.locator("#focus article").first();
+    const firstCard = page.locator("section[aria-labelledby=projects-title] article").first();
     await firstCard.scrollIntoViewIfNeeded();
     await expect.poll(() => firstCard.evaluate((el) => getComputedStyle(el).opacity)).toBe("1");
   });
@@ -60,7 +60,7 @@ test.describe("without JavaScript", () => {
     ).toBeVisible();
     await expect(page.getByRole("link", { name: "Explore the herbarium" })).toBeVisible();
 
-    const cards = page.locator("#focus article");
+    const cards = page.locator("section[aria-labelledby=projects-title] article");
     await expect(cards).toHaveCount(3);
     for (const opacity of await cards.evaluateAll((els) =>
       els.map((el) => getComputedStyle(el).opacity),
@@ -70,7 +70,9 @@ test.describe("without JavaScript", () => {
 
     // The footer sitemap gives every section without JavaScript.
     const footer = page.getByRole("navigation", { name: "Footer" });
-    await expect(footer.getByRole("link", { name: "Herbarium", exact: true })).toBeVisible();
+    await expect(
+      footer.getByRole("link", { name: "Herbarium & Research", exact: true }),
+    ).toBeVisible();
     await expect(footer.getByRole("link", { name: "Volunteer" })).toBeVisible();
   });
 });

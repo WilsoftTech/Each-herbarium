@@ -2,7 +2,7 @@
 
 The website of East African Community Herbariums, an independent initiative for plant conservation, herbarium development, medicinal-plant knowledge and botanical education across East Africa, starting in Uganda.
 
-> **Status:** design system, navigation and cinematic hero (M02). See [ROADMAP.md](ROADMAP.md).
+> **Status:** cinematic homepage and all public pages (M03), with content awaiting EACH marked on the page. See [ROADMAP.md](ROADMAP.md) and [docs/content/awaiting-approval.md](docs/content/awaiting-approval.md).
 
 Copy `.env.example` to `.env.local` if you need to override defaults. No variables are required for local development.
 

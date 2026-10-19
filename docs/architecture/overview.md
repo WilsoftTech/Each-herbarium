@@ -8,10 +8,11 @@ EACH is a **modular monolith**: a single Next.js App Router application, deploye
 Browser ──► Next.js on Vercel
               ├─ app/(public)          public site — Server Components
               ├─ app/(admin)/admin     admin — every entry point calls requireAdmin()
-              ├─ features/<feature>    business modules (from M03)
+              ├─ features/<feature>    business modules: projects, resources, partners (M03)
+              ├─ content/              typed static copy and the pending-content register
               ├─ components/           shared UI; client leaves for interaction and animation
               ├─ services/             server-only adapters: auth (now); db, storage, email (later)
-              ├─ validation/           Zod schemas (env now; forms and content later)
+              ├─ validation/           Zod schemas (env, content contracts; forms later)
               └─ config/               site identity, validated env
                     └─► Neon PostgreSQL (Prisma), Cloudflare R2, Resend   [planned]
 ```
@@ -31,7 +32,10 @@ Browser ──► Next.js on Vercel
 
 - **Server Components by default.** `"use client"` goes only on the smallest leaf that needs state, effects, browser APIs or animation.
 - **Cache Components** (`cacheComponents: true`) and **partial prefetching** are enabled, as Next.js 16 defaults. Routes are prerendered unless they read request data. Request-time reads (sessions, cookies) go behind `<Suspense>` and follow `node_modules/next/dist/docs/01-app/02-guides/authentication-with-cache-components.md`.
-- Current routes (`/`, `/admin` → 404, not-found) are all static.
+- All 25 public routes are static. `(public)/layout.tsx` sets `ensureStatic = "navigation"`, so the build fails if one needs request-time rendering, and unknown project or resource slugs return a real 404. `/admin` returns 404 until M04.
+- **Content** comes from typed feature modules (`projects`, `resources`, `partners`) through async `server-only` queries validated by Zod schemas, and from typed copy in `src/content/`. In M04 the query bodies switch to the database; pages do not change. Missing content is shown as labelled placeholders from one register ([ADR 0006](../decisions/0006-content-contracts-and-placeholders.md)).
+- **Loading and errors:** there is no route `loading.tsx`, because every route is prerendered and a loading boundary would hide content without JavaScript. `(public)/error.tsx` shows a retry inside the site shell; `global-error.tsx` covers root-layout failures; `not-found.tsx` serves 404s inside the shell.
+- **SEO:** every route sets its title, description, canonical URL and Open Graph through `pageMetadata()`. Structured data covers verified facts only: Organization and WebSite on `/`, and BreadcrumbList on inner pages. Placeholder-only pages are `noindex`. A sitemap and robots file are part of M06.
 
 ## Security baseline
 

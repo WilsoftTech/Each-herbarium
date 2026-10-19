@@ -2,8 +2,11 @@ import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/utils";
 
 type SectionProps = ComponentPropsWithoutRef<"section"> & {
-  /** Colour scheme. `dark` switches the token set via `data-surface="dark"`. */
-  surface?: "light" | "muted" | "dark";
+  /**
+   * Colour scheme. `dark` and `warm` switch the token set via `data-surface`;
+   * `warm` is reserved for the independent partner, Bitwiire Herbarium Cafe.
+   */
+  surface?: "light" | "muted" | "dark" | "warm";
   spacing?: "default" | "compact" | "none";
 };
 
@@ -22,7 +25,7 @@ export function Section({
 }: SectionProps) {
   return (
     <section
-      data-surface={surface === "dark" ? "dark" : undefined}
+      data-surface={surface === "dark" || surface === "warm" ? surface : undefined}
       className={cn(
         "relative",
         surface === "muted" && "bg-muted",

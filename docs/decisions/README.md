@@ -30,10 +30,11 @@ Trade-offs, follow-ups, what becomes easier or harder.
 
 ## Index
 
-| ADR                                    | Title                                                     | Status   |
-| -------------------------------------- | --------------------------------------------------------- | -------- |
-| [0001](0001-foundation-stack.md)       | Foundation stack and minimal test tooling                 | Accepted |
-| [0002](0002-modular-monolith.md)       | Modular monolith, route groups and environment validation | Accepted |
-| [0003](0003-animation-architecture.md) | Animation architecture and reduced motion                 | Accepted |
-| [0004](0004-platform-and-ui-stack.md)  | Platform and UI stack                                     | Accepted |
-| [0005](0005-interim-photography.md)    | Interim photography from openly licensed sources          | Accepted |
+| ADR                                                | Title                                                      | Status   |
+| -------------------------------------------------- | ---------------------------------------------------------- | -------- |
+| [0001](0001-foundation-stack.md)                   | Foundation stack and minimal test tooling                  | Accepted |
+| [0002](0002-modular-monolith.md)                   | Modular monolith, route groups and environment validation  | Accepted |
+| [0003](0003-animation-architecture.md)             | Animation architecture and reduced motion                  | Accepted |
+| [0004](0004-platform-and-ui-stack.md)              | Platform and UI stack                                      | Accepted |
+| [0005](0005-interim-photography.md)                | Interim photography from openly licensed sources           | Accepted |
+| [0006](0006-content-contracts-and-placeholders.md) | Content contracts, static sources and visible placeholders | Accepted |

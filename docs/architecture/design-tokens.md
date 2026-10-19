@@ -32,6 +32,27 @@ Checked against the original logo `public/brand/each-logo.jpeg` in M02 by averag
 
 Apply `data-surface="dark"` to any container to switch a whole section to the dark palette. Its background and text colour are set in the base layer, so utilities such as `bg-transparent` can override them (the transparent header relies on this).
 
+### Warm partner surface (M03)
+
+`data-surface="warm"` (or `Section surface="warm"`) is reserved for sections about **Bitwiire Herbarium Cafe**, an independent partner. It keeps the partner visually distinct from EACH's green and blue. These are EACH presentation tokens, **not** Bitwiire brand colours; none have been supplied.
+
+| Token                                 | Value                 | Measured contrast                                              |
+| ------------------------------------- | --------------------- | -------------------------------------------------------------- |
+| `--background` / `--foreground`       | `#F2E9DC` / `#2B201A` | 13.19:1                                                        |
+| `--card` / `--card-foreground`        | `#FBF6EF` / `#2B201A` | 14.75:1                                                        |
+| `--primary` (clay)                    | `#8B4A22`             | 5.63:1 on background, 6.30:1 on card, 5.01:1 on muted          |
+| `--primary-foreground` on `--primary` | `#FBF6EF`             | 6.30:1                                                         |
+| `--accent` (olive)                    | `#5E6B2E`             | 4.83:1 on background, 5.40:1 on card                           |
+| `--muted` / `--muted-foreground`      | `#E8DCCB` / `#5C4A3D` | 6.21:1 (muted-foreground on background 6.98:1, on card 7.81:1) |
+| `--border`, `--ring`                  | `#D9C7B0`, `#8B4A22`  | —                                                              |
+
+### Utilities added in M03
+
+| Utility               | Purpose                                                                                   |
+| --------------------- | ----------------------------------------------------------------------------------------- |
+| `bg-specimen-grid`    | Fine ruled grid drawn with `--border`, like a herbarium cutting mat (herbarium page only) |
+| `animate-clip-reveal` | 1.4 s cinematic clip reveal for photographs visible on first paint (`PageHeader`)         |
+
 ## Typography
 
 | Font                      | Loaded with                               | Use                                                    |

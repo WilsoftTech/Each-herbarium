@@ -55,25 +55,25 @@ test.describe("mobile navigation", () => {
   test("drill into a section, use the accordion and go back", async ({ page }) => {
     await page.goto("/");
     await menuButton(page).tap();
-    await page.getByRole("button", { name: "Research & Learning, open section" }).tap();
+    await page.getByRole("button", { name: "Herbarium & Research, open section" }).tap();
 
     const back = page.getByRole("button", { name: "Back to main menu" });
     await expect(back).toBeFocused();
     await expect(
-      page.getByRole("dialog").getByRole("heading", { level: 2, name: "Research & Learning" }),
+      page.getByRole("dialog").getByRole("heading", { level: 2, name: "Herbarium & Research" }),
     ).toBeVisible();
 
     const learning = page
       .getByRole("dialog")
-      .getByRole("button", { name: "Learning", exact: true });
+      .getByRole("button", { name: "Knowledge", exact: true });
     await expect(learning).toHaveAttribute("aria-expanded", "false");
     await learning.tap();
     await expect(learning).toHaveAttribute("aria-expanded", "true");
-    await expect(page.getByRole("dialog").getByRole("link", { name: /^Education/ })).toBeVisible();
+    await expect(page.getByRole("dialog").getByRole("link", { name: /^Resources/ })).toBeVisible();
 
     await back.tap();
     await expect(
-      page.getByRole("button", { name: "Research & Learning, open section" }),
+      page.getByRole("button", { name: "Herbarium & Research, open section" }),
     ).toBeFocused();
   });
 
@@ -85,7 +85,10 @@ test.describe("mobile navigation", () => {
       .getByRole("dialog")
       .getByRole("link", { name: /^Volunteer/ })
       .tap();
-    await expect(page).toHaveURL("/get-involved/volunteer");
+    await expect(page).toHaveURL("/volunteer");
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Volunteer with EACH" }),
+    ).toBeVisible();
     await expect(page.getByRole("dialog")).toHaveCount(0);
     await expect(page.locator("html")).not.toHaveCSS("overflow", "hidden");
   });
