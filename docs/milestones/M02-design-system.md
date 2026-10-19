@@ -80,7 +80,7 @@ Run on 2026-10-19 (Windows 11, Node 24.12.0, npm 11.6.2). Details: [M02-verifica
 | Screen reader | —                                               | NOT VERIFIED                                    |
 | GitHub CI     | —                                               | NOT VERIFIED (no remote)                        |
 
-Milestone commit: recorded in the follow-up `docs(m02)` commit.
+Milestone commit: `07684f9` — feat(m02): premium design system, animated navigation and cinematic hero.
 
 ### Conditions
 

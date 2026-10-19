@@ -4,13 +4,13 @@ Progress dashboard for the **East African Community Herbariums** website. Detail
 
 ## Status
 
-|                            |                                                                          |
-| -------------------------- | ------------------------------------------------------------------------ |
-| **Current milestone**      | M02 complete (PASS WITH CONDITIONS) — awaiting approval to start M03     |
-| **Overall progress**       | 2 of 7 milestones completed                                              |
-| **Latest verified commit** | M02 milestone commit (hash recorded in the follow-up `docs(m02)` commit) |
-| **Previous milestone**     | M01 `0de7d2c`, revision 2 `68c4aca`                                      |
-| **Outstanding blockers**   | None blocking M03. Conditions and open risks below.                      |
+|                            |                                                                                      |
+| -------------------------- | ------------------------------------------------------------------------------------ |
+| **Current milestone**      | M02 complete (PASS WITH CONDITIONS) — awaiting approval to start M03                 |
+| **Overall progress**       | 2 of 7 milestones completed                                                          |
+| **Latest verified commit** | `07684f9` — feat(m02): premium design system, animated navigation and cinematic hero |
+| **Previous milestone**     | M01 `0de7d2c`, revision 2 `68c4aca`                                                  |
+| **Outstanding blockers**   | None blocking M03. Conditions and open risks below.                                  |
 
 ## Milestones
 
