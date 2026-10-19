@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+/*
+ * EACH design tokens (M01, provisional).
+ * Brand values are unverified against the authoritative logo — see
+ * docs/architecture/overview.md#design-tokens. Components must use the
+ * semantic tokens (background, foreground, primary, accent, muted), not the
+ * raw brand values.
+ */
+@theme {
+  --color-botanical-green: #176b28;
+  --color-globe-blue: #087db9;
+  --color-charcoal: #151a18;
+  --color-warm-ivory: #f6f7f2;
+  --color-moss-grey: #4a524e;
+}
+
+@theme inline {
+  --color-background: var(--color-warm-ivory);
+  --color-foreground: var(--color-charcoal);
+  --color-primary: var(--color-botanical-green);
+  --color-accent: var(--color-globe-blue);
+  --color-muted: var(--color-moss-grey);
+  --font-sans: var(--font-geist-sans);
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+}
