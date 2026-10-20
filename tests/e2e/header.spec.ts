@@ -6,6 +6,24 @@ test.use({ viewport: desktop });
 
 const header = (page: import("@playwright/test").Page) => page.locator("header[data-appearance]");
 
+test("logo loads without a white plate and keeps its visibility shadow on both header surfaces", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const logo = header(page).locator("img").first();
+  await expect(logo).toBeVisible();
+  await expect(logo).toHaveAttribute("src", /each-logo-transparent/);
+  await expect(logo).toHaveJSProperty("complete", true);
+  expect(await logo.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+  await expect(logo.locator("..")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  expect(await logo.evaluate((image) => getComputedStyle(image).filter)).toContain("drop-shadow");
+
+  await page.mouse.wheel(0, 400);
+  await expect(header(page)).toHaveAttribute("data-appearance", "solid");
+  await expect(logo).toBeVisible();
+  expect(await logo.evaluate((image) => getComputedStyle(image).filter)).toContain("drop-shadow");
+});
+
 test("header is transparent over the hero and turns solid on scroll", async ({ page }) => {
   await page.goto("/");
   await expect(header(page)).toHaveAttribute("data-appearance", "transparent");

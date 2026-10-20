@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
-import logo from "../../../public/brand/each-logo.jpeg";
+import logo from "../../../public/brand/each-logo-transparent.png";
 
 type BrandMarkProps = {
   /** Show the organisation name next to the logo. */
@@ -14,9 +14,9 @@ type BrandMarkProps = {
 };
 
 /**
- * The original EACH logo, unaltered. The supplied file is a JPEG with a white
- * background, so it always sits on a white plate; it is never recoloured,
- * cropped or placed directly on photography.
+ * The original EACH artwork with its exterior background removed. A light
+ * edge shadow keeps the dark portrait and lettering visible over photography
+ * and dark surfaces without adding a rectangular plate.
  */
 export function BrandMark({ showName = true, size = 52, className, onNavigate }: BrandMarkProps) {
   return (
@@ -26,14 +26,14 @@ export function BrandMark({ showName = true, size = 52, className, onNavigate }:
       aria-label={showName ? `${siteConfig.shortName}, ${siteConfig.name}, home` : undefined}
       className={cn("group/brand inline-flex items-center gap-3 rounded-sm", className)}
     >
-      <span className="block shrink-0 overflow-hidden rounded-sm bg-white shadow-sm ring-1 ring-black/5">
+      <span className="block shrink-0">
         <Image
           src={logo}
           alt={showName ? "" : `${siteConfig.name} home`}
           width={size}
           height={size}
           sizes={`${size}px`}
-          className="block"
+          className="block drop-shadow-[0_0_1px_var(--brand-ivory)]"
           style={{ width: size, height: size }}
         />
       </span>
