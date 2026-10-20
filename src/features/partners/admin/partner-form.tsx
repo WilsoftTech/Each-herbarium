@@ -1,19 +1,22 @@
 import { ActionForm } from "@/components/admin/action-form";
 import { AdminPanel } from "@/components/admin/admin-ui";
-import { CheckboxField, TextField } from "@/components/admin/form-fields";
+import { CheckboxField, SelectField, TextField } from "@/components/admin/form-fields";
 import { SubmitButton } from "@/components/admin/submit-button";
 import { EditorTarget } from "@/features/cms";
+import type { MediaOption } from "@/features/media";
 import { savePartner } from "./actions";
 import type { PartnerForAdmin } from "./admin";
 
 export function PartnerForm({
   partner,
   revisionId,
+  images,
   editable,
 }: {
   partner?: PartnerForAdmin;
   /** Set when the form edits the pending changes of a published partner. */
   revisionId?: string | null;
+  images: readonly MediaOption[];
   editable: boolean;
 }) {
   return (
@@ -48,6 +51,13 @@ export function PartnerForm({
             hint="Verified information only, approved by the partner."
           />
           <TextField
+            name="category"
+            label="Partnership category"
+            maxLength={60}
+            defaultValue={partner?.category}
+            hint="Optional, for example Research, Community or Hospitality."
+          />
+          <TextField
             name="href"
             label="Page on this site"
             defaultValue={partner?.href}
@@ -72,6 +82,20 @@ export function PartnerForm({
             label="Placeholder"
             defaultChecked={partner?.placeholder ?? false}
             hint="Shows the layout only; never presented as fact."
+          />
+        </AdminPanel>
+        <AdminPanel
+          title="Logo"
+          description="Upload the logo exactly as the partner approved it, in the media library. It is shown at its own proportions and never cropped or recoloured."
+        >
+          <SelectField
+            name="logoId"
+            label="Logo"
+            options={[
+              { value: "", label: "No logo" },
+              ...images.map((image) => ({ value: image.id, label: image.label })),
+            ]}
+            defaultValue={partner?.logoId ?? ""}
           />
         </AdminPanel>
       </fieldset>

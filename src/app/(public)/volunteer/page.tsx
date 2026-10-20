@@ -9,16 +9,11 @@ import { Notice } from "@/components/ui/notice";
 import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { media } from "@/config/media";
-import { pageMetadata } from "@/lib/metadata";
+import { loadManagedPage, metadataForPage } from "@/features/pages";
 
-export const metadata = pageMetadata({
-  title: "Volunteer",
-  description:
-    "Volunteer with EACH: the kinds of field, herbarium, education and digital work volunteers may help with.",
-  path: "/volunteer",
-  image: media.budongoTree,
-});
+export async function generateMetadata() {
+  return metadataForPage("volunteer");
+}
 
 // Indicative areas, not confirmed roles (pending: `volunteerRoles`).
 const areas = [
@@ -40,7 +35,8 @@ const areas = [
   },
 ] as const;
 
-export default function VolunteerPage() {
+export default async function VolunteerPage() {
+  const page = await loadManagedPage("volunteer");
   return (
     <>
       <PageHeader
@@ -50,12 +46,10 @@ export default function VolunteerPage() {
             current={{ label: "Volunteer", href: "/volunteer" }}
           />
         }
-        eyebrow="Get involved"
-        title="Volunteer with EACH"
-        lead={
-          <p>Give your time and skills to help document and protect East Africa&apos;s plants.</p>
-        }
-        image={media.elgonMontaneForest}
+        eyebrow={page.eyebrow}
+        title={page.title}
+        lead={<p>{page.lead}</p>}
+        image={page.image ?? undefined}
       />
 
       <Section aria-labelledby="areas-title">

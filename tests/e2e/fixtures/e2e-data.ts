@@ -44,6 +44,13 @@ async function teardown() {
     select: { id: true },
   });
   for (const user of administrators) setManagedIdentityRole(user.id, "user");
+  const projects = await db.project.findMany({
+    where: { slug: { startsWith: "e2e-" } },
+    select: { id: true },
+  });
+  await db.contentRevision.deleteMany({
+    where: { collection: "projects", entityId: { in: projects.map((project) => project.id) } },
+  });
   await db.project.deleteMany({ where: { slug: { startsWith: "e2e-" } } });
   // Keep audit references, but revoke application access for test identities.
   await db.user.updateMany({

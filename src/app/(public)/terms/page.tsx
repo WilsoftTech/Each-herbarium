@@ -1,20 +1,15 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { PendingContent } from "@/components/ui/pending-content";
-import { getPage, PolicyPage } from "@/features/pages";
-import { pageMetadata } from "@/lib/metadata";
+import { loadManagedPage, metadataForPage, PolicyPage } from "@/features/pages";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPage("terms");
-  if (!page) notFound();
-  return pageMetadata({ title: page.title, description: page.description, path: "/terms" });
+  return metadataForPage("terms");
 }
 
 // Draft for legal review (`legalPolicies`).
 // The words are managed in the CMS (Pages).
 export default async function TermsPage() {
-  const page = await getPage("terms");
-  if (!page) notFound();
+  const page = await loadManagedPage("terms");
 
   return <PolicyPage page={page} aside={<PendingContent item="legalPolicies" />} />;
 }

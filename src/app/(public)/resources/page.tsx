@@ -6,16 +6,14 @@ import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { DownloadList, listDownloads, listResources, ResourceList } from "@/features/resources";
-import { pageMetadata } from "@/lib/metadata";
+import { loadManagedPage, metadataForPage } from "@/features/pages";
 
-export const metadata = pageMetadata({
-  title: "Resources",
-  description:
-    "Publications, guides and stories from EACH. The first resources are being prepared.",
-  path: "/resources",
-});
+export async function generateMetadata() {
+  return metadataForPage("resources");
+}
 
 export default async function ResourcesPage() {
+  const page = await loadManagedPage("resources");
   const [resources, downloads] = await Promise.all([listResources(), listDownloads()]);
   const showsPlaceholders = [...resources, ...downloads].some(
     (item) => item.status === "placeholder",
@@ -25,11 +23,11 @@ export default async function ResourcesPage() {
     <>
       <PageHeader
         breadcrumbs={<Breadcrumbs current={{ label: "Resources", href: "/resources" }} />}
-        eyebrow="Herbarium & Research"
-        title="Resources"
+        eyebrow={page.eyebrow}
+        title={page.title}
         lead={
           <p>
-            Publications, guides and stories from EACH&apos;s work.
+            {page.lead}
             {showsPlaceholders
               ? " The entries below are placeholders that show how resources will be presented."
               : null}

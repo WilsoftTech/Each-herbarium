@@ -12,9 +12,13 @@ import { Notice } from "@/components/ui/notice";
 import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { getProgramme, nextProgramme } from "@/features/programmes";
+import {
+  getProgramme,
+  nextProgramme,
+  ProgrammeDetails,
+  programmeMetadata,
+} from "@/features/programmes";
 import { referenceSpecimens } from "@/content/specimens";
-import { pageMetadata } from "@/lib/metadata";
 
 const slug = "medicinal-plants";
 
@@ -26,14 +30,7 @@ async function loadProgramme() {
 }
 
 export async function generateMetadata() {
-  const programme = await loadProgramme();
-  return pageMetadata({
-    title: programme.title,
-    description:
-      "How EACH approaches East Africa's medicinal plants: accurate identification, cultural context, consent and conservation. Not medical advice.",
-    path: programme.href,
-    image: programme.image,
-  });
+  return programmeMetadata(await loadProgramme());
 }
 
 // Draft approach for expert review (pending: `medicinalReview`).
@@ -153,6 +150,8 @@ export default async function MedicinalPlantsPage() {
           </Container>
         </Reveal>
       </Section>
+
+      <ProgrammeDetails programme={programme} />
 
       <SequenceNav
         label="Next programme"

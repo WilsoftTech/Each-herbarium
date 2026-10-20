@@ -7,6 +7,8 @@ import { contentTags } from "@/lib/cache-tags";
 import { getDb } from "@/services/db";
 import { projectSchema, type Project } from "./schema";
 
+const isoDate = (date: Date | null) => (date ? date.toISOString().slice(0, 10) : null);
+
 /** Everything a project page shows. Shared with the admin preview. */
 export const projectInclude = {
   image: { select: mediaSelect },
@@ -52,6 +54,20 @@ export function toProject(row: ProjectRow): Project {
       .filter((partner) => partner.status === "PUBLISHED")
       .sort((a, b) => a.sortOrder - b.sortOrder)
       .map((partner) => partner.name),
+    featured: row.featured,
+    country: row.country,
+    startDate: isoDate(row.startDate),
+    endDate: isoDate(row.endDate),
+    operationalStatus: row.operationalStatus
+      ? (row.operationalStatus.toLowerCase().replace("_", "-") as Project["operationalStatus"])
+      : null,
+    objectives: row.objectives,
+    activities: row.activities,
+    outcomes: row.outcomes,
+    references: row.references,
+    seoTitle: row.seoTitle,
+    seoDescription: row.seoDescription,
+    noindex: row.noindex,
   });
 }
 

@@ -7,6 +7,7 @@ import { DesktopNav } from "@/components/navigation/desktop-nav";
 import { MobileNav } from "@/components/navigation/mobile-nav";
 import { Container } from "@/components/ui/container";
 import { useScrolled } from "@/hooks/use-scrolled";
+import type { NavItem } from "@/config/navigation";
 import { cn } from "@/lib/utils";
 import { BrandMark } from "./brand-mark";
 
@@ -35,6 +36,8 @@ type SiteHeaderProps = {
    * (the server and client markup would differ).
    */
   notFound?: boolean;
+  /** The navigation with CMS overrides applied (Settings → Navigation). */
+  navigation?: readonly NavItem[];
 };
 
 /**
@@ -42,7 +45,7 @@ type SiteHeaderProps = {
  * once the page scrolls or a mega menu opens. Other routes get a spacer so
  * their content starts below the header.
  */
-export function SiteHeader({ notFound = false }: SiteHeaderProps) {
+export function SiteHeader({ notFound = false, navigation }: SiteHeaderProps) {
   const browserPathname = usePathname();
   const pathname = notFound ? "" : browserPathname;
   const scrolled = useScrolled();
@@ -77,8 +80,8 @@ export function SiteHeader({ notFound = false }: SiteHeaderProps) {
         >
           <Container className="flex h-full max-w-[96rem] items-center justify-between gap-6">
             <BrandMark />
-            <DesktopNav pathname={pathname} onOpenChange={onMenuOpenChange} />
-            <MobileNav pathname={pathname} />
+            <DesktopNav pathname={pathname} onOpenChange={onMenuOpenChange} items={navigation} />
+            <MobileNav pathname={pathname} items={navigation} />
           </Container>
         </header>
         {overHero ? null : <div aria-hidden="true" className="h-header shrink-0" />}

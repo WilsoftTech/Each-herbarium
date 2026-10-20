@@ -11,30 +11,22 @@ import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { media } from "@/config/media";
 import { siteConfig } from "@/config/site";
-import { pageMetadata } from "@/lib/metadata";
+import { loadManagedPage, metadataForPage } from "@/features/pages";
 
-export const metadata = pageMetadata({
-  title: "About EACH",
-  description:
-    "Who EACH is: an independent conservation, herbarium and botanical knowledge initiative for East Africa, beginning in Uganda.",
-  path: "/about",
-  image: media.rwenzoriVegetation,
-});
+export async function generateMetadata() {
+  return metadataForPage("about");
+}
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const page = await loadManagedPage("about");
   return (
     <>
       <PageHeader
         breadcrumbs={<Breadcrumbs current={{ label: "About EACH", href: "/about" }} />}
-        eyebrow="About EACH"
-        title="An independent initiative for East Africa's plants"
-        lead={
-          <p>
-            {siteConfig.name} (EACH) works for plant conservation, herbarium development and
-            botanical knowledge in East Africa, beginning in Uganda.
-          </p>
-        }
-        image={media.rwenzoriVegetation}
+        eyebrow={page.eyebrow}
+        title={page.title}
+        lead={<p>{page.lead}</p>}
+        image={page.image ?? undefined}
       />
 
       <Statement

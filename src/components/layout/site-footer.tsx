@@ -6,21 +6,45 @@ import { hasMenu, legalNavigation, primaryNavigation, type NavItem } from "@/con
 import { siteConfig } from "@/config/site";
 import { BrandMark } from "./brand-mark";
 
-const sections = (primaryNavigation as readonly NavItem[]).filter(hasMenu);
+/** Footer wording managed in the CMS (Settings → Footer and Branding). */
+export type FooterContent = {
+  statement: string;
+  tagline: string;
+  note: string;
+  /** Empty hides the line. */
+  copyright: string;
+};
+
+const defaultContent: FooterContent = {
+  statement: "Preserving East Africa's Plant Heritage.",
+  tagline: siteConfig.description,
+  note: "",
+  copyright: "",
+};
+
+type SiteFooterProps = {
+  /** The navigation with CMS overrides applied; defaults to the approved navigation. */
+  navigation?: readonly NavItem[];
+  content?: FooterContent;
+};
 
 /**
  * Global footer: a closing statement with the main actions, identity, a full
- * sitemap from the navigation config (works without JavaScript) and the
- * policy links.
+ * sitemap from the navigation (works without JavaScript) and the policy links.
+ * The layout passes the CMS wording and navigation.
  */
-export function SiteFooter() {
+export function SiteFooter({
+  navigation = primaryNavigation,
+  content = defaultContent,
+}: SiteFooterProps) {
+  const sections = navigation.filter(hasMenu);
   return (
     <footer data-surface="dark" className="border-t border-border">
       <div className="border-b border-border">
         <Container className="py-section-sm">
           <div className="grid gap-10 lg:grid-cols-12 lg:items-end">
             <p className="font-display text-display-lg font-light text-balance lg:col-span-8">
-              Preserving East Africa&apos;s Plant Heritage.
+              {content.statement}
             </p>
             <div className="flex flex-wrap gap-4 lg:col-span-4 lg:justify-end">
               <Button asChild variant="contrast" size="lg">
@@ -41,9 +65,7 @@ export function SiteFooter() {
         <div className="grid gap-14 lg:grid-cols-12">
           <div className="lg:col-span-4">
             <BrandMark />
-            <p className="mt-6 max-w-sm leading-7 text-muted-foreground">
-              {siteConfig.description}
-            </p>
+            <p className="mt-6 max-w-sm leading-7 text-muted-foreground">{content.tagline}</p>
             <p className="mt-6 max-w-sm text-sm leading-6 text-muted-foreground">
               <Link
                 href="/bitwiire-herbarium-cafe"
@@ -102,10 +124,8 @@ export function SiteFooter() {
           </nav>
           <div className="flex flex-col gap-1 lg:items-end">
             <p>{siteConfig.name}</p>
-            <p>
-              Photography is credited alongside each image. Some content is awaiting approval and is
-              marked on the page.
-            </p>
+            {content.copyright ? <p>{content.copyright}</p> : null}
+            {content.note ? <p>{content.note}</p> : null}
           </div>
         </div>
       </Container>

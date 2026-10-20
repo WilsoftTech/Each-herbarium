@@ -7,14 +7,11 @@ import { Container } from "@/components/ui/container";
 import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { pageMetadata } from "@/lib/metadata";
+import { loadManagedPage, metadataForPage } from "@/features/pages";
 
-export const metadata = pageMetadata({
-  title: "Impact",
-  description:
-    "How EACH will measure and report the results of its work. Figures are published only once verified.",
-  path: "/impact",
-});
+export async function generateMetadata() {
+  return metadataForPage("impact");
+}
 
 // Proposed measures (pending: `impactFigures`). No values until EACH supplies verified figures.
 const measures = [
@@ -41,19 +38,15 @@ const reporting = [
   },
 ] as const;
 
-export default function ImpactPage() {
+export default async function ImpactPage() {
+  const page = await loadManagedPage("impact");
   return (
     <>
       <PageHeader
         breadcrumbs={<Breadcrumbs current={{ label: "Impact", href: "/impact" }} />}
-        eyebrow="Projects & Impact"
-        title="Measuring what matters"
-        lead={
-          <p>
-            EACH will report the results of its work here. No figures are shown until they have been
-            verified.
-          </p>
-        }
+        eyebrow={page.eyebrow}
+        title={page.title}
+        lead={<p>{page.lead}</p>}
       />
 
       <Section surface="dark" aria-labelledby="measures-title">

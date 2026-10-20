@@ -4,6 +4,7 @@ import path from "node:path";
 import { media, type MediaAsset } from "@/config/media";
 import { createScriptClient, databaseHost } from "../scripts/script-env";
 import { seedArticles } from "./seed/articles";
+import { seedHomeContent, seedLandingPages } from "./seed/landing-pages";
 import { seedPages } from "./seed/pages";
 import { seedPartners } from "./seed/partners";
 import { seedProgrammes } from "./seed/programmes";
@@ -74,6 +75,7 @@ async function main() {
         title: programme.title,
         summary: programme.summary,
         intro: programme.intro,
+        seoDescription: programme.seoDescription ?? null,
         imageId: mediaId(mediaIds, programme.image),
       },
     });
@@ -142,11 +144,16 @@ async function main() {
     });
   }
 
-  for (const page of seedPages) {
+  for (const { heroImage, ...page } of [...seedPages, ...seedLandingPages]) {
     await db.page.upsert({
       where: { slug: page.slug },
       update: {},
-      create: { ...published, ...page },
+      create: {
+        ...published,
+        ...page,
+        heroImageId: heroImage ? mediaId(mediaIds, heroImage) : null,
+        content: page.slug === "home" ? seedHomeContent((asset) => mediaId(mediaIds, asset)) : {},
+      },
     });
   }
 

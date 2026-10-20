@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   contentStatusSchema,
   mediaAssetSchema,
+  seoSchema,
   slugSchema,
   textSectionSchema,
 } from "@/validation/content";
@@ -37,6 +38,29 @@ export const projectSchema = z.object({
   story: z.array(textSectionSchema),
   /** Names of published partners. Empty until EACH supplies them. */
   partners: z.array(z.string().min(1)),
+  /** Chosen for the homepage's featured projects. */
+  featured: z.boolean(),
+  /** Country, or null until confirmed. */
+  country: z.string().min(1).nullable(),
+  /** ISO dates (YYYY-MM-DD), or null until confirmed. */
+  startDate: z.iso.date().nullable(),
+  endDate: z.iso.date().nullable(),
+  /** Whether the work is planned, under way, finished or paused; null until confirmed. */
+  operationalStatus: z.enum(["planned", "active", "completed", "on-hold"]).nullable(),
+  objectives: z.array(z.string().min(1)),
+  activities: z.array(z.string().min(1)),
+  /** Outcomes EACH can evidence. Never estimates. */
+  outcomes: z.array(z.string().min(1)),
+  /** Sources; may contain [text](https://…) links, rendered safely. */
+  references: z.array(z.string().min(1)),
+  ...seoSchema.shape,
 });
+
+export const projectStatusLabel = {
+  planned: "Planned",
+  active: "Under way",
+  completed: "Completed",
+  "on-hold": "On hold",
+} as const;
 
 export type Project = z.infer<typeof projectSchema>;

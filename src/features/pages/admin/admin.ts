@@ -3,26 +3,115 @@ import { z } from "zod";
 import { formData, type WorkflowCollection } from "@/features/cms";
 import type { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/services/db";
-import { pageSchema } from "../schema";
+import { homeContentSchema, movableSectionKeys, type HomeContent } from "../home-content";
+import { pageInclude, readHomeRow, toHomePage, toPage } from "../queries";
+import { pageEntry, pageRegistry } from "../registry";
 
 type Db = PrismaClient | Prisma.TransactionClient;
 
-/** Managed pages have fixed slugs (each belongs to a route), so only their words change. */
+/**
+ * What the page editor may change. Managed pages have fixed slugs (each
+ * belongs to a route), so only their words, images and SEO change. Fields
+ * that apply to one kind of page only (body, content) are checked against
+ * the page registry when saving.
+ */
 export const pageInputSchema = z.object({
-  title: z.string().min(1, "Enter a title.").max(120),
+  title: z.string().trim().min(1, "Enter a title.").max(200),
   description: z
     .string()
+    .trim()
     .min(30, "Write at least 30 characters: search engines show this description.")
     .max(300),
-  eyebrow: z.string().min(1, "Enter a short label, such as Policies.").max(60),
-  lead: z.string().max(600),
-  body: z.string().min(1, "Enter the page text.").max(50_000),
+  eyebrow: z.string().trim().min(1, "Enter a short label, such as Policies.").max(80),
+  lead: z.string().trim().max(600),
+  body: z.string().max(50_000),
+  heroImageId: z.string().min(1).nullable(),
+  seoTitle: z.string().trim().min(1).max(120).nullable(),
+  noindex: z.boolean(),
+  /** Homepage sections; validated with homeContentSchema for the homepage. */
+  content: z.unknown().nullable(),
 });
 
 export type PageInput = z.infer<typeof pageInputSchema>;
 
+/** Reads the homepage sections editor (fields named content.<path>), or null if absent. */
+function readHomeContent(form: FormData): unknown {
+  const { text, values, paragraphs } = formData;
+  if (!form.has("content.introduction.text")) return null;
+  const t = (path: string) => text(form, `content.${path}`);
+  const link = (path: string) => ({ label: t(`${path}.label`), href: t(`${path}.href`) });
+  const feature = (section: string) => ({
+    eyebrow: t(`${section}.eyebrow`),
+    title: t(`${section}.title`),
+    body: paragraphs(t(`${section}.body`)),
+    imageId: t(`${section}.imageId`),
+    action: link(`${section}.action`),
+  });
+  const panel = (index: number) => ({
+    eyebrow: t(`involved.panels.${index}.eyebrow`),
+    title: t(`involved.panels.${index}.title`),
+    description: t(`involved.panels.${index}.description`),
+    imageId: t(`involved.panels.${index}.imageId`),
+    action: link(`involved.panels.${index}.action`),
+  });
+  const position = (key: string) => {
+    const value = Number(t(`layout.position.${key}`));
+    return Number.isFinite(value) ? value : Number.MAX_SAFE_INTEGER;
+  };
+
+  return {
+    hero: {
+      primaryAction: link("hero.primaryAction"),
+      secondaryAction: link("hero.secondaryAction"),
+    },
+    introduction: {
+      eyebrow: t("introduction.eyebrow"),
+      text: t("introduction.text"),
+      detail: t("introduction.detail"),
+      action: link("introduction.action"),
+    },
+    programmes: {
+      eyebrow: t("programmes.eyebrow"),
+      title: t("programmes.title"),
+      description: t("programmes.description"),
+      linkLabel: t("programmes.linkLabel"),
+    },
+    heritage: {
+      eyebrow: t("heritage.eyebrow"),
+      title: t("heritage.title"),
+      description: t("heritage.description"),
+      statementEyebrow: t("heritage.statementEyebrow"),
+      statement: t("heritage.statement"),
+      imageId: t("heritage.imageId"),
+    },
+    projects: {
+      eyebrow: t("projects.eyebrow"),
+      title: t("projects.title"),
+      description: t("projects.description"),
+      linkLabel: t("projects.linkLabel"),
+    },
+    research: feature("research"),
+    community: feature("community"),
+    involved: {
+      eyebrow: t("involved.eyebrow"),
+      title: t("involved.title"),
+      panels: [panel(0), panel(1)],
+    },
+    stories: {
+      eyebrow: t("stories.eyebrow"),
+      title: t("stories.title"),
+      linkLabel: t("stories.linkLabel"),
+    },
+    layout: {
+      // The introduction stays first; stable sort keeps the default order for ties.
+      order: ["introduction", ...[...movableSectionKeys].sort((a, b) => position(a) - position(b))],
+      hidden: values(form, "content.layout.hidden"),
+    },
+  };
+}
+
 export function readPageForm(form: FormData) {
-  const { text } = formData;
+  const { text, optionalText, checkbox } = formData;
   return {
     title: text(form, "title"),
     description: text(form, "description"),
@@ -30,7 +119,31 @@ export function readPageForm(form: FormData) {
     lead: text(form, "lead"),
     // Keep line structure: the rich-text format depends on it.
     body: (typeof form.get("body") === "string" ? String(form.get("body")) : "").trim(),
+    heroImageId: optionalText(form, "heroImageId"),
+    seoTitle: optionalText(form, "seoTitle"),
+    noindex: checkbox(form, "noindex"),
+    content: readHomeContent(form),
   };
+}
+
+/**
+ * Validates the homepage content. Field errors are keyed by the editor's
+ * field names (content.<path>), so each message appears beside its control.
+ */
+export function parseHomeContent(
+  content: unknown,
+): { content: HomeContent; errors: null } | { content: null; errors: Record<string, string> } {
+  const result = homeContentSchema.safeParse(content);
+  if (result.success) return { content: result.data, errors: null };
+  const errors: Record<string, string> = {};
+  for (const issue of result.error.issues) {
+    const key =
+      issue.path[0] === "layout"
+        ? "content.layout.hidden"
+        : ["content", ...issue.path.map(String)].join(".");
+    errors[key] ??= issue.message;
+  }
+  return { content: null, errors };
 }
 
 export const pageWorkflow: WorkflowCollection = {
@@ -54,24 +167,52 @@ export const pageWorkflow: WorkflowCollection = {
     return Promise.reject(new Error("Managed pages cannot be deleted."));
   },
   async checkPublishable(db, id) {
-    const row = await db.page.findUnique({ where: { id } });
+    const row = await db.page.findUnique({ where: { id }, include: pageInclude });
     if (!row) return "This page no longer exists.";
-    const result = pageSchema.safeParse({
-      ...row,
-      status: row.placeholder ? "placeholder" : "published",
-    });
-    return result.success
-      ? null
-      : "The page needs a title, a label and a description of at least 30 characters.";
+    const entry = pageEntry(row.slug);
+    if (!entry) return "This page has no route on the website.";
+    let page;
+    try {
+      page = toPage(row);
+    } catch {
+      return "The page needs a title, a label and a description of at least 30 characters.";
+    }
+    if ("imageRequired" in entry && !row.heroImageId) {
+      return "This page opens with a full-width photograph. Choose one.";
+    }
+    if (row.heroImageId && !page.image) {
+      return "The image has not finished uploading, or needs alt text of at least 20 characters and a caption.";
+    }
+    if (entry.kind === "prose" && !row.body.trim()) return "Enter the page text.";
+    if (entry.kind === "home") {
+      const home = await readHomeRow(db, { id });
+      try {
+        const mapped = toHomePage(home!);
+        const { images } = mapped;
+        if (
+          ![images.heritage, images.research, images.community, ...images.panels].every(Boolean)
+        ) {
+          return "Every homepage image must be uploaded, with alt text of at least 20 characters and a caption.";
+        }
+      } catch {
+        return "The homepage needs its hero image and every section filled in.";
+      }
+    }
+    return null;
   },
 };
 
-export function listPagesForAdmin() {
-  return getDb().page.findMany({
-    orderBy: { title: "asc" },
+/** Every managed page, in registry order, for the admin list. */
+export async function listPagesForAdmin() {
+  const rows = await getDb().page.findMany({
     select: { id: true, title: true, slug: true, status: true, placeholder: true, updatedAt: true },
-    take: 50,
+    take: 100,
   });
+  const order = Object.keys(pageRegistry);
+  return rows
+    .filter((row) => pageEntry(row.slug))
+    .sort((a, b) => order.indexOf(a.slug) - order.indexOf(b.slug))
+    .map((row) => ({ ...row, title: `${pageEntry(row.slug)!.label}: ${row.title}` }));
 }
 
 export function getPageForAdmin(id: string, db: Db = getDb()) {
@@ -79,3 +220,9 @@ export function getPageForAdmin(id: string, db: Db = getDb()) {
 }
 
 export type PageForAdmin = NonNullable<Awaited<ReturnType<typeof getPageForAdmin>>>;
+
+/** The id of a managed page, for direct links such as "Edit homepage". */
+export async function findPageId(slug: string): Promise<string | null> {
+  const row = await getDb().page.findUnique({ where: { slug }, select: { id: true } });
+  return row?.id ?? null;
+}

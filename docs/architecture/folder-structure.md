@@ -42,10 +42,14 @@ This describes the repository **as it is now**. Planned folders are listed separ
 │   │   ├── (admin)/admin/
 │   │   │   ├── layout.tsx       noindex, instant = false (per-request rendering)
 │   │   │   ├── sign-in/         Sign-in page (outside the console)
-│   │   │   ├── (console)/       AdminShell layout; dashboard, account, pages, programmes, projects,
-│   │   │   │                    articles, resources, partners, team, media, settings, users, audit
-│   │   │   └── preview/         Draft previews (projects, articles, pages), behind requireAdmin()
-│   │   └── media/[...key]/route.ts  Streams uploaded files from the private Neon Object Storage bucket
+│   │   │   ├── (console)/       AdminShell layout with loading, error and not-found states; dashboard,
+│   │   │   │                    reviews, account, pages, programmes, projects, articles, resources,
+│   │   │   │                    partners, team, media, settings (+ contact, branding, navigation,
+│   │   │   │                    footer, seo), users, audit
+│   │   │   └── preview/         Draft and pending-change previews (projects, articles, pages)
+│   │   ├── media/[...key]/route.ts  Streams uploaded files from the private Neon Object Storage bucket
+│   │   ├── sitemap.ts           Published, indexable content only (cached, tag-invalidated)
+│   │   └── robots.ts            Allows the public site, disallows /admin
 │   ├── components/
 │   │   ├── admin/               Admin UI: AdminShell, ActionForm, form fields, ContentTable, CollectionList,
 │   │   │                        StatusBadge, Pagination, PreviewFrame
@@ -60,7 +64,9 @@ This describes the repository **as it is now**. Planned folders are listed separ
 │   │                            SpecimenSheet
 │   ├── config/
 │   │   ├── site.ts              Site identity
-│   │   ├── navigation.ts        Typed navigation: mega menus, mobile menu, footer, policy links
+│   │   ├── navigation.ts        Typed navigation: mega menus, mobile menu, footer, policy links;
+│   │   │                        CMS overrides (labels, order, visibility) and applyNavigation
+│   │   ├── routes.ts            Approved public routes; isApprovedHref validates CMS links
 │   │   ├── media.ts             Photography registry with alt text and credits
 │   │   └── env.ts               Validated server environment (server-only)
 │   ├── content/                 Typed static copy that is not CMS-bound
@@ -69,14 +75,17 @@ This describes the repository **as it is now**. Planned folders are listed separ
 │   │   ├── ecosystems.ts        Landscape chapters for the scroll story
 │   │   └── specimens.ts         Reference specimens (Kew-imaged, collected in Uganda)
 │   ├── features/                Business modules (ADR 0002, 0006, 0007)
-│   │   ├── cms/                 Workflow rules, shared save/transition/delete, action results,
-│   │   │                        form parsing, list params, dashboard, WorkflowPanel, StatusFilter
+│   │   ├── cms/                 Workflow and revision rules, shared save/transition/delete, revision
+│   │   │                        editor and preview loaders, action results, form parsing, list params,
+│   │   │                        dashboard, WorkflowPanel, EditorTarget, SeoFields, StatusFilter
 │   │   ├── auth/                Sign-in, sign-out and password Server Actions and forms
 │   │   ├── users/               Staff accounts and roles (administrators only)
 │   │   ├── media/               Upload rules, mapping, references, admin actions and forms
 │   │   ├── programmes/  projects/  resources/  partners/  team/  pages/  settings/
 │   │   │                        Each: schema.ts, queries.ts (published, cached), components/,
-│   │   │                        admin/ (adapter, queries, actions, form), index.ts
+│   │   │                        admin/ (adapter, save operations, editor loaders, actions, form),
+│   │   │                        index.ts. pages/ also: registry.ts (managed fixed pages),
+│   │   │                        home-content.ts (homepage sections), metadata.ts
 │   ├── hooks/                   useScrolled, useBodyScrollLock
 │   ├── lib/                     utils.ts (cn), motion.ts, metadata.ts (pageMetadata), structured-data.ts
 │   ├── generated/prisma/        Prisma client (generated, git-ignored)
@@ -90,8 +99,9 @@ This describes the repository **as it is now**. Planned folders are listed separ
 │   ├── unit/                    Vitest (node; jsdom per file): every page, content contracts and
 │   │                            register, navigation, metadata, components, permissions, workflow,
 │   │                            upload rules, rich text, env, admin input, migration safeguard
-│   ├── integration/             Vitest against the test schema: authorisation, editorial workflow,
-│   │                            database constraints and drift, media, sign-in; auth test double
+│   ├── integration/             Vitest against the test schema: authorisation, editorial workflow and
+│   │                            revisions, CMS pages/settings/sitemap, database constraints and drift,
+│   │                            media, sign-in; auth test double
 │   └── e2e/                     Playwright: routes, links, interactions, navigation, header, mega menu,
 │                                mobile, motion, layout/axe, platform, admin (publish flow);
 │                                global-setup + fixtures/e2e-data.ts (e2e staff accounts)

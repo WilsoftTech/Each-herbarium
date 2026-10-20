@@ -10,6 +10,8 @@ import type { SeedProgramme } from "./types";
 export const seedProgrammes: readonly SeedProgramme[] = [
   {
     slug: "plant-conservation",
+    seoDescription:
+      "Why East Africa's native plants need protecting, and how plants are conserved in the wild, in collections and in herbaria.",
     title: "Plant conservation",
     summary: "Protecting native plants and the places they grow.",
     intro:
@@ -18,6 +20,8 @@ export const seedProgrammes: readonly SeedProgramme[] = [
   },
   {
     slug: "environmental-conservation",
+    seoDescription:
+      "The forests, wetlands and grasslands that East Africa's plants depend on, and why protecting them matters for people too.",
     title: "Environmental conservation",
     summary: "Caring for the forests, wetlands and grasslands that plants depend on.",
     intro:
@@ -26,6 +30,8 @@ export const seedProgrammes: readonly SeedProgramme[] = [
   },
   {
     slug: "medicinal-plants",
+    seoDescription:
+      "How EACH approaches East Africa's medicinal plants: accurate identification, cultural context, consent and conservation. Not medical advice.",
     title: "Medicinal plants",
     summary: "Plant knowledge in its scientific and cultural context.",
     intro:
@@ -34,6 +40,8 @@ export const seedProgrammes: readonly SeedProgramme[] = [
   },
   {
     slug: "indigenous-knowledge",
+    seoDescription:
+      "Recording East African communities' knowledge of plants with consent, credit and community control.",
     title: "Indigenous knowledge",
     summary: "Recording plant knowledge with respect for its custodians.",
     intro:

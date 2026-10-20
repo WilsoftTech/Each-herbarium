@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { ArrowRightIcon } from "@/components/ui/icons";
+import { getSiteChrome } from "@/features/settings";
 
 export const metadata: Metadata = {
   title: "Page not found",
@@ -13,10 +14,11 @@ export const metadata: Metadata = {
 
 // Renders the public header and footer so visitors can keep navigating. Sections
 // linked from the navigation return this page until they are built in M03.
-export default function NotFound() {
+export default async function NotFound() {
+  const chrome = await getSiteChrome();
   return (
     <>
-      <SiteHeader notFound />
+      <SiteHeader notFound navigation={chrome.navigation} />
       <main id="main" tabIndex={-1} className="flex flex-1 items-center py-section outline-none">
         <Container>
           <Eyebrow>404</Eyebrow>
@@ -32,7 +34,7 @@ export default function NotFound() {
           </Button>
         </Container>
       </main>
-      <SiteFooter />
+      <SiteFooter navigation={chrome.navigation} content={chrome.footer} />
     </>
   );
 }

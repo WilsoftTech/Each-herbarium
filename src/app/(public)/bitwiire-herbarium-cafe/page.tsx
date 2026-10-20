@@ -8,21 +8,19 @@ import { KeyFacts } from "@/components/ui/key-facts";
 import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { pageMetadata } from "@/lib/metadata";
+import { loadManagedPage, metadataForPage } from "@/features/pages";
 
-export const metadata = pageMetadata({
-  title: "Bitwiire Herbarium Cafe",
-  description:
-    "Bitwiire Herbarium Cafe is an independent partner of EACH. The two are separate organisations.",
-  path: "/bitwiire-herbarium-cafe",
-});
+export async function generateMetadata() {
+  return metadataForPage("bitwiire-herbarium-cafe");
+}
 
 /**
  * Bitwiire is an independent partner, so the page uses the warm partner
  * surface and original illustrations rather than EACH's palette and
  * photography, and describes Bitwiire only in confirmed terms.
  */
-export default function BitwiirePage() {
+export default async function BitwiirePage() {
+  const page = await loadManagedPage("bitwiire-herbarium-cafe");
   const pending = <PendingContent item="bitwiireProfile" variant="badge" />;
 
   return (
@@ -38,14 +36,9 @@ export default function BitwiirePage() {
             current={{ label: "Bitwiire Herbarium Cafe", href: "/bitwiire-herbarium-cafe" }}
           />
         }
-        eyebrow="Independent partner"
-        title="Bitwiire Herbarium Cafe"
-        lead={
-          <p>
-            An independent partner of EACH. Bitwiire Herbarium Cafe and EACH are separate
-            organisations: neither owns or runs the other.
-          </p>
-        }
+        eyebrow={page.eyebrow}
+        title={page.title}
+        lead={<p>{page.lead}</p>}
         aside={
           <KeyFacts
             columns={1}

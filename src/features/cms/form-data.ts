@@ -41,6 +41,24 @@ export function paragraphs(source: string): string[] {
     .filter(Boolean);
 }
 
+/**
+ * Blocks separated by blank lines, keeping line breaks inside a block, for
+ * rich text stored as an array (article bodies): a list keeps one item per line.
+ */
+export function blocks(source: string): string[] {
+  return source
+    .replace(/\r\n?/g, "\n")
+    .split(/\n\s*\n/)
+    .map((block) =>
+      block
+        .split("\n")
+        .map((line) => line.trim())
+        .join("\n")
+        .trim(),
+    )
+    .filter(Boolean);
+}
+
 /** The inverse of `paragraphs`, for filling a textarea. */
 export function joinParagraphs(items: readonly string[]): string {
   return items.join("\n\n");
@@ -72,6 +90,11 @@ export function sections(source: string): { sections: TextSection[]; stray: bool
 
 export function joinSections(items: readonly TextSection[]): string {
   return items.map((item) => `## ${item.heading}\n\n${joinParagraphs(item.body)}`).join("\n\n");
+}
+
+/** The inverse of `lines`, for filling a textarea. */
+export function joinLines(items: readonly string[]): string {
+  return items.join("\n");
 }
 
 /** One entry per line, blanks dropped (authors, list fields). */

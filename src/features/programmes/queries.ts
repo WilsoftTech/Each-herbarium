@@ -12,6 +12,13 @@ export const programmeSelect = {
   title: true,
   summary: true,
   intro: true,
+  category: true,
+  objectives: true,
+  body: true,
+  featured: true,
+  seoTitle: true,
+  seoDescription: true,
+  noindex: true,
   image: { select: mediaSelect },
 } as const satisfies Prisma.ProgrammeSelect;
 
@@ -26,6 +33,13 @@ export function toProgramme(row: ProgrammeRow): Programme {
     summary: row.summary,
     intro: row.intro,
     image: toMediaAsset(row.image),
+    category: row.category,
+    objectives: row.objectives,
+    body: row.body,
+    featured: row.featured,
+    seoTitle: row.seoTitle,
+    seoDescription: row.seoDescription,
+    noindex: row.noindex,
   });
 }
 

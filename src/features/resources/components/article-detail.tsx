@@ -6,7 +6,7 @@ import { Container } from "@/components/ui/container";
 import { DownloadIcon } from "@/components/ui/icons";
 import { KeyFacts } from "@/components/ui/key-facts";
 import { PendingContent } from "@/components/ui/pending-content";
-import { Prose } from "@/components/ui/prose";
+import { RichText } from "@/components/ui/rich-text";
 import { Section } from "@/components/ui/section";
 import { resourceTypeLabel, type Resource } from "../schema";
 import { formatFileSize, formatResourceDate } from "./resource-list";
@@ -50,16 +50,21 @@ export function ArticleDetail({ resource }: { resource: Resource }) {
       <Section aria-label="Article" className="pt-0">
         <Container>
           {resource.body.length && !placeholder ? (
-            <Prose className="mx-auto">
-              {resource.body.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-            </Prose>
+            <RichText className="mx-auto" source={resource.body.join("\n\n")} />
           ) : (
             <div className="mx-auto max-w-[68ch]">
               <PendingContent item="resources" />
             </div>
           )}
+          {resource.references.length && !placeholder ? (
+            <div className="mx-auto mt-12 max-w-[68ch]">
+              <h2 className="font-display text-heading">References</h2>
+              <RichText
+                className="mt-4"
+                source={resource.references.map((reference) => `- ${reference}`).join("\n")}
+              />
+            </div>
+          ) : null}
           {resource.document ? (
             <div className="mx-auto mt-12 max-w-[68ch]">
               <Button asChild variant="outline">

@@ -8,15 +8,76 @@ import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Container } from "@/components/ui/container";
 import { KeyFacts } from "@/components/ui/key-facts";
 import { PendingContent } from "@/components/ui/pending-content";
+import { RichText } from "@/components/ui/rich-text";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
-import type { Project } from "../schema";
+import { projectStatusLabel, type Project } from "../schema";
 
 type ProjectDetailProps = {
   project: Project;
   /** The next case study, for the closing link. Omitted in previews. */
   next?: Pick<Project, "slug" | "title" | "summary">;
 };
+
+const dateFormat = new Intl.DateTimeFormat("en-GB", {
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC",
+});
+const formatMonth = (iso: string) => dateFormat.format(new Date(`${iso}T00:00:00Z`));
+
+/** The period as written by EACH, or derived from the confirmed dates. */
+function periodOf(project: Project): string | null {
+  if (project.period) return project.period;
+  if (project.startDate && project.endDate) {
+    return `${formatMonth(project.startDate)} to ${formatMonth(project.endDate)}`;
+  }
+  if (project.startDate) return `From ${formatMonth(project.startDate)}`;
+  return null;
+}
+
+/** Objectives, activities, verified outcomes and references, as written in the CMS. */
+function ProjectLists({ project }: { project: Project }) {
+  const lists = [
+    { title: "Objectives", items: project.objectives },
+    { title: "Activities", items: project.activities },
+    { title: "Verified outcomes", items: project.outcomes },
+  ].filter((list) => list.items.length);
+  if (!lists.length && !project.references.length) return null;
+
+  return (
+    <Section surface="muted" aria-labelledby="details-title">
+      <Reveal>
+        <Container className="grid gap-12 lg:grid-cols-12">
+          <div className="lg:col-span-4">
+            <SectionHeading id="details-title" eyebrow="The project" title="Aims and results" />
+          </div>
+          <div data-reveal className="space-y-10 lg:col-span-7 lg:col-start-6">
+            {lists.map((list) => (
+              <div key={list.title}>
+                <h3 className="font-display text-heading">{list.title}</h3>
+                <ul className="mt-4 list-disc space-y-2 pl-5 leading-7 text-muted-foreground">
+                  {list.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+            {project.references.length ? (
+              <div>
+                <h3 className="font-display text-heading">References</h3>
+                <RichText
+                  className="mt-4"
+                  source={project.references.map((reference) => `- ${reference}`).join("\n")}
+                />
+              </div>
+            ) : null}
+          </div>
+        </Container>
+      </Reveal>
+    </Section>
+  );
+}
 
 /** The case-study page body. Rendered by the public route and by the admin preview. */
 export function ProjectDetail({ project, next }: ProjectDetailProps) {
@@ -54,7 +115,14 @@ export function ProjectDetail({ project, next }: ProjectDetailProps) {
                 facts={[
                   { term: "Landscape", value: project.ecosystem },
                   { term: "Location", value: project.location ?? pending },
-                  { term: "Period", value: project.period ?? pending },
+                  { term: "Country", value: project.country ?? pending },
+                  {
+                    term: "Status",
+                    value: project.operationalStatus
+                      ? projectStatusLabel[project.operationalStatus]
+                      : pending,
+                  },
+                  { term: "Period", value: periodOf(project) ?? pending },
                   {
                     term: "Programmes",
                     value: project.programmes.length ? (
@@ -80,7 +148,11 @@ export function ProjectDetail({ project, next }: ProjectDetailProps) {
                   },
                   {
                     term: "Outcomes",
-                    value: <PendingContent item="impactFigures" variant="badge" />,
+                    value: project.outcomes.length ? (
+                      "Listed under Aims and results"
+                    ) : (
+                      <PendingContent item="impactFigures" variant="badge" />
+                    ),
                   },
                 ]}
               />
@@ -132,6 +204,8 @@ export function ProjectDetail({ project, next }: ProjectDetailProps) {
           </Container>
         </Reveal>
       </Section>
+
+      <ProjectLists project={project} />
 
       {next ? (
         <SequenceNav

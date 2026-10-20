@@ -9,6 +9,7 @@ import {
   deletePartner,
   transitionPartner,
 } from "@/features/partners";
+import { listMediaOptions } from "@/features/media";
 import { requireAdmin } from "@/services/admin-auth";
 
 export const metadata: Metadata = { title: "Edit partner" };
@@ -19,7 +20,7 @@ export default async function EditPartnersPage({
 }: PageProps<"/admin/partners/[id]">) {
   const session = await requireAdmin();
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  const editor = await getPartnerEditor(id);
+  const [editor, images] = await Promise.all([getPartnerEditor(id), listMediaOptions("IMAGE")]);
   if (!editor) notFound();
   const { live: item, draft, revision, revisionError } = editor;
 
@@ -34,6 +35,7 @@ export default async function EditPartnersPage({
         <PartnerForm
           partner={draft}
           revisionId={revision?.id}
+          images={images}
           editable={canEditItem(session.role, item.status, revision?.status)}
         />
         <div className="xl:sticky xl:top-8 xl:self-start">

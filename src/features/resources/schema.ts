@@ -3,6 +3,7 @@ import {
   contentStatusSchema,
   documentAssetSchema,
   mediaAssetSchema,
+  seoSchema,
   slugSchema,
 } from "@/validation/content";
 
@@ -19,10 +20,18 @@ export const resourceSchema = z.object({
   published: z.iso.date().nullable(),
   authors: z.array(z.string().min(1)),
   image: mediaAssetSchema.nullable(),
-  /** Article text as paragraphs. Empty until EACH supplies it. */
+  /**
+   * Article text as rich-text blocks (src/lib/rich-text.ts): paragraphs,
+   * "## " headings, "- " lists, safe links. Empty until EACH supplies it.
+   */
   body: z.array(z.string().min(1)),
   /** Optional download, e.g. the full publication as PDF. */
   document: documentAssetSchema.nullable(),
+  /** Chosen for the homepage's latest stories and publications. */
+  featured: z.boolean(),
+  /** Scientific or source references; may contain safe links. */
+  references: z.array(z.string().min(1)),
+  ...seoSchema.shape,
 });
 
 export type Resource = z.infer<typeof resourceSchema>;

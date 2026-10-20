@@ -10,7 +10,7 @@ import {
 import type { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/services/db";
 import { slugSchema } from "@/validation/content";
-import { partnerSchema } from "../schema";
+import { partnerInclude, toPartner } from "../queries";
 
 type Db = PrismaClient | Prisma.TransactionClient;
 
@@ -25,6 +25,8 @@ export const partnerInputSchema = z.object({
   websiteUrl: z.url({ protocol: /^https$/, error: "Use a full https:// address." }).nullable(),
   sortOrder: z.number("Enter a whole number.").int().min(0).max(10_000),
   placeholder: z.boolean(),
+  category: z.string().trim().max(60),
+  logoId: z.string().min(1).nullable(),
 });
 
 export type PartnerInput = z.infer<typeof partnerInputSchema>;
@@ -39,6 +41,8 @@ export function readPartnerForm(form: FormData) {
     websiteUrl: optionalText(form, "websiteUrl"),
     sortOrder: integer(form, "sortOrder"),
     placeholder: checkbox(form, "placeholder"),
+    category: text(form, "category"),
+    logoId: optionalText(form, "logoId"),
   };
 }
 
@@ -70,13 +74,15 @@ export const partnerWorkflow: WorkflowCollection = {
     return db.partner.delete({ where: { id } });
   },
   async checkPublishable(db, id) {
-    const row = await db.partner.findUnique({ where: { id } });
+    const row = await db.partner.findUnique({ where: { id }, include: partnerInclude });
     if (!row) return "This partner no longer exists.";
-    const result = partnerSchema.safeParse({
-      ...row,
-      status: row.placeholder ? "placeholder" : "published",
-    });
-    return result.success ? null : "Some details do not meet the publishing rules.";
+    if (row.logo && row.logo.status !== "READY") return "The logo has not finished uploading.";
+    try {
+      toPartner(row);
+    } catch {
+      return "Some details do not meet the publishing rules. The logo needs alt text of at least 20 characters and a caption.";
+    }
+    return null;
   },
 };
 

@@ -1,20 +1,15 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { PendingContent } from "@/components/ui/pending-content";
-import { getPage, PolicyPage } from "@/features/pages";
-import { pageMetadata } from "@/lib/metadata";
+import { loadManagedPage, metadataForPage, PolicyPage } from "@/features/pages";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPage("accessibility");
-  if (!page) notFound();
-  return pageMetadata({ title: page.title, description: page.description, path: "/accessibility" });
+  return metadataForPage("accessibility");
 }
 
 // Statements describe the site as built and tested (docs/audits/M03-verification.md).
 // The words are managed in the CMS (Pages).
 export default async function AccessibilityPage() {
-  const page = await getPage("accessibility");
-  if (!page) notFound();
+  const page = await loadManagedPage("accessibility");
 
   return (
     <PolicyPage

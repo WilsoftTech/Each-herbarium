@@ -9,16 +9,11 @@ import { Notice } from "@/components/ui/notice";
 import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { media } from "@/config/media";
-import { pageMetadata } from "@/lib/metadata";
+import { loadManagedPage, metadataForPage } from "@/features/pages";
 
-export const metadata = pageMetadata({
-  title: "Partnerships",
-  description:
-    "How research institutions, community organisations and conservation groups can work with EACH.",
-  path: "/partnerships",
-  image: media.kidepoEuphorbia,
-});
+export async function generateMetadata() {
+  return metadataForPage("partnerships");
+}
 
 // Draft partnership types (pending: `partnershipModel`).
 const types = [
@@ -40,7 +35,8 @@ const types = [
   },
 ] as const;
 
-export default function PartnershipsPage() {
+export default async function PartnershipsPage() {
+  const page = await loadManagedPage("partnerships");
   return (
     <>
       <PageHeader
@@ -50,15 +46,10 @@ export default function PartnershipsPage() {
             current={{ label: "Partnerships", href: "/partnerships" }}
           />
         }
-        eyebrow="Get involved"
-        title="Partner with EACH"
-        lead={
-          <p>
-            Partners keep their independence. A partnership is a collaboration between separate
-            organisations, each responsible for its own work.
-          </p>
-        }
-        image={media.kidepoEuphorbia}
+        eyebrow={page.eyebrow}
+        title={page.title}
+        lead={<p>{page.lead}</p>}
+        image={page.image ?? undefined}
       />
 
       <Section aria-labelledby="types-title">

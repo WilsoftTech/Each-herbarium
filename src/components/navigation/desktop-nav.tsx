@@ -35,10 +35,12 @@ type OpenState = {
 
 const HOVER_OPEN_DELAY = 90;
 const HOVER_CLOSE_DELAY = 240;
-const items: readonly NavItem[] = primaryNavigation;
+const defaultItems: readonly NavItem[] = primaryNavigation;
 
 type DesktopNavProps = {
   pathname: string;
+  /** The navigation with CMS overrides applied; defaults to the approved navigation. */
+  items?: readonly NavItem[];
   /** Reports whether a mega menu is open, so the header can switch to its solid style. */
   onOpenChange: (open: boolean) => void;
 };
@@ -51,7 +53,7 @@ type DesktopNavProps = {
  * - Left/Right/Home/End move between top-level items; Down opens and enters a menu.
  * - Escape closes and returns focus to the trigger; so does tabbing out of the nav.
  */
-export function DesktopNav({ pathname, onOpenChange }: DesktopNavProps) {
+export function DesktopNav({ pathname, onOpenChange, items = defaultItems }: DesktopNavProps) {
   const reduced = useReducedMotion() ?? false;
   const [open, setOpenState] = useState<OpenState>(null);
   const [panelHeight, setPanelHeight] = useState(0);

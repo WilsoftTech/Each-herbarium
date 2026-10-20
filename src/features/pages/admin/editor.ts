@@ -1,6 +1,8 @@
 import "server-only";
 import { loadForEditing, loadPreview } from "@/features/cms";
-import { pageSchema } from "../schema";
+import { readHomeRow, toHomePage, toPage, type HomeRow } from "../queries";
+import { pageEntry } from "../registry";
+import type { HomePage, Page } from "../schema";
 import { getPageForAdmin, pageWorkflow } from "./admin";
 import { pageSave } from "./save";
 
@@ -9,14 +11,25 @@ export function getPageEditor(id: string) {
   return loadForEditing(pageWorkflow, pageSave, id, (db) => getPageForAdmin(id, db));
 }
 
+export type PagePreview =
+  { kind: "home"; home: HomePage } | { kind: "landing" | "prose"; page: Page; route: string };
+
+function toPreview(row: HomeRow): PagePreview {
+  const entry = pageEntry(row.slug);
+  if (!entry) throw new Error("Unknown page");
+  return entry.kind === "home"
+    ? { kind: "home", home: toHomePage(row) }
+    : { kind: entry.kind, page: toPage(row), route: entry.route };
+}
+
 /** A page mapped to the public contract for the admin preview, pending changes applied. */
 export function getPagePreview(id: string) {
   return loadPreview(
     pageWorkflow,
     pageSave,
     id,
-    (db) => db.page.findUnique({ where: { id } }),
-    (row) => pageSchema.parse({ ...row, status: row.placeholder ? "placeholder" : "published" }),
-    "Add a title, a label and a description of at least 30 characters to preview.",
+    (db) => readHomeRow(db, { id }),
+    toPreview,
+    "Fill in the title, label, description (at least 30 characters) and, on the homepage, every section to preview.",
   );
 }

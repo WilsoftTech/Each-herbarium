@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleDetail, getResource, listResources } from "@/features/resources";
+import { getSiteSettings } from "@/features/settings";
 import { pageMetadata, staticParams } from "@/lib/metadata";
 
 // Published articles are prerendered; one published after the build renders
@@ -13,15 +14,15 @@ export async function generateMetadata({
   params,
 }: PageProps<"/resources/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const resource = await getResource(slug);
+  const [resource, settings] = await Promise.all([getResource(slug), getSiteSettings()]);
   if (!resource) notFound();
 
   return pageMetadata({
-    title: resource.title,
-    description: resource.summary,
+    title: resource.seoTitle ?? resource.title,
+    description: resource.seoDescription ?? resource.summary,
     path: `/resources/${resource.slug}`,
-    image: resource.image ?? undefined,
-    noindex: resource.status === "placeholder",
+    image: resource.image ?? settings.socialImage ?? undefined,
+    noindex: resource.noindex || resource.status === "placeholder",
   });
 }
 

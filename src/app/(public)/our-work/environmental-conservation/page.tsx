@@ -10,9 +10,13 @@ import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { media } from "@/config/media";
-import { getProgramme, nextProgramme } from "@/features/programmes";
+import {
+  getProgramme,
+  nextProgramme,
+  ProgrammeDetails,
+  programmeMetadata,
+} from "@/features/programmes";
 import { listProjectsForProgramme, ProjectCards } from "@/features/projects";
-import { pageMetadata } from "@/lib/metadata";
 
 const slug = "environmental-conservation";
 
@@ -24,14 +28,7 @@ async function loadProgramme() {
 }
 
 export async function generateMetadata() {
-  const programme = await loadProgramme();
-  return pageMetadata({
-    title: programme.title,
-    description:
-      "The forests, wetlands and grasslands that East Africa's plants depend on, and why protecting them matters for people too.",
-    path: programme.href,
-    image: programme.image,
-  });
+  return programmeMetadata(await loadProgramme());
 }
 
 const services = [
@@ -145,6 +142,8 @@ export default async function EnvironmentalConservationPage() {
           </Container>
         </Reveal>
       </Section>
+
+      <ProgrammeDetails programme={programme} />
 
       <SequenceNav
         label="Next programme"

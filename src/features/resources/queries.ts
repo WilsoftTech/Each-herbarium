@@ -28,6 +28,11 @@ export function toResource(row: ArticleRow): Resource {
     image: isUsable(row.image) ? toMediaAsset(row.image) : null,
     body: row.body,
     document: isUsable(row.document) ? toDocumentAsset(row.document) : null,
+    featured: row.featured,
+    references: row.references,
+    seoTitle: row.seoTitle,
+    seoDescription: row.seoDescription,
+    noindex: row.noindex,
   });
 }
 

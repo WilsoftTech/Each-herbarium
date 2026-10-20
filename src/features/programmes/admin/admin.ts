@@ -2,6 +2,7 @@ import "server-only";
 import { z } from "zod";
 import {
   formData,
+  readSeoFields,
   pageCount,
   pageWindow,
   type ListParams,
@@ -9,7 +10,7 @@ import {
 } from "@/features/cms";
 import type { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/services/db";
-import { slugSchema } from "@/validation/content";
+import { seoInputSchema, slugSchema } from "@/validation/content";
 import { programmeSelect, toProgramme } from "../queries";
 
 type Db = PrismaClient | Prisma.TransactionClient;
@@ -22,12 +23,17 @@ export const programmeInputSchema = z.object({
   imageId: z.string().min(1, "Choose an image."),
   sortOrder: z.number("Enter a whole number.").int().min(0).max(10_000),
   placeholder: z.boolean(),
+  category: z.string().trim().max(60),
+  objectives: z.array(z.string().min(1).max(400)).max(20, "List at most 20 objectives."),
+  body: z.string().max(20_000),
+  featured: z.boolean(),
+  ...seoInputSchema.shape,
 });
 
 export type ProgrammeInput = z.infer<typeof programmeInputSchema>;
 
 export function readProgrammeForm(form: FormData) {
-  const { text, checkbox, integer } = formData;
+  const { text, checkbox, integer, lines } = formData;
   return {
     title: text(form, "title"),
     slug: text(form, "slug"),
@@ -36,6 +42,12 @@ export function readProgrammeForm(form: FormData) {
     imageId: text(form, "imageId"),
     sortOrder: integer(form, "sortOrder"),
     placeholder: checkbox(form, "placeholder"),
+    category: text(form, "category"),
+    objectives: lines(text(form, "objectives")),
+    // Keep line structure: the rich-text format depends on it.
+    body: (typeof form.get("body") === "string" ? String(form.get("body")) : "").trim(),
+    featured: checkbox(form, "featured"),
+    ...readSeoFields(form),
   };
 }
 

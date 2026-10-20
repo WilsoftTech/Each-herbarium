@@ -13,7 +13,10 @@ export type AdminNavGroup = { label: string; items: readonly AdminNavItem[] };
 export const adminNavigation: readonly AdminNavGroup[] = [
   {
     label: "Overview",
-    items: [{ label: "Dashboard", href: "/admin", permission: "admin:access" }],
+    items: [
+      { label: "Dashboard", href: "/admin", permission: "admin:access" },
+      { label: "Review queue", href: "/admin/reviews", permission: "admin:access" },
+    ],
   },
   {
     label: "Content",

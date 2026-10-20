@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import type { Partner } from "../schema";
@@ -13,8 +14,20 @@ export function PartnerList({ partners }: { partners: readonly Partner[] }) {
       {partners.map((partner) => (
         <li key={partner.slug} data-reveal>
           <article className="group/partner relative h-full rounded-sm border border-border bg-card p-8 transition-colors duration-(--motion-duration-base) hover:border-foreground/40">
+            {partner.logo ? (
+              // Shown at its own proportions, never cropped or recoloured.
+              <Image
+                src={partner.logo.src}
+                alt={partner.logo.alt}
+                width={partner.logo.width}
+                height={partner.logo.height}
+                sizes="12rem"
+                className="mb-6 h-14 w-auto max-w-48 object-contain"
+              />
+            ) : null}
             <p className="text-eyebrow font-medium text-primary uppercase">
               {relationshipLabel[partner.relationship]}
+              {partner.category ? ` · ${partner.category}` : null}
             </p>
             <h3 className="mt-4 font-display text-heading">
               {partner.href ? (

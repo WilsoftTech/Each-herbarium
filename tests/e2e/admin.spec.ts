@@ -178,6 +178,7 @@ test.describe("admin access", () => {
 test.describe.serial("publish flow", () => {
   const slug = `e2e-project-${Date.now()}`;
   const title = `E2E case study ${Date.now()}`;
+  const revisedTitle = `${title} (revised)`;
   let editUrl = "";
 
   test("an editor creates a draft that is not public", async ({ page }) => {
@@ -236,16 +237,121 @@ test.describe.serial("publish flow", () => {
     await visitor.close();
   });
 
-  test("unpublishing removes it from the site immediately", async ({ browser }) => {
+  test("an editor's changes to the published project stay private until approved", async ({
+    browser,
+  }) => {
+    const page = await newSession(browser, "editor");
+    await page.goto(editUrl);
+    await expect(page.getByText("Published", { exact: true }).first()).toBeVisible();
+    await page.getByLabel(/^Title\b/).fill(revisedTitle);
+    await page.getByLabel("Featured on the homepage").check();
+    await page.getByRole("button", { name: "Save pending changes" }).click();
+    await expect(page).toHaveURL(/\?revision=1$/);
+    await expect(page.getByRole("heading", { name: "Pending changes" })).toBeVisible();
+
+    // The public page still shows the approved version.
+    const visitor = await browser.newPage();
+    await visitor.goto(`/projects/${slug}`);
+    await expect(visitor.getByRole("heading", { level: 1, name: title })).toBeVisible();
+    await expect(visitor.getByRole("heading", { level: 1, name: revisedTitle })).toHaveCount(0);
+
+    // The preview shows the pending changes, clearly labelled.
+    await page.getByRole("link", { name: "Preview pending changes" }).click();
+    await expect(
+      page.getByRole("note").filter({ hasText: "Preview of pending changes" }),
+    ).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: revisedTitle })).toBeVisible();
+
+    await page.goto(editUrl);
+    await page.getByRole("button", { name: "Submit changes for review" }).click();
+    await expect(page.getByRole("status")).toContainText("Submit changes for review: done.");
+    await page.reload();
+    await expect(page.getByRole("button", { name: "Approve and publish changes" })).toHaveCount(0);
+    await visitor.goto(`/projects/${slug}`);
+    await expect(visitor.getByRole("heading", { level: 1, name: title })).toBeVisible();
+    await visitor.close();
+  });
+
+  test("the review queue lists the changes; a reviewer approves and the site updates", async ({
+    browser,
+  }) => {
+    const page = await newSession(browser, "reviewer");
+    await page.goto("/admin/reviews");
+    await expect(page.getByRole("heading", { level: 1, name: "Review queue" })).toBeVisible();
+    await expect(page.getByRole("link", { name: title })).toBeVisible();
+    await expectAccessible(page);
+
+    await page.goto(editUrl);
+    await expect(page.getByRole("button", { name: "Unpublish" })).toHaveCount(0);
+    await page.getByRole("button", { name: "Approve and publish changes" }).click();
+    await expect(page.getByRole("status")).toContainText("Approve and publish changes: done.");
+
+    const visitor = await browser.newPage();
+    await visitor.goto(`/projects/${slug}`);
+    await expect(visitor.getByRole("heading", { level: 1, name: revisedTitle })).toBeVisible();
+    await expect(visitor).toHaveTitle(new RegExp(revisedTitle));
+    await visitor.goto("/");
+    await expect(visitor.getByRole("heading", { name: revisedTitle })).toBeVisible();
+    await visitor.close();
+  });
+
+  test("archiving removes it from the site immediately", async ({ browser }) => {
     const page = await newSession(browser, "reviewer");
     await page.goto(editUrl);
-    await page.getByRole("button", { name: "Unpublish" }).click();
-    await expect(page.getByRole("status")).toContainText("Unpublish: done.");
+    await page.getByRole("button", { name: "Archive" }).click();
+    await expect(page.getByRole("status")).toContainText("Archive: done.");
 
     const visitor = await browser.newPage();
     expect((await visitor.goto(`/projects/${slug}`))?.status()).toBe(404);
     await visitor.goto("/projects");
-    await expect(visitor.getByRole("heading", { name: title })).toHaveCount(0);
+    await expect(visitor.getByRole("heading", { name: revisedTitle })).toHaveCount(0);
+    await visitor.goto("/");
+    await expect(visitor.getByRole("heading", { name: revisedTitle })).toHaveCount(0);
+    const sitemap = await visitor.request.get("/sitemap.xml");
+    expect(await sitemap.text()).not.toContain(slug);
     await visitor.close();
+  });
+});
+
+test.describe.serial("managed page header", () => {
+  const original = "Measuring what matters";
+  const changed = `Measuring results ${Date.now()}`;
+
+  async function editImpact(page: Page, value: string) {
+    await page.goto("/admin/pages");
+    await page.getByRole("link", { name: /^Impact:/ }).click();
+    await page.getByLabel(/^Title\b/).fill(value);
+    await page.getByRole("button", { name: "Save pending changes" }).click();
+    await expect(page).toHaveURL(/\?revision=1$/);
+    await page.getByRole("button", { name: "Submit changes for review" }).click();
+    await expect(page.getByRole("status")).toContainText("done.");
+    await page.getByRole("button", { name: "Approve and publish changes" }).click();
+    await expect(page.getByRole("status")).toContainText("Approve and publish changes: done.");
+  }
+
+  test("a reviewer publishes a new page headline without redeployment", async ({ browser }) => {
+    const page = await newSession(browser, "reviewer");
+    await editImpact(page, changed);
+    const visitor = await browser.newPage();
+    await visitor.goto("/impact");
+    await expect(visitor.getByRole("heading", { level: 1, name: changed })).toBeVisible();
+    await visitor.close();
+
+    await editImpact(page, original);
+    const after = await browser.newPage();
+    await after.goto("/impact");
+    await expect(after.getByRole("heading", { level: 1, name: original })).toBeVisible();
+    await after.close();
+  });
+
+  test("settings and page editors are accessible", async ({ page }) => {
+    await signIn(page, "admin");
+    for (const path of ["/admin/settings", "/admin/settings/navigation", "/admin/pages"]) {
+      await page.goto(path);
+      await expectAccessible(page);
+    }
+    await page.getByRole("link", { name: /^Homepage:/ }).click();
+    await expect(page.getByRole("heading", { name: "Section order and visibility" })).toBeVisible();
+    await expectAccessible(page);
   });
 });

@@ -13,9 +13,11 @@ import {
   getProgramme,
   listProgrammes,
   nextProgramme,
+  ProgrammeDetails,
+  programmeMetadata,
 } from "@/features/programmes";
 import { listProjectsForProgramme, ProjectCards } from "@/features/projects";
-import { pageMetadata, staticParams } from "@/lib/metadata";
+import { staticParams } from "@/lib/metadata";
 
 /**
  * Generic page for a programme added in the CMS. The four founding
@@ -39,13 +41,7 @@ export async function generateMetadata({
   params,
 }: PageProps<"/our-work/[slug]">): Promise<Metadata> {
   const programme = await loadProgramme((await params).slug);
-  return pageMetadata({
-    title: programme.title,
-    description: programme.summary,
-    path: programme.href,
-    image: programme.image,
-    noindex: programme.status === "placeholder",
-  });
+  return programmeMetadata(programme);
 }
 
 export default async function ProgrammePage({ params }: PageProps<"/our-work/[slug]">) {
@@ -69,6 +65,8 @@ export default async function ProgrammePage({ params }: PageProps<"/our-work/[sl
         lead={<p>{programme.intro}</p>}
         image={programme.image}
       />
+
+      <ProgrammeDetails programme={programme} />
 
       <Section aria-labelledby="programme-projects-title">
         <Reveal>

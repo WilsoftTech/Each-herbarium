@@ -10,18 +10,13 @@ import { Notice } from "@/components/ui/notice";
 import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { herbariumProgramme } from "@/content/programmes";
 import { referenceSpecimens } from "@/content/specimens";
-import { pageMetadata } from "@/lib/metadata";
 import { cn } from "@/lib/utils";
+import { loadManagedPage, metadataForPage } from "@/features/pages";
 
-export const metadata = pageMetadata({
-  title: "The herbarium",
-  description:
-    "What a herbarium is, how a plant specimen is prepared, and why herbaria matter for East Africa's plants. EACH's collection status will be published once confirmed.",
-  path: "/herbarium",
-  image: herbariumProgramme.image,
-});
+export async function generateMetadata() {
+  return metadataForPage("herbarium");
+}
 
 // Standard herbarium practice, described in general terms.
 const process = [
@@ -59,19 +54,15 @@ const uses = [
   "Preserve a record of plant names and knowledge for the future",
 ] as const;
 
-export default function HerbariumPage() {
+export default async function HerbariumPage() {
+  const page = await loadManagedPage("herbarium");
   return (
     <>
       <PageHeader
         breadcrumbs={<Breadcrumbs current={{ label: "The herbarium", href: "/herbarium" }} />}
-        eyebrow="Herbarium & Research"
-        title="A library of preserved plants"
-        lead={
-          <p>
-            {herbariumProgramme.intro} Together, specimens form a lasting scientific record of a
-            region&apos;s plants.
-          </p>
-        }
+        eyebrow={page.eyebrow}
+        title={page.title}
+        lead={<p>{page.lead}</p>}
         aside={
           <Notice title="No online specimen catalogue yet">
             <p>

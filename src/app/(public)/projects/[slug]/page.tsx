@@ -17,11 +17,11 @@ export async function generateMetadata({
   if (!project) notFound();
 
   return pageMetadata({
-    title: project.title,
-    description: project.summary,
+    title: project.seoTitle ?? project.title,
+    description: project.seoDescription ?? project.summary,
     path: `/projects/${project.slug}`,
     image: project.image,
-    noindex: project.status === "placeholder",
+    noindex: project.noindex || project.status === "placeholder",
   });
 }
 

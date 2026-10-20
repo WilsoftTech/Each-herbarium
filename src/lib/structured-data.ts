@@ -15,7 +15,11 @@ export function serializeJsonLd(data: JsonLdObject | readonly JsonLdObject[]): s
   return JSON.stringify(data).replace(/</g, "\\u003c");
 }
 
-export function organizationJsonLd(siteUrl: string): JsonLdObject {
+/** `description` is the CMS tagline (Settings, Branding); defaults to the code description. */
+export function organizationJsonLd(
+  siteUrl: string,
+  description: string = siteConfig.description,
+): JsonLdObject {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -23,7 +27,7 @@ export function organizationJsonLd(siteUrl: string): JsonLdObject {
     alternateName: siteConfig.shortName,
     url: `${siteUrl}/`,
     logo: `${siteUrl}/brand/each-logo.jpeg`,
-    description: siteConfig.description,
+    description,
   };
 }
 

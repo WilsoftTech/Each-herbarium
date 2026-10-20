@@ -6,19 +6,15 @@ import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Container } from "@/components/ui/container";
 import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
-import { media } from "@/config/media";
 import { listProjects, ProjectLocation } from "@/features/projects";
-import { pageMetadata } from "@/lib/metadata";
+import { loadManagedPage, metadataForPage } from "@/features/pages";
 
-export const metadata = pageMetadata({
-  title: "Projects",
-  description:
-    "Case studies of EACH's conservation projects across East Africa. The first projects are being prepared.",
-  path: "/projects",
-  image: media.kidepoEuphorbia,
-});
+export async function generateMetadata() {
+  return metadataForPage("projects");
+}
 
 export default async function ProjectsPage() {
+  const page = await loadManagedPage("projects");
   const projects = await listProjects();
   const showsPlaceholders = projects.some((project) => project.status === "placeholder");
 
@@ -26,12 +22,11 @@ export default async function ProjectsPage() {
     <>
       <PageHeader
         breadcrumbs={<Breadcrumbs current={{ label: "Projects", href: "/projects" }} />}
-        eyebrow="Projects & Impact"
-        title="Conservation projects"
+        eyebrow={page.eyebrow}
+        title={page.title}
         lead={
           <p>
-            Each project will be told as a case study: the landscape, the plants, the people
-            involved and what changed.
+            {page.lead}
             {showsPlaceholders
               ? " The case studies below are placeholders that show the format; they do not describe EACH projects."
               : null}

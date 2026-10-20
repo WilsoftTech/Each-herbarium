@@ -173,6 +173,9 @@ model MediaAsset {
   articleFiles    Article[]        @relation("ArticleDocument")
   resourceFiles   Resource[]       @relation("ResourceDocument")
   teamPhotos      TeamMember[]     @relation("TeamPhoto")
+  pageImages      Page[]           @relation("PageHeroImage")
+  partnerLogos    Partner[]        @relation("PartnerLogo")
+  settingsImages  SiteSettings[]   @relation("SettingsSocialImage")
 
   @@index([kind, status, createdAt])
   @@index([status, createdAt])
@@ -180,21 +183,42 @@ model MediaAsset {
 }
 
 /// Single row (id = 1): organisation-wide details editable by administrators.
+/// The organisation's name and logo are protected brand assets kept in code
+/// (AGENTS.md section 4); only the wording around them is managed here.
 model SiteSettings {
-  id            Int      @id @default(1)
-  contactEmail  String?  @map("contact_email")
-  phone         String?
-  postalAddress String?  @map("postal_address")
-  officeHours   String?  @map("office_hours")
+  id              Int         @id @default(1)
+  contactEmail    String?     @map("contact_email")
+  phone           String?
+  postalAddress   String?     @map("postal_address")
+  /// Where EACH works, in words; shown with the contact details.
+  locationText    String?     @map("location_text")
+  officeHours     String?     @map("office_hours")
   /// [{ label, url }]
-  socialLinks   Json     @default("[]") @map("social_links")
-  updatedById   String?  @map("updated_by_id")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  socialLinks     Json        @default("[]") @map("social_links")
+  /// One sentence describing EACH: footer, structured data, default description.
+  tagline         String      @default("Plant conservation, herbarium development and botanical knowledge for East Africa, beginning in Uganda.")
+  /// Closing line of the footer.
+  footerStatement String      @default("Preserving East Africa's Plant Heritage.") @map("footer_statement")
+  /// Small print under the footer links.
+  footerNote      String      @default("Photography is credited alongside each image. Some content is awaiting approval and is marked on the page.") @map("footer_note")
+  /// Optional copyright line; empty hides it.
+  copyrightText   String      @default("") @map("copyright_text")
+  /// Default sharing image for pages without their own.
+  socialImageId   String?     @map("social_image_id")
+  socialImage     MediaAsset? @relation("SettingsSocialImage", fields: [socialImageId], references: [id], onDelete: Restrict)
+  /// Label, description, order and visibility overrides for the approved
+  /// navigation (src/config/navigation.ts). Destinations are not editable.
+  navigation      Json        @default("{}")
+  updatedById     String?     @map("updated_by_id")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
 
   @@map("site_settings")
 }
 
-/// Prose pages managed in the CMS (privacy, terms, accessibility).
+/// Fixed-route public pages managed in the CMS. The slug selects an entry in
+/// the page registry (src/features/pages/registry.ts), which decides the route,
+/// the layout and which fields apply: prose pages use `body`, the homepage
+/// uses `content`, landing pages use the header fields only.
 model Page {
   id          String        @id @default(cuid())
   slug        String        @unique @db.VarChar(120)
@@ -208,6 +232,13 @@ model Page {
   /// Rich text: "## " headings, "- " list items, blank-line paragraphs,
   /// [text](/path) links. Rendered by src/lib/rich-text.ts, never as HTML.
   body        String        @default("")
+  heroImageId String?       @map("hero_image_id")
+  heroImage   MediaAsset?   @relation("PageHeroImage", fields: [heroImageId], references: [id], onDelete: Restrict)
+  /// Typed section content validated by the page registry (homepage).
+  content     Json          @default("{}")
+  /// Search title, when it should differ from the page title.
+  seoTitle    String?       @map("seo_title")
+  noindex     Boolean       @default(false)
   publishedAt DateTime?     @map("published_at")
   createdById String?       @map("created_by_id")
   updatedById String?       @map("updated_by_id")
@@ -219,54 +250,78 @@ model Page {
 }
 
 model Programme {
-  id          String             @id @default(cuid())
-  slug        String             @unique @db.VarChar(120)
-  status      ContentStatus      @default(DRAFT)
-  placeholder Boolean            @default(false)
-  version     Int                @default(1)
-  sortOrder   Int                @default(0) @map("sort_order")
-  title       String
-  summary     String
-  intro       String
-  imageId     String             @map("image_id")
-  image       MediaAsset         @relation("ProgrammeImage", fields: [imageId], references: [id], onDelete: Restrict)
-  projects    ProjectProgramme[]
-  publishedAt DateTime?          @map("published_at")
-  createdById String?            @map("created_by_id")
-  updatedById String?            @map("updated_by_id")
-  createdAt   DateTime           @default(now()) @map("created_at")
-  updatedAt   DateTime           @updatedAt @map("updated_at")
+  id             String             @id @default(cuid())
+  slug           String             @unique @db.VarChar(120)
+  status         ContentStatus      @default(DRAFT)
+  placeholder    Boolean            @default(false)
+  version        Int                @default(1)
+  sortOrder      Int                @default(0) @map("sort_order")
+  title          String
+  summary        String
+  intro          String
+  /// Grouping label, e.g. "Conservation" or "Knowledge".
+  category       String             @default("")
+  objectives     String[]           @default([])
+  /// Rich text (src/lib/rich-text.ts).
+  body           String             @default("")
+  featured       Boolean            @default(false)
+  seoTitle       String?            @map("seo_title")
+  seoDescription String?            @map("seo_description")
+  noindex        Boolean            @default(false)
+  imageId        String             @map("image_id")
+  image          MediaAsset         @relation("ProgrammeImage", fields: [imageId], references: [id], onDelete: Restrict)
+  projects       ProjectProgramme[]
+  publishedAt    DateTime?          @map("published_at")
+  createdById    String?            @map("created_by_id")
+  updatedById    String?            @map("updated_by_id")
+  createdAt      DateTime           @default(now()) @map("created_at")
+  updatedAt      DateTime           @updatedAt @map("updated_at")
 
   @@index([status, sortOrder])
   @@map("programmes")
 }
 
 model Project {
-  id          String             @id @default(cuid())
-  slug        String             @unique @db.VarChar(120)
-  status      ContentStatus      @default(DRAFT)
-  placeholder Boolean            @default(false)
-  version     Int                @default(1)
-  sortOrder   Int                @default(0) @map("sort_order")
-  title       String
-  summary     String
-  ecosystem   String
-  location    String?
-  period      String?
-  imageId     String             @map("image_id")
-  image       MediaAsset         @relation("ProjectImage", fields: [imageId], references: [id], onDelete: Restrict)
+  id                String             @id @default(cuid())
+  slug              String             @unique @db.VarChar(120)
+  status            ContentStatus      @default(DRAFT)
+  placeholder       Boolean            @default(false)
+  version           Int                @default(1)
+  sortOrder         Int                @default(0) @map("sort_order")
+  title             String
+  summary           String
+  ecosystem         String
+  location          String?
+  country           String?
+  period            String?
+  startDate         DateTime?          @map("start_date") @db.Date
+  endDate           DateTime?          @map("end_date") @db.Date
+  /// Operational status, separate from the editorial `status`; null until confirmed.
+  operationalStatus ProjectStatus?     @map("operational_status")
+  objectives        String[]           @default([])
+  activities        String[]           @default([])
+  /// Only outcomes EACH can evidence.
+  outcomes          String[]           @default([])
+  /// Sources, one per entry; [text](https://...) links allowed.
+  references        String[]           @default([])
+  featured          Boolean            @default(false)
+  seoTitle          String?            @map("seo_title")
+  seoDescription    String?            @map("seo_description")
+  noindex           Boolean            @default(false)
+  imageId           String             @map("image_id")
+  image             MediaAsset         @relation("ProjectImage", fields: [imageId], references: [id], onDelete: Restrict)
   /// { heading, body: string[] }
-  landscape   Json
+  landscape         Json
   /// [{ heading, body: string[] }]
-  story       Json               @default("[]")
-  programmes  ProjectProgramme[]
-  partners    ProjectPartner[]
-  gallery     ProjectGallery[]
-  publishedAt DateTime?          @map("published_at")
-  createdById String?            @map("created_by_id")
-  updatedById String?            @map("updated_by_id")
-  createdAt   DateTime           @default(now()) @map("created_at")
-  updatedAt   DateTime           @updatedAt @map("updated_at")
+  story             Json               @default("[]")
+  programmes        ProjectProgramme[]
+  partners          ProjectPartner[]
+  gallery           ProjectGallery[]
+  publishedAt       DateTime?          @map("published_at")
+  createdById       String?            @map("created_by_id")
+  updatedById       String?            @map("updated_by_id")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
 
   @@index([status, sortOrder])
   @@map("projects")
@@ -307,6 +362,15 @@ model ProjectGallery {
   @@map("project_gallery")
 }
 
+enum ProjectStatus {
+  PLANNED
+  ACTIVE
+  COMPLETED
+  ON_HOLD
+
+  @@map("project_status")
+}
+
 enum ArticleType {
   PUBLICATION
   GUIDE
@@ -317,29 +381,35 @@ enum ArticleType {
 
 /// Written content read on the site: publications, guides and stories (/resources/[slug]).
 model Article {
-  id          String        @id @default(cuid())
-  slug        String        @unique @db.VarChar(120)
-  status      ContentStatus @default(DRAFT)
-  placeholder Boolean       @default(false)
-  version     Int           @default(1)
-  type        ArticleType
-  title       String
-  summary     String
+  id             String        @id @default(cuid())
+  slug           String        @unique @db.VarChar(120)
+  status         ContentStatus @default(DRAFT)
+  placeholder    Boolean       @default(false)
+  version        Int           @default(1)
+  type           ArticleType
+  title          String
+  summary        String
   /// Publication date shown to readers (date only); null until confirmed.
-  publishedOn DateTime?     @map("published_on") @db.Date
-  authors     String[]      @default([])
+  publishedOn    DateTime?     @map("published_on") @db.Date
+  authors        String[]      @default([])
   /// Paragraphs.
-  body        String[]      @default([])
-  imageId     String?       @map("image_id")
-  image       MediaAsset?   @relation("ArticleImage", fields: [imageId], references: [id], onDelete: Restrict)
+  body           String[]      @default([])
+  imageId        String?       @map("image_id")
+  image          MediaAsset?   @relation("ArticleImage", fields: [imageId], references: [id], onDelete: Restrict)
   /// Optional downloadable file (for example the full publication as PDF).
-  documentId  String?       @map("document_id")
-  document    MediaAsset?   @relation("ArticleDocument", fields: [documentId], references: [id], onDelete: Restrict)
-  publishedAt DateTime?     @map("published_at")
-  createdById String?       @map("created_by_id")
-  updatedById String?       @map("updated_by_id")
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @updatedAt @map("updated_at")
+  documentId     String?       @map("document_id")
+  document       MediaAsset?   @relation("ArticleDocument", fields: [documentId], references: [id], onDelete: Restrict)
+  /// Scientific or source references, one per entry.
+  references     String[]      @default([])
+  featured       Boolean       @default(false)
+  seoTitle       String?       @map("seo_title")
+  seoDescription String?       @map("seo_description")
+  noindex        Boolean       @default(false)
+  publishedAt    DateTime?     @map("published_at")
+  createdById    String?       @map("created_by_id")
+  updatedById    String?       @map("updated_by_id")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
 
   @@index([status, publishedOn])
   @@map("articles")
@@ -381,6 +451,11 @@ model Partner {
   /// Partner page on this site, e.g. "/bitwiire-herbarium-cafe".
   href         String?
   websiteUrl   String?          @map("website_url")
+  /// For example "Research" or "Community"; shown as a label.
+  category     String           @default("")
+  /// The partner's approved logo, uploaded as supplied by the partner.
+  logoId       String?          @map("logo_id")
+  logo         MediaAsset?      @relation("PartnerLogo", fields: [logoId], references: [id], onDelete: Restrict)
   projects     ProjectPartner[]
   publishedAt  DateTime?        @map("published_at")
   createdById  String?          @map("created_by_id")

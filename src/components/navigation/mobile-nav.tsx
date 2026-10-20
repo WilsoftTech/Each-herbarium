@@ -35,7 +35,7 @@ import { cn } from "@/lib/utils";
 const DIALOG_ID = "mobile-menu";
 const DESKTOP_QUERY = "(min-width: 80rem)";
 const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
-const items: readonly NavItem[] = primaryNavigation;
+const defaultItems: readonly NavItem[] = primaryNavigation;
 
 const subscribeNothing = () => () => {};
 
@@ -49,14 +49,18 @@ const rise: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE_CINEMATIC } },
 };
 
-type MobileNavProps = { pathname: string };
+type MobileNavProps = {
+  pathname: string;
+  /** The navigation with CMS overrides applied; defaults to the approved navigation. */
+  items?: readonly NavItem[];
+};
 
 /**
  * Full-screen navigation below the desktop breakpoint. A modal dialog: focus is
  * trapped, the rest of the page is inert and does not scroll, Escape closes,
  * and focus returns to the Menu button.
  */
-export function MobileNav({ pathname }: MobileNavProps) {
+export function MobileNav({ pathname, items = defaultItems }: MobileNavProps) {
   const reduced = useReducedMotion() ?? false;
   const isClient = useSyncExternalStore(
     subscribeNothing,

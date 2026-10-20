@@ -2,7 +2,7 @@ import { ActionForm } from "@/components/admin/action-form";
 import { AdminPanel } from "@/components/admin/admin-ui";
 import { CheckboxField, SelectField, TextField } from "@/components/admin/form-fields";
 import { SubmitButton } from "@/components/admin/submit-button";
-import { EditorTarget } from "@/features/cms";
+import { EditorTarget, formData, SeoFields } from "@/features/cms";
 import type { MediaOption } from "@/features/media";
 import { saveProgramme } from "./actions";
 import type { ProgrammeForAdmin } from "./admin";
@@ -77,6 +77,41 @@ export function ProgrammeForm({ programme, revisionId, images, editable }: Progr
             hint="Shows the layout only; never presented as fact."
           />
         </AdminPanel>
+
+        <AdminPanel
+          title="Programme page"
+          description="Shown on the programme's page under /our-work. Leave empty until EACH approves the text."
+        >
+          <TextField
+            name="category"
+            label="Category"
+            maxLength={60}
+            defaultValue={programme?.category}
+            hint="For example: Conservation or Knowledge."
+          />
+          <TextField
+            name="objectives"
+            label="Objectives"
+            rows={5}
+            defaultValue={formData.joinLines(programme?.objectives ?? [])}
+            hint="One objective per line."
+          />
+          <TextField
+            name="body"
+            label="Detailed content"
+            rows={10}
+            defaultValue={programme?.body}
+            hint='Rich text: "## " starts a heading, "- " a list item, blank lines separate paragraphs.'
+          />
+          <CheckboxField
+            name="featured"
+            label="Featured"
+            defaultChecked={programme?.featured ?? false}
+            hint="Highlighted where the site lists programmes."
+          />
+        </AdminPanel>
+
+        <SeoFields value={programme} />
       </fieldset>
       {editable ? (
         <SubmitButton pendingLabel="Saving…">

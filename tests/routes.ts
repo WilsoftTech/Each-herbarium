@@ -1,32 +1,11 @@
 /**
- * The approved M03 public routes, shared by unit and browser tests. Dynamic
- * routes are listed with every slug the static content defines.
+ * The approved M03 public routes, shared by unit and browser tests (the CMS
+ * validates links against the same list). Dynamic routes are listed with every
+ * slug the seeded content defines.
  */
-export const staticRoutes = [
-  "/",
-  "/about",
-  "/about/mission",
-  "/about/leadership",
-  "/about/partners",
-  "/our-work",
-  "/our-work/plant-conservation",
-  "/our-work/environmental-conservation",
-  "/our-work/medicinal-plants",
-  "/our-work/indigenous-knowledge",
-  "/herbarium",
-  "/research",
-  "/resources",
-  "/projects",
-  "/impact",
-  "/get-involved",
-  "/volunteer",
-  "/partnerships",
-  "/bitwiire-herbarium-cafe",
-  "/contact",
-  "/privacy",
-  "/terms",
-  "/accessibility",
-] as const;
+import { staticRoutes } from "../src/config/routes";
+
+export { staticRoutes };
 
 export const dynamicRoutes = [
   "/projects/placeholder-montane-forest",

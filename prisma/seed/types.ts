@@ -12,6 +12,8 @@ export type SeedProgramme = {
   summary: string;
   intro: string;
   image: MediaAsset;
+  /** Search description of a designed programme page. */
+  seoDescription?: string;
 };
 
 export type SeedProject = {
@@ -60,4 +62,8 @@ export type SeedPage = {
   eyebrow: string;
   lead: string;
   body: string;
+  /** Browser and search title, when it differs from the headline. */
+  seoTitle?: string | null;
+  /** Header photograph, or the sharing image (see the page registry). */
+  heroImage?: MediaAsset | null;
 };

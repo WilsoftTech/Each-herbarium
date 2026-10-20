@@ -3,16 +3,20 @@ import Link from "next/link";
 import {
   AdminPageHeader,
   AdminPanel,
+  AdminStat,
   EmptyState,
   formatAdminDate,
 } from "@/components/admin/admin-ui";
+import { Button } from "@/components/ui/button";
 import {
   contentStatuses,
   listAwaitingReview,
   listRecentAudit,
   statusLabel,
   summariseContent,
+  summariseOperations,
 } from "@/features/cms";
+import { findPageId } from "@/features/pages";
 import { requireAdmin } from "@/services/admin-auth";
 import { can, roleLabel } from "@/services/permissions";
 
@@ -21,12 +25,34 @@ export const metadata: Metadata = { title: "Dashboard" };
 export default async function AdminDashboardPage() {
   const session = await requireAdmin();
   const showAudit = can(session.role, "audit:view");
-  const [summary, awaiting, recent] = await Promise.all([
+  const [summary, awaiting, recent, operations, homeId] = await Promise.all([
     summariseContent(),
     listAwaitingReview(),
     showAudit ? listRecentAudit(8) : Promise.resolve([]),
+    summariseOperations(),
+    findPageId("home"),
   ]);
   const canReview = can(session.role, "content:publish");
+  const { attention } = operations;
+  const attentionItems = [
+    {
+      count: attention.placeholders,
+      text: "published placeholders: labelled on the site and never indexed; replace them with approved content",
+    },
+    { count: attention.staleDrafts, text: "drafts unchanged for more than 30 days" },
+    {
+      count: attention.stuckUploads,
+      text: "uploads that never finished (run npm run media:cleanup)",
+    },
+  ].filter((item) => item.count > 0);
+  const quickActions = [
+    homeId ? { label: "Edit the homepage", href: `/admin/pages/${homeId}` } : null,
+    { label: "New project", href: "/admin/projects/new" },
+    { label: "New article", href: "/admin/articles/new" },
+    { label: "New programme", href: "/admin/programmes/new" },
+    { label: "Upload media", href: "/admin/media/upload" },
+    { label: "Review queue", href: "/admin/reviews" },
+  ].filter((action): action is { label: string; href: string } => Boolean(action));
 
   return (
     <>
@@ -34,6 +60,69 @@ export default async function AdminDashboardPage() {
         title="Dashboard"
         description={`Signed in as ${session.name} (${roleLabel[session.role]}).`}
       />
+
+      <section aria-label="Figures" className="mb-6">
+        <ul className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <li>
+            <AdminStat
+              label="Published pages"
+              value={operations.published.pages}
+              href="/admin/pages"
+            />
+          </li>
+          <li>
+            <AdminStat
+              label="Published projects"
+              value={operations.published.projects}
+              href="/admin/projects?status=PUBLISHED"
+            />
+          </li>
+          <li>
+            <AdminStat
+              label="Published articles"
+              value={operations.published.articles}
+              href="/admin/articles?status=PUBLISHED"
+            />
+          </li>
+          <li>
+            <AdminStat
+              label="Published programmes"
+              value={operations.published.programmes}
+              href="/admin/programmes?status=PUBLISHED"
+            />
+          </li>
+          <li>
+            <AdminStat label="Drafts" value={operations.drafts} />
+          </li>
+          <li>
+            <AdminStat
+              label="Waiting for review"
+              value={operations.awaitingReview}
+              href="/admin/reviews"
+            />
+          </li>
+          <li>
+            <AdminStat
+              label="Published items with pending changes"
+              value={operations.pendingChanges}
+              href="/admin/reviews"
+            />
+          </li>
+          <li>
+            <AdminStat label="Media files" value={operations.media} href="/admin/media" />
+          </li>
+        </ul>
+      </section>
+
+      <AdminPanel title="Quick actions" className="mb-6">
+        <div className="flex flex-wrap gap-3">
+          {quickActions.map((action) => (
+            <Button key={action.href} asChild variant="outline" size="sm">
+              <Link href={action.href}>{action.label}</Link>
+            </Button>
+          ))}
+        </div>
+      </AdminPanel>
 
       <div className="grid gap-6 xl:grid-cols-3">
         <AdminPanel
@@ -55,7 +144,9 @@ export default async function AdminDashboardPage() {
                     {item.title}
                   </Link>
                   <span className="text-sm text-muted-foreground">
-                    {item.collection} · {formatAdminDate(item.updatedAt)}
+                    {item.revision ? "Changes to a published " : ""}
+                    {item.revision ? item.collection.toLowerCase() : item.collection} ·{" "}
+                    {formatAdminDate(item.updatedAt)}
                   </span>
                 </li>
               ))}
@@ -90,6 +181,20 @@ export default async function AdminDashboardPage() {
           </AdminPanel>
         ) : null}
       </div>
+
+      <AdminPanel title="Needs attention" className="mt-6">
+        {attentionItems.length ? (
+          <ul className="list-disc space-y-1 pl-5 text-sm">
+            {attentionItems.map((item) => (
+              <li key={item.text}>
+                <strong className="tabular-nums">{item.count}</strong> {item.text}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <EmptyState>Nothing needs attention.</EmptyState>
+        )}
+      </AdminPanel>
 
       <AdminPanel title="Content" className="mt-6">
         <div className="overflow-x-auto">

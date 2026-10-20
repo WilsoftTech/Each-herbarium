@@ -14,7 +14,7 @@ export default async function AdminPagesPage() {
     <>
       <AdminPageHeader
         title="Pages"
-        description="Policy pages whose text is managed here. Each belongs to a fixed address, so pages are edited, not created."
+        description="The homepage and every fixed page of the website. Each belongs to an address and a design in code, so pages are edited here, not created: the homepage sections, page headers, policy text, images and search settings."
       />
       <ContentTable rows={pages} basePath="/admin/pages" caption="Pages" />
     </>

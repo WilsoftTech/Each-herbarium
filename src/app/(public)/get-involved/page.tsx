@@ -6,30 +6,22 @@ import { Container } from "@/components/ui/container";
 import { Notice } from "@/components/ui/notice";
 import { Section } from "@/components/ui/section";
 import { media } from "@/config/media";
-import { pageMetadata } from "@/lib/metadata";
+import { loadManagedPage, metadataForPage } from "@/features/pages";
 
-export const metadata = pageMetadata({
-  title: "Get involved",
-  description:
-    "Volunteer, partner or get in touch to help protect East Africa's plant heritage with EACH.",
-  path: "/get-involved",
-  image: media.semulikiVegetation,
-});
+export async function generateMetadata() {
+  return metadataForPage("get-involved");
+}
 
-export default function GetInvolvedPage() {
+export default async function GetInvolvedPage() {
+  const page = await loadManagedPage("get-involved");
   return (
     <>
       <PageHeader
         surface="dark"
         breadcrumbs={<Breadcrumbs current={{ label: "Get involved", href: "/get-involved" }} />}
-        eyebrow="Get involved"
-        title="Help protect East Africa's plant heritage"
-        lead={
-          <p>
-            Conservation needs many hands and many kinds of knowledge. Find the way of taking part
-            that suits you.
-          </p>
-        }
+        eyebrow={page.eyebrow}
+        title={page.title}
+        lead={<p>{page.lead}</p>}
         aside={
           <Notice title="Online forms are not available yet">
             <p>Sign-up and enquiry forms will be added soon. Each page explains what to expect.</p>

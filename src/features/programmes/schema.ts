@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { contentStatusSchema, mediaAssetSchema, slugSchema } from "@/validation/content";
+import { contentStatusSchema, mediaAssetSchema, seoSchema, slugSchema } from "@/validation/content";
 
 /** A programme as public pages see it (published rows only). */
 export const programmeSchema = z.object({
@@ -15,6 +15,13 @@ export const programmeSchema = z.object({
   /** Opening paragraph of the programme page. */
   intro: z.string().min(1),
   image: mediaAssetSchema,
+  /** Grouping label, e.g. "Conservation"; empty when not set. */
+  category: z.string(),
+  objectives: z.array(z.string().min(1)),
+  /** Rich text (src/lib/rich-text.ts); empty when not written yet. */
+  body: z.string(),
+  featured: z.boolean(),
+  ...seoSchema.shape,
 });
 
 export type Programme = z.infer<typeof programmeSchema>;

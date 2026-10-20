@@ -2,6 +2,7 @@ import "server-only";
 import { z } from "zod";
 import {
   formData,
+  readSeoFields,
   pageCount,
   pageWindow,
   type ListParams,
@@ -10,7 +11,7 @@ import {
 import { mediaSelect, toDocumentAsset } from "@/features/media";
 import type { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/services/db";
-import { slugSchema } from "@/validation/content";
+import { seoInputSchema, slugSchema } from "@/validation/content";
 import { articleInclude, toResource } from "../queries";
 
 type Db = PrismaClient | Prisma.TransactionClient;
@@ -30,12 +31,17 @@ export const articleInputSchema = z.object({
   imageId: z.string().nullable(),
   documentId: z.string().nullable(),
   placeholder: z.boolean(),
+  references: z.array(z.string().min(1).max(600)).max(50, "List at most 50 references."),
+  featured: z.boolean(),
+  ...seoInputSchema.shape,
 });
 
 export type ArticleInput = z.infer<typeof articleInputSchema>;
 
 export function readArticleForm(form: FormData) {
-  const { text, optionalText, checkbox, paragraphs, lines } = formData;
+  const { text, optionalText, checkbox, blocks, lines } = formData;
+  // Keep line structure inside blocks: lists keep one item per line.
+  const body = typeof form.get("body") === "string" ? String(form.get("body")) : "";
   return {
     type: text(form, "type"),
     title: text(form, "title"),
@@ -43,10 +49,13 @@ export function readArticleForm(form: FormData) {
     summary: text(form, "summary"),
     publishedOn: optionalText(form, "publishedOn"),
     authors: lines(text(form, "authors")),
-    body: paragraphs(text(form, "body")),
+    body: blocks(body),
     imageId: optionalText(form, "imageId"),
     documentId: optionalText(form, "documentId"),
     placeholder: checkbox(form, "placeholder"),
+    references: lines(text(form, "references")),
+    featured: checkbox(form, "featured"),
+    ...readSeoFields(form),
   };
 }
 

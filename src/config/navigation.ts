@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { media, type MediaAsset } from "./media";
 
 /**
@@ -270,4 +271,105 @@ export function isActiveSection(item: NavItem, pathname: string): boolean {
 /** Element id of the mega menu panel controlled by an item's trigger. */
 export function megaMenuPanelId(item: Pick<NavItem, "id">): string {
   return `mega-menu-${item.id}`;
+}
+
+// ---------------------------------------------------------------------------
+// CMS overrides (Settings → Navigation)
+// ---------------------------------------------------------------------------
+
+const label = z.string().trim().min(1).max(40);
+const order = z.number().int().min(1).max(50);
+
+/**
+ * Wording, order and visibility changes made in the CMS. Destinations are
+ * never stored: overrides are keyed by an item's `id` or a link's `href` in
+ * the approved navigation above, so a menu can only point at real routes.
+ */
+export const navigationOverridesSchema = z.object({
+  items: z
+    .record(
+      z.string(),
+      z.object({
+        label: label.optional(),
+        summary: z.string().trim().min(1).max(300).optional(),
+        order: order.optional(),
+      }),
+    )
+    .default({}),
+  links: z
+    .record(
+      z.string(),
+      z.object({
+        label: label.optional(),
+        description: z.string().trim().min(1).max(160).optional(),
+        order: order.optional(),
+        hidden: z.boolean().optional(),
+      }),
+    )
+    .default({}),
+});
+
+export type NavigationOverrides = z.infer<typeof navigationOverridesSchema>;
+
+export const noNavigationOverrides: NavigationOverrides = { items: {}, links: {} };
+
+/** Every link that appears in a menu group, with the item it belongs to. */
+export function navigationLinks(
+  items: readonly NavItem[] = primaryNavigation,
+): { item: NavItem; group: NavGroup; link: NavLink }[] {
+  return items.flatMap((item) =>
+    (item.groups ?? []).flatMap((group) => group.links.map((link) => ({ item, group, link }))),
+  );
+}
+
+/**
+ * The navigation with CMS overrides applied: labels, summaries and
+ * descriptions replaced, items and links reordered, hidden links removed.
+ * Groups left without links are dropped; an item left without groups becomes
+ * a plain link. Overrides for unknown ids or links are ignored.
+ */
+export function applyNavigation(
+  base: readonly NavItem[],
+  overrides: NavigationOverrides,
+): NavItem[] {
+  const byOrder = <T>(entries: { value: T; order: number; index: number }[]) =>
+    entries.sort((a, b) => a.order - b.order || a.index - b.index).map((entry) => entry.value);
+
+  const items = base.map((item, index) => {
+    const override = overrides.items[item.id] ?? {};
+    const groups = (item.groups ?? [])
+      .map((group) => ({
+        ...group,
+        links: byOrder(
+          group.links
+            .map((link, linkIndex) => ({
+              link,
+              override: overrides.links[link.href] ?? {},
+              linkIndex,
+            }))
+            .filter(({ override: linkOverride }) => !linkOverride.hidden)
+            .map(({ link, override: linkOverride, linkIndex }) => ({
+              value: {
+                ...link,
+                label: linkOverride.label ?? link.label,
+                description: linkOverride.description ?? link.description,
+              },
+              order: linkOverride.order ?? linkIndex + 1,
+              index: linkIndex,
+            })),
+        ),
+      }))
+      .filter((group) => group.links.length);
+    const next: NavItem = {
+      ...item,
+      label: override.label ?? item.label,
+      summary: override.summary ?? item.summary,
+    };
+    if (item.groups) {
+      if (groups.length) next.groups = groups;
+      else delete next.groups;
+    }
+    return { value: next, order: override.order ?? index + 1, index };
+  });
+  return byOrder(items);
 }

@@ -7,16 +7,12 @@ import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { listTeamMembers, teamGroupLabel, teamGroupSchema, TeamList } from "@/features/team";
-import { pageMetadata } from "@/lib/metadata";
+import { loadManagedPage, metadataForPage } from "@/features/pages";
 
 // Indexed only once real, consented profiles are published.
 export async function generateMetadata() {
   const members = await listTeamMembers();
-  return pageMetadata({
-    title: "Leadership",
-    description:
-      "The people who lead and govern EACH. Profiles are published once confirmed, with each person's consent.",
-    path: "/about/leadership",
+  return metadataForPage("about-leadership", {
     noindex: !members.some((member) => member.status === "published"),
   });
 }
@@ -29,6 +25,7 @@ const willInclude = [
 ] as const;
 
 export default async function LeadershipPage() {
+  const page = await loadManagedPage("about-leadership");
   const trail = [{ label: "About EACH", href: "/about" }];
   const members = await listTeamMembers();
   const groups = teamGroupSchema.options
@@ -41,14 +38,9 @@ export default async function LeadershipPage() {
         breadcrumbs={
           <Breadcrumbs trail={trail} current={{ label: "Leadership", href: "/about/leadership" }} />
         }
-        eyebrow="Leadership"
-        title="The people behind EACH"
-        lead={
-          <p>
-            Profiles of EACH&apos;s leadership will be published here once they are confirmed and
-            each person has agreed to appear.
-          </p>
-        }
+        eyebrow={page.eyebrow}
+        title={page.title}
+        lead={<p>{page.lead}</p>}
       />
 
       {groups.map(({ group, members: groupMembers }) => (

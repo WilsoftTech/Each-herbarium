@@ -7,10 +7,20 @@ import {
   TextField,
 } from "@/components/admin/form-fields";
 import { SubmitButton } from "@/components/admin/submit-button";
-import { EditorTarget, formData, statusLabel } from "@/features/cms";
+import { EditorTarget, formData, SeoFields, statusLabel } from "@/features/cms";
 import type { MediaOption } from "@/features/media";
 import { saveProject } from "./actions";
 import type { ProjectForAdmin } from "./queries";
+
+const dateValue = (date: Date | null | undefined) => (date ? date.toISOString().slice(0, 10) : "");
+
+const operationalOptions = [
+  { value: "", label: "Not confirmed" },
+  { value: "PLANNED", label: "Planned" },
+  { value: "ACTIVE", label: "Under way" },
+  { value: "COMPLETED", label: "Completed" },
+  { value: "ON_HOLD", label: "On hold" },
+];
 
 type ProjectFormProps = {
   project?: ProjectForAdmin;
@@ -101,11 +111,49 @@ export function ProjectForm({
             />
           </div>
           <CheckboxField
+            name="featured"
+            label="Featured on the homepage"
+            defaultChecked={project?.featured ?? false}
+            hint="Featured published projects appear in the homepage section; without any, the first three are shown."
+          />
+          <CheckboxField
             name="placeholder"
             label="Placeholder"
             defaultChecked={project?.placeholder ?? false}
             hint="Shows the layout only: labelled on the site, never indexed, never presented as fact."
           />
+        </AdminPanel>
+
+        <AdminPanel
+          title="Where and when"
+          description="Leave fields empty until EACH confirms them. The operational status describes the work, not whether this page is published."
+        >
+          <div className="grid gap-5 md:grid-cols-2">
+            <TextField
+              name="country"
+              label="Country"
+              maxLength={100}
+              defaultValue={project?.country}
+            />
+            <SelectField
+              name="operationalStatus"
+              label="Project status"
+              options={operationalOptions}
+              defaultValue={project?.operationalStatus ?? ""}
+            />
+            <TextField
+              name="startDate"
+              label="Start date"
+              type="date"
+              defaultValue={dateValue(project?.startDate)}
+            />
+            <TextField
+              name="endDate"
+              label="End date"
+              type="date"
+              defaultValue={dateValue(project?.endDate)}
+            />
+          </div>
         </AdminPanel>
 
         <AdminPanel title="Images" description="Upload images in the media library first.">
@@ -152,6 +200,37 @@ export function ProjectForm({
           />
         </AdminPanel>
 
+        <AdminPanel
+          title="Objectives, activities and outcomes"
+          description="One entry per line. Record only verified outcomes; never estimates or targets presented as results."
+        >
+          <TextField
+            name="objectives"
+            label="Objectives"
+            rows={4}
+            defaultValue={formData.joinLines(project?.objectives ?? [])}
+          />
+          <TextField
+            name="activities"
+            label="Activities"
+            rows={4}
+            defaultValue={formData.joinLines(project?.activities ?? [])}
+          />
+          <TextField
+            name="outcomes"
+            label="Verified outcomes"
+            rows={4}
+            defaultValue={formData.joinLines(project?.outcomes ?? [])}
+          />
+          <TextField
+            name="references"
+            label="References"
+            rows={4}
+            hint="One source per line. Links: [title](https://example.org/paper)."
+            defaultValue={formData.joinLines(project?.references ?? [])}
+          />
+        </AdminPanel>
+
         <AdminPanel title="Links">
           <CheckboxGroup
             name="programmeIds"
@@ -176,6 +255,8 @@ export function ProjectForm({
             defaultValues={project?.partners.map((item) => item.partnerId) ?? []}
           />
         </AdminPanel>
+
+        <SeoFields value={project} />
       </fieldset>
 
       {editable ? (

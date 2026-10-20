@@ -11,15 +11,14 @@ import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { media } from "@/config/media";
 import { getSiteSettings } from "@/features/settings";
-import { pageMetadata } from "@/lib/metadata";
+import { loadManagedPage, metadataForPage } from "@/features/pages";
 
-export const metadata = pageMetadata({
-  title: "Contact",
-  description: "How to contact EACH. Contact details will be published once confirmed.",
-  path: "/contact",
-});
+export async function generateMetadata() {
+  return metadataForPage("contact");
+}
 
 export default async function ContactPage() {
+  const page = await loadManagedPage("contact");
   const settings = await getSiteSettings();
   const pending = <PendingContent item="contactDetails" variant="badge" />;
   const complete = Boolean(
@@ -35,9 +34,9 @@ export default async function ContactPage() {
             current={{ label: "Contact", href: "/contact" }}
           />
         }
-        eyebrow="Contact"
-        title="Get in touch"
-        lead={<p>Questions, ideas and offers of help are all welcome.</p>}
+        eyebrow={page.eyebrow}
+        title={page.title}
+        lead={<p>{page.lead}</p>}
         aside={
           <Notice title="The contact form is not available yet">
             <p>An online contact form will be added soon.</p>
@@ -76,6 +75,9 @@ export default async function ContactPage() {
                       pending
                     ),
                   },
+                  ...(settings.locationText
+                    ? [{ term: "Location", value: settings.locationText }]
+                    : []),
                   { term: "Office hours", value: settings.officeHours ?? pending },
                 ]}
               />

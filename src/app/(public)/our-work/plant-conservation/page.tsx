@@ -11,9 +11,13 @@ import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { media } from "@/config/media";
-import { getProgramme, nextProgramme } from "@/features/programmes";
+import {
+  getProgramme,
+  nextProgramme,
+  ProgrammeDetails,
+  programmeMetadata,
+} from "@/features/programmes";
 import { listProjectsForProgramme, ProjectCards } from "@/features/projects";
-import { pageMetadata } from "@/lib/metadata";
 
 const slug = "plant-conservation";
 
@@ -25,14 +29,7 @@ async function loadProgramme() {
 }
 
 export async function generateMetadata() {
-  const programme = await loadProgramme();
-  return pageMetadata({
-    title: programme.title,
-    description:
-      "Why East Africa's native plants need protecting, and how plants are conserved in the wild, in collections and in herbaria.",
-    path: programme.href,
-    image: programme.image,
-  });
+  return programmeMetadata(await loadProgramme());
 }
 
 // How plant conservation works in general; not a description of EACH's activities.
@@ -125,6 +122,8 @@ export default async function PlantConservationPage() {
           </Container>
         </Reveal>
       </Section>
+
+      <ProgrammeDetails programme={programme} />
 
       <SequenceNav
         label="Next programme"

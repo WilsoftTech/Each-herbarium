@@ -154,3 +154,24 @@ export function EmptyState({ children }: { children: ReactNode }) {
     </p>
   );
 }
+
+/** One figure on the dashboard: a live count with a label and, optionally, where it leads. */
+export function AdminStat({ label, value, href }: { label: string; value: number; href?: string }) {
+  const content = (
+    <>
+      <span className="block font-display text-3xl font-semibold tabular-nums">{value}</span>
+      <span className="mt-1 block text-sm text-muted-foreground">{label}</span>
+    </>
+  );
+  return (
+    <div className="rounded-sm border border-border bg-card p-5">
+      {href ? (
+        <Link href={href} className="block rounded-sm underline-offset-4 hover:underline">
+          {content}
+        </Link>
+      ) : (
+        content
+      )}
+    </div>
+  );
+}

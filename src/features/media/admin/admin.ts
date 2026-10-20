@@ -114,41 +114,61 @@ export async function findMediaUsage(
   db: Db,
   id: string,
 ): Promise<{ label: string; href: string }[]> {
-  const [programmes, projects, gallery, articleImages, articleFiles, resources, team, pending] =
-    await Promise.all([
-      db.programme.findMany({
-        where: { imageId: id },
-        select: { id: true, title: true },
-        take: 50,
-      }),
-      db.project.findMany({ where: { imageId: id }, select: { id: true, title: true }, take: 50 }),
-      db.projectGallery.findMany({
-        where: { mediaId: id },
-        select: { project: { select: { id: true, title: true } } },
-        take: 50,
-      }),
-      db.article.findMany({ where: { imageId: id }, select: { id: true, title: true }, take: 50 }),
-      db.article.findMany({
-        where: { documentId: id },
-        select: { id: true, title: true },
-        take: 50,
-      }),
-      db.resource.findMany({
-        where: { documentId: id },
-        select: { id: true, title: true },
-        take: 50,
-      }),
-      db.teamMember.findMany({
-        where: { photoId: id },
-        select: { id: true, name: true },
-        take: 50,
-      }),
-      // Pending revisions hold references as JSON, outside foreign keys.
-      db.$queryRaw<{ collection: string; entity_id: string }[]>`
+  const [
+    programmes,
+    projects,
+    gallery,
+    articleImages,
+    articleFiles,
+    resources,
+    team,
+    pageImages,
+    partnerLogos,
+    settings,
+    pending,
+    pageSections,
+  ] = await Promise.all([
+    db.programme.findMany({
+      where: { imageId: id },
+      select: { id: true, title: true },
+      take: 50,
+    }),
+    db.project.findMany({ where: { imageId: id }, select: { id: true, title: true }, take: 50 }),
+    db.projectGallery.findMany({
+      where: { mediaId: id },
+      select: { project: { select: { id: true, title: true } } },
+      take: 50,
+    }),
+    db.article.findMany({ where: { imageId: id }, select: { id: true, title: true }, take: 50 }),
+    db.article.findMany({
+      where: { documentId: id },
+      select: { id: true, title: true },
+      take: 50,
+    }),
+    db.resource.findMany({
+      where: { documentId: id },
+      select: { id: true, title: true },
+      take: 50,
+    }),
+    db.teamMember.findMany({
+      where: { photoId: id },
+      select: { id: true, name: true },
+      take: 50,
+    }),
+    db.page.findMany({ where: { heroImageId: id }, select: { id: true, title: true }, take: 50 }),
+    db.partner.findMany({ where: { logoId: id }, select: { id: true, name: true }, take: 50 }),
+    db.siteSettings.count({ where: { socialImageId: id } }),
+    // Pending revisions and homepage sections hold references as JSON,
+    // outside foreign keys. Ids are generated (no LIKE wildcards in them).
+    db.$queryRaw<{ collection: string; entity_id: string }[]>`
         SELECT "collection", "entity_id" FROM "content_revisions"
         WHERE "data"::text LIKE ${`%"${id}"%`}
         LIMIT 50`,
-    ]);
+    db.$queryRaw<{ id: string; title: string }[]>`
+        SELECT "id", "title" FROM "pages"
+        WHERE "content"::text LIKE ${`%"${id}"%`}
+        LIMIT 50`,
+  ]);
   return [
     ...programmes.map((row) => ({
       label: `Programme: ${row.title}`,
@@ -175,6 +195,16 @@ export async function findMediaUsage(
       href: `/admin/resources/${row.id}`,
     })),
     ...team.map((row) => ({ label: `Team: ${row.name}`, href: `/admin/team/${row.id}` })),
+    ...pageImages.map((row) => ({ label: `Page: ${row.title}`, href: `/admin/pages/${row.id}` })),
+    ...pageSections.map((row) => ({
+      label: `Page sections: ${row.title}`,
+      href: `/admin/pages/${row.id}`,
+    })),
+    ...partnerLogos.map((row) => ({
+      label: `Partner logo: ${row.name}`,
+      href: `/admin/partners/${row.id}`,
+    })),
+    ...(settings ? [{ label: "Default sharing image", href: "/admin/settings/seo" }] : []),
     ...pending.map((row) => ({
       label: `Pending changes (${row.collection})`,
       href: `/admin/${row.collection}/${row.entity_id}`,

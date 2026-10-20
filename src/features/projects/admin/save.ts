@@ -24,6 +24,8 @@ async function checkReferences(db: Prisma.TransactionClient, input: ProjectInput
   if (Object.keys(errors).length) throw new ActionError("Check the highlighted fields.", errors);
 }
 
+const toDate = (value: string | null) => (value ? new Date(`${value}T00:00:00Z`) : null);
+
 function scalars(input: ProjectInput) {
   return {
     title: input.title,
@@ -37,6 +39,18 @@ function scalars(input: ProjectInput) {
     imageId: input.imageId,
     landscape: { heading: input.landscapeHeading, body: input.landscapeBody },
     story: input.story,
+    country: input.country,
+    startDate: toDate(input.startDate),
+    endDate: toDate(input.endDate),
+    operationalStatus: input.operationalStatus,
+    objectives: input.objectives,
+    activities: input.activities,
+    outcomes: input.outcomes,
+    references: input.references,
+    featured: input.featured,
+    seoTitle: input.seoTitle,
+    seoDescription: input.seoDescription,
+    noindex: input.noindex,
   };
 }
 

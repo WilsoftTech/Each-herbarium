@@ -8,19 +8,15 @@ import { ArrowRightIcon } from "@/components/ui/icons";
 import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { media } from "@/config/media";
 import { listPartners, PartnerList } from "@/features/partners";
-import { pageMetadata } from "@/lib/metadata";
+import { loadManagedPage, metadataForPage } from "@/features/pages";
 
-export const metadata = pageMetadata({
-  title: "Partners",
-  description:
-    "The organisations EACH works alongside, including its independent partner Bitwiire Herbarium Cafe.",
-  path: "/about/partners",
-  image: media.semulikiVegetation,
-});
+export async function generateMetadata() {
+  return metadataForPage("about-partners");
+}
 
 export default async function PartnersPage() {
+  const page = await loadManagedPage("about-partners");
   const partners = await listPartners();
   const trail = [{ label: "About EACH", href: "/about" }];
 
@@ -30,14 +26,9 @@ export default async function PartnersPage() {
         breadcrumbs={
           <Breadcrumbs trail={trail} current={{ label: "Partners", href: "/about/partners" }} />
         }
-        eyebrow="Partners"
-        title="Working alongside others"
-        lead={
-          <p>
-            Conservation depends on collaboration. Every organisation listed here is independent:
-            partnership never means that one organisation owns or runs another.
-          </p>
-        }
+        eyebrow={page.eyebrow}
+        title={page.title}
+        lead={<p>{page.lead}</p>}
       />
 
       <Section aria-labelledby="confirmed-title" className="pt-0">

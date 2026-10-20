@@ -9,15 +9,11 @@ import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { media } from "@/config/media";
-import { pageMetadata } from "@/lib/metadata";
+import { loadManagedPage, metadataForPage } from "@/features/pages";
 
-export const metadata = pageMetadata({
-  title: "Mission and values",
-  description:
-    "EACH's purpose: connecting plants, people, science and indigenous knowledge to protect East Africa's biodiversity for future generations.",
-  path: "/about/mission",
-  image: media.heroBwindiMist,
-});
+export async function generateMetadata() {
+  return metadataForPage("about-mission");
+}
 
 // Draft principles for EACH to confirm (pending: `values`).
 const principles = [
@@ -47,7 +43,8 @@ const principles = [
   },
 ] as const;
 
-export default function MissionPage() {
+export default async function MissionPage() {
+  const page = await loadManagedPage("about-mission");
   const trail = [{ label: "About EACH", href: "/about" }];
 
   return (
@@ -59,9 +56,9 @@ export default function MissionPage() {
             current={{ label: "Mission and values", href: "/about/mission" }}
           />
         }
-        eyebrow="Mission and values"
-        title="Connecting plants, people, science and indigenous knowledge"
-        lead={<p>To protect biodiversity for future generations.</p>}
+        eyebrow={page.eyebrow}
+        title={page.title}
+        lead={<p>{page.lead}</p>}
         aside={<PendingContent item="missionStatement" />}
       />
 

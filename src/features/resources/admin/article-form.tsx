@@ -2,7 +2,7 @@ import { ActionForm } from "@/components/admin/action-form";
 import { AdminPanel } from "@/components/admin/admin-ui";
 import { CheckboxField, SelectField, TextField } from "@/components/admin/form-fields";
 import { SubmitButton } from "@/components/admin/submit-button";
-import { formData, EditorTarget } from "@/features/cms";
+import { EditorTarget, formData, SeoFields } from "@/features/cms";
 import type { MediaOption } from "@/features/media";
 import { saveArticle } from "./actions";
 import { dateInputValue, type ArticleForAdmin } from "./admin";
@@ -81,7 +81,20 @@ export function ArticleForm({
             label="Text"
             rows={14}
             defaultValue={formData.joinParagraphs(article?.body ?? [])}
-            hint="Separate paragraphs with a blank line."
+            hint='Separate paragraphs with a blank line. "## " starts a heading, "- " a list item; links: [text](https://example.org).'
+          />
+          <TextField
+            name="references"
+            label="References"
+            rows={4}
+            hint="One source per line. Links: [title](https://example.org/paper)."
+            defaultValue={formData.joinLines(article?.references ?? [])}
+          />
+          <CheckboxField
+            name="featured"
+            label="Featured on the homepage"
+            defaultChecked={article?.featured ?? false}
+            hint="Featured published articles appear under the homepage's latest stories; without any, the three newest are shown."
           />
         </AdminPanel>
         <AdminPanel title="Files" description="Upload files in the media library first.">
@@ -110,6 +123,7 @@ export function ArticleForm({
             hint="Shows the layout only; never presented as fact."
           />
         </AdminPanel>
+        <SeoFields value={article} />
       </fieldset>
       {editable ? (
         <SubmitButton pendingLabel="Saving…">

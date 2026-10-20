@@ -62,3 +62,30 @@ export const textSectionSchema = z.object({
 });
 
 export type TextSection = z.infer<typeof textSectionSchema>;
+
+/** Search and sharing overrides carried by published content. */
+export const seoSchema = z.object({
+  /** Browser and search title, when it should differ from the title. */
+  seoTitle: z.string().min(1).nullable(),
+  /** Search description, when it should differ from the summary. */
+  seoDescription: z.string().min(1).nullable(),
+  /** Keep the page out of search results and the sitemap. */
+  noindex: z.boolean(),
+});
+
+/** The editor's version: limits and messages for the same fields. */
+export const seoInputSchema = z.object({
+  seoTitle: z
+    .string()
+    .trim()
+    .min(1)
+    .max(120, "Keep the search title under 120 characters.")
+    .nullable(),
+  seoDescription: z
+    .string()
+    .trim()
+    .min(30, "Write at least 30 characters, or leave it empty to use the summary.")
+    .max(300, "Keep the search description under 300 characters.")
+    .nullable(),
+  noindex: z.boolean(),
+});

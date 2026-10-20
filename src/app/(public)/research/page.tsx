@@ -10,14 +10,11 @@ import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { listResources, ResourceList } from "@/features/resources";
-import { pageMetadata } from "@/lib/metadata";
+import { loadManagedPage, metadataForPage } from "@/features/pages";
 
-export const metadata = pageMetadata({
-  title: "Research",
-  description:
-    "Botanical research for East Africa: documenting the flora, assessing conservation status and recording plant knowledge responsibly.",
-  path: "/research",
-});
+export async function generateMetadata() {
+  return metadataForPage("research");
+}
 
 // Draft themes for EACH to confirm (pending: `researchThemes`).
 const themes = [
@@ -40,20 +37,16 @@ const themes = [
 ] as const;
 
 export default async function ResearchPage() {
+  const page = await loadManagedPage("research");
   const publications = (await listResources()).filter((item) => item.type === "publication");
 
   return (
     <>
       <PageHeader
         breadcrumbs={<Breadcrumbs current={{ label: "Research", href: "/research" }} />}
-        eyebrow="Herbarium & Research"
-        title="Botanical research for East Africa"
-        lead={
-          <p>
-            Research turns specimens and field observations into knowledge that can guide
-            conservation, teaching and policy.
-          </p>
-        }
+        eyebrow={page.eyebrow}
+        title={page.title}
+        lead={<p>{page.lead}</p>}
         aside={
           <KeyFacts
             columns={1}

@@ -1,6 +1,7 @@
 // Public API of the CMS core (editorial workflow shared by every content type).
 export { idleState, type ActionState } from "./action-state";
 export { EditorTarget } from "./components/editor-target";
+export { readSeoFields, SeoFields } from "./components/seo-fields";
 export { StatusFilter } from "./components/status-filter";
 export { WorkflowPanel } from "./components/workflow-panel";
 export {
@@ -22,9 +23,13 @@ export {
 } from "./content-workflow";
 export {
   listAwaitingReview,
+  listPendingRevisions,
   listRecentAudit,
   summariseContent,
+  summariseOperations,
   type CollectionSummary,
+  type OperationsSummary,
+  type ReviewItem,
 } from "./dashboard";
 export * as formData from "./form-data";
 export {

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, Geist } from "next/font/google";
 import { env } from "@/config/env";
 import { siteConfig } from "@/config/site";
+import { getSiteSettings } from "@/features/settings";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -20,14 +21,18 @@ const fraunces = Fraunces({
   display: "optional",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(env.siteUrl),
-  title: {
-    default: siteConfig.name,
-    template: `%s | ${siteConfig.shortName}`,
-  },
-  description: siteConfig.description,
-};
+/** Site-wide defaults. The description is the CMS tagline (Settings, Branding). */
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  return {
+    metadataBase: new URL(env.siteUrl),
+    title: {
+      default: siteConfig.name,
+      template: `%s | ${siteConfig.shortName}`,
+    },
+    description: settings.tagline,
+  };
+}
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

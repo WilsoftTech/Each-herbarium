@@ -3,5 +3,7 @@ export { deleteProgramme, saveProgramme, transitionProgramme } from "./admin/act
 export { getProgrammeForAdmin, listProgrammesForAdmin } from "./admin/admin";
 export { getProgrammeEditor } from "./admin/editor";
 export { ProgrammeForm } from "./admin/programme-form";
+export { ProgrammeDetails } from "./components/programme-details";
+export { programmeMetadata } from "./metadata";
 export { getProgramme, listProgrammes, nextProgramme } from "./queries";
 export { bespokeProgrammeSlugs, programmeHref, programmeSchema, type Programme } from "./schema";

@@ -11,17 +11,14 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { media } from "@/config/media";
 import { listProgrammes } from "@/features/programmes";
 import { listProjects, ProjectCards } from "@/features/projects";
-import { pageMetadata } from "@/lib/metadata";
+import { loadManagedPage, metadataForPage } from "@/features/pages";
 
-export const metadata = pageMetadata({
-  title: "Our work",
-  description:
-    "EACH's programmes: plant conservation, environmental conservation, medicinal plants and indigenous knowledge in East Africa.",
-  path: "/our-work",
-  image: media.rwenzoriGroundselValley,
-});
+export async function generateMetadata() {
+  return metadataForPage("our-work");
+}
 
 export default async function OurWorkPage() {
+  const page = await loadManagedPage("our-work");
   const [programmes, projects] = await Promise.all([listProgrammes(), listProjects()]);
 
   return (
@@ -29,10 +26,10 @@ export default async function OurWorkPage() {
       <Hero
         size="tall"
         breadcrumbs={<Breadcrumbs current={{ label: "Our work", href: "/our-work" }} />}
-        eyebrow="Our work"
-        title="Protecting plants, places and the knowledge around them"
-        description="Protecting East Africa's plant diversity by connecting plants, people, science and indigenous knowledge."
-        image={media.rwenzoriGroundselValley}
+        eyebrow={page.eyebrow}
+        title={page.title}
+        description={page.lead}
+        image={page.image ?? media.rwenzoriGroundselValley}
         focus="50% 60%"
         nextSectionId="programmes"
       />

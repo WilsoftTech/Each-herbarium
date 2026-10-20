@@ -9,8 +9,12 @@ import { Container } from "@/components/ui/container";
 import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { getProgramme, nextProgramme } from "@/features/programmes";
-import { pageMetadata } from "@/lib/metadata";
+import {
+  getProgramme,
+  nextProgramme,
+  ProgrammeDetails,
+  programmeMetadata,
+} from "@/features/programmes";
 
 const slug = "indigenous-knowledge";
 
@@ -22,14 +26,7 @@ async function loadProgramme() {
 }
 
 export async function generateMetadata() {
-  const programme = await loadProgramme();
-  return pageMetadata({
-    title: programme.title,
-    description:
-      "Recording East African communities' knowledge of plants with consent, credit and community control.",
-    path: programme.href,
-    image: programme.image,
-  });
+  return programmeMetadata(await loadProgramme());
 }
 
 // Draft principles for EACH and its community partners to agree (pending: `communityProtocols`).
@@ -102,6 +99,8 @@ export default async function IndigenousKnowledgePage() {
           <PendingContent item="communityProtocols" className="mt-14" />
         </Container>
       </Section>
+
+      <ProgrammeDetails programme={programme} />
 
       <SequenceNav
         label="Next programme"
