@@ -107,7 +107,7 @@ Run on 2026-10-21 (Windows 11, Node 24.13.0, npm 11.6.2) against the Neon `dev` 
 | Build              | `npm run build`                     | Pass: 79/79 pages, public routes static            |
 | E2E                | `npm run test:e2e`                  | Pass: 142 passed, 3 skipped (opt-in screenshots)   |
 | Production         | `prisma migrate status` (read-only) | 4 migrations pending; not applied (needs approval) |
-| Milestone commit   | `git log`                           | Recorded in `ROADMAP.md` after the commit          |
+| Milestone commit   | `git log`                           | `40ae825`                                          |
 
 ## Risks
 

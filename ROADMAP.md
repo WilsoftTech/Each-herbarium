@@ -8,7 +8,7 @@ Progress dashboard for the **East African Community Herbariums** website. Detail
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Current milestone**      | M04 PASS WITH CONDITIONS (production migration awaits owner approval); M05 not started, awaiting approval                                                  |
 | **Overall progress**       | 4 of 7 milestones passed (M01 completed; M02–M04 pass with conditions)                                                                                     |
-| **Latest verified commit** | M04 closeout — recorded in [M04](docs/milestones/M04-cms-database.md#verification-record) after the commit                                                 |
+| **Latest verified commit** | `40ae825` — feat(m04): designed page sections in the CMS and verified milestone closeout                                                                   |
 | **Previous milestone**     | M03 `dc8578f`; M02 `07684f9`; M01 `0de7d2c`, revision 2 `68c4aca`                                                                                          |
 | **Outstanding blockers**   | Production database: 4 migrations and the M04 seed await owner approval. Content awaiting EACH: [awaiting-approval.md](docs/content/awaiting-approval.md). |
 

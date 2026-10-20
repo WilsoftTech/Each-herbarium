@@ -2,7 +2,7 @@
 
 - **Environment:** Windows 11 Pro, Node 24.13.0, npm 11.6.2, Git Bash, Playwright Chromium.
 - **Database for tests:** Neon branch `dev` (endpoint `ep-aged-bar-…`). Unit and integration tests rebuild their own `each_test` schema from every committed migration and the seed (`tests/global-setup.ts`); the build and browser tests use dev's main schema. Production (endpoint `ep-super-poetry-…`) was only queried read-only (`prisma migrate status`).
-- **Tree verified:** the M04 closeout working tree on top of `6dc32ca`. The commit hash is recorded in the milestone document and `ROADMAP.md`.
+- **Tree verified:** the M04 closeout tree, committed as `40ae825` (parent `6dc32ca`). Only documentation changed between the final runs and the commit.
 - Backend setup and operational probes: [M04 Neon verification](M04-neon-verification.md).
 
 ## Scope decision
