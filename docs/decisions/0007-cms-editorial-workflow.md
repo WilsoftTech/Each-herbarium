@@ -1,5 +1,7 @@
 # 0007. Custom CMS on Prisma + Neon, editorial workflow and cache invalidation
 
+> Editing published content is amended by [ADR 0011](0011-content-revisions.md): saves to published items become pending revisions that go live only on approval.
+
 - **Status:** Accepted
 - **Date:** 2026-10-20
 - **Milestone:** M04
@@ -29,5 +31,5 @@ M04 must let EACH staff manage public content without code changes, with a draft
 - The build needs `DATABASE_URL` (pages prerender from the database). CI runs a PostgreSQL service container.
 - Per-collection tags over-invalidate slightly; acceptable at EACH's content volume. On a multi-instance host, tag invalidation relies on the platform's shared cache (Vercel); self-hosting would need a cache handler.
 - Reviewers can approve their own submissions (small team). Revisit if EACH wants strict separation of duties.
-- Editing published content changes the live page immediately; there is no separate "pending revision" copy.
+- ~~Editing published content changes the live page immediately.~~ Superseded by ADR 0011 (pending revisions).
 - `instant = false` on the admin layout: admin pages block on the session by design.

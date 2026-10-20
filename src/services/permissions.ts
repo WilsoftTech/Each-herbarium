@@ -18,13 +18,16 @@ export const roleLabel: Record<Role, string> = {
 const permissions = {
   /** Open the admin area at all. */
   "admin:access": ["admin", "reviewer", "editor"],
-  /** Create content and edit it while it is a draft. */
+  /**
+   * Create content, edit drafts, and propose changes to published content
+   * (saved as a revision; the live page is unchanged until approval).
+   */
   "content:edit-draft": ["admin", "reviewer", "editor"],
-  /** Send a draft for review. */
+  /** Send a draft or a revision for review. */
   "content:submit": ["admin", "reviewer", "editor"],
-  /** Edit content that is in review or published (changes go live). */
-  "content:edit-live": ["admin", "reviewer"],
-  /** Approve, request changes, unpublish, archive and restore. */
+  /** Edit content, or proposed changes, while they wait for review. */
+  "content:edit-in-review": ["admin", "reviewer"],
+  /** Approve (publish), return for changes, unpublish, archive and restore. */
   "content:publish": ["admin", "reviewer"],
   /** Permanently delete draft or archived content. */
   "content:delete": ["admin"],
@@ -32,6 +35,7 @@ const permissions = {
   /** Change alt text, captions and credits (shown on live pages at once). */
   "media:edit": ["admin", "reviewer"],
   "media:delete": ["admin", "reviewer"],
+  /** Site settings, navigation, footer, SEO defaults and branding text. */
   "settings:edit": ["admin"],
   "users:manage": ["admin"],
   "audit:view": ["admin"],

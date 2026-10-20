@@ -1,5 +1,6 @@
 // Public API of the CMS core (editorial workflow shared by every content type).
 export { idleState, type ActionState } from "./action-state";
+export { EditorTarget } from "./components/editor-target";
 export { StatusFilter } from "./components/status-filter";
 export { WorkflowPanel } from "./components/workflow-panel";
 export {
@@ -8,7 +9,12 @@ export {
   applyTransition,
   audit,
   expireCollection,
+  getRevision,
+  loadForEditing,
+  loadPreview,
   readTarget,
+  readWithRevision,
+  type RevisionInfo,
   type SaveOperations,
   type StatusChange,
   type WorkflowCollection,
@@ -31,13 +37,20 @@ export {
 } from "./list-params";
 export { ActionError, ConflictError, fieldErrorsOf, parseInput, runAction } from "./run-action";
 export {
+  availableRevisionTransitions,
   availableTransitions,
   canDelete,
   canEdit,
+  canEditItem,
+  canEditRevision,
   canTransition,
+  canTransitionRevision,
   contentStatuses,
+  revisionTransitions,
   statusLabel,
   transitions,
   type ContentStatus,
+  type RevisionStatus,
+  type RevisionTransitionName,
   type TransitionName,
 } from "./workflow";

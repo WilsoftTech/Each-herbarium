@@ -2,25 +2,23 @@ import { ActionForm } from "@/components/admin/action-form";
 import { AdminPanel } from "@/components/admin/admin-ui";
 import { CheckboxField, SelectField, TextField } from "@/components/admin/form-fields";
 import { SubmitButton } from "@/components/admin/submit-button";
+import { EditorTarget } from "@/features/cms";
 import type { MediaOption } from "@/features/media";
 import { saveProgramme } from "./actions";
 import type { ProgrammeForAdmin } from "./admin";
 
 type ProgrammeFormProps = {
+  /** Set when the form edits the pending changes of a published item. */
+  revisionId?: string | null;
   programme?: ProgrammeForAdmin;
   images: readonly MediaOption[];
   editable: boolean;
 };
 
-export function ProgrammeForm({ programme, images, editable }: ProgrammeFormProps) {
+export function ProgrammeForm({ programme, revisionId, images, editable }: ProgrammeFormProps) {
   return (
     <ActionForm action={saveProgramme} label="Programme details" className="space-y-6">
-      {programme ? (
-        <>
-          <input type="hidden" name="id" value={programme.id} />
-          <input type="hidden" name="version" value={programme.version} />
-        </>
-      ) : null}
+      <EditorTarget item={programme} revisionId={revisionId} />
       <fieldset disabled={!editable} className="space-y-6">
         <AdminPanel title="Programme">
           <TextField
@@ -82,7 +80,11 @@ export function ProgrammeForm({ programme, images, editable }: ProgrammeFormProp
       </fieldset>
       {editable ? (
         <SubmitButton pendingLabel="Saving…">
-          {programme ? "Save changes" : "Create draft"}
+          {!programme
+            ? "Create draft"
+            : programme.status === "PUBLISHED"
+              ? "Save pending changes"
+              : "Save changes"}
         </SubmitButton>
       ) : null}
     </ActionForm>

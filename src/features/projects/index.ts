@@ -2,6 +2,7 @@
 export { deleteProject, saveProject, transitionProject } from "./admin/actions";
 export { ProjectForm } from "./admin/project-form";
 export {
+  getProjectEditor,
   getProjectForAdmin,
   getProjectFormOptions,
   getProjectPreview,

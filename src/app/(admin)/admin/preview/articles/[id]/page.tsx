@@ -16,9 +16,13 @@ export default async function ArticlePreviewPage({
   if (!preview) notFound();
 
   return (
-    <PreviewFrame status={preview.status} editHref={`/admin/articles/${id}`}>
-      {preview.resource ? (
-        <ArticleDetail resource={preview.resource} />
+    <PreviewFrame
+      status={preview.status}
+      pendingChanges={Boolean(preview.revision)}
+      editHref={`/admin/articles/${id}`}
+    >
+      {preview.value ? (
+        <ArticleDetail resource={preview.value} />
       ) : (
         <div className="p-10">
           <EmptyState>{preview.error}</EmptyState>

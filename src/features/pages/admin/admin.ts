@@ -1,8 +1,11 @@
 import "server-only";
 import { z } from "zod";
 import { formData, type WorkflowCollection } from "@/features/cms";
+import type { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/services/db";
 import { pageSchema } from "../schema";
+
+type Db = PrismaClient | Prisma.TransactionClient;
 
 /** Managed pages have fixed slugs (each belongs to a route), so only their words change. */
 export const pageInputSchema = z.object({
@@ -71,24 +74,8 @@ export function listPagesForAdmin() {
   });
 }
 
-export function getPageForAdmin(id: string) {
-  return getDb().page.findUnique({ where: { id } });
+export function getPageForAdmin(id: string, db: Db = getDb()) {
+  return db.page.findUnique({ where: { id } });
 }
 
 export type PageForAdmin = NonNullable<Awaited<ReturnType<typeof getPageForAdmin>>>;
-
-export async function getPagePreview(id: string) {
-  const row = await getDb().page.findUnique({ where: { id } });
-  if (!row) return null;
-  const result = pageSchema.safeParse({
-    ...row,
-    status: row.placeholder ? "placeholder" : "published",
-  });
-  return {
-    page: result.success ? result.data : null,
-    status: row.status,
-    error: result.success
-      ? null
-      : "Add a title, a label and a description of at least 30 characters to preview.",
-  };
-}

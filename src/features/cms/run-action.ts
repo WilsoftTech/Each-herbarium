@@ -82,13 +82,18 @@ export async function runAction(body: () => Promise<ActionState | void>): Promis
                 adapter.data.cause.constraint.fields?.join(","))
               : ""),
         );
-        return target.includes("slug")
-          ? {
-              ok: false,
-              message: "Check the highlighted fields.",
-              fieldErrors: { slug: "This slug is already used." },
-            }
-          : { ok: false, message: "That value is already in use." };
+        if (target.includes("slug")) {
+          return {
+            ok: false,
+            message: "Check the highlighted fields.",
+            fieldErrors: { slug: "This slug is already used." },
+          };
+        }
+        // Two people started a revision of the same item at once.
+        if (target.includes("collection") || target.includes("entity_id")) {
+          return { ok: false, message: new ConflictError().message };
+        }
+        return { ok: false, message: "That value is already in use." };
       }
       if (error.code === "P2003" || error.code === "P2014") {
         return { ok: false, message: "This item is still used by other content." };

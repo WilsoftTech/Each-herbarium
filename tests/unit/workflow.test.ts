@@ -1,10 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
   affectsPublicSite,
+  availableRevisionTransitions,
   availableTransitions,
   canDelete,
   canEdit,
+  canEditItem,
   canTransition,
+  canTransitionRevision,
   contentStatuses,
 } from "@/features/cms/workflow";
 
@@ -39,11 +42,10 @@ describe("editorial workflow", () => {
     expect(canTransition("reviewer", "ARCHIVED", "restore")).toBe(true);
   });
 
-  it("locks content in review or published to roles that can publish", () => {
+  it("locks content in review to roles that can publish", () => {
     expect(canEdit("editor", "DRAFT")).toBe(true);
     expect(canEdit("editor", "IN_REVIEW")).toBe(false);
-    expect(canEdit("editor", "PUBLISHED")).toBe(false);
-    expect(canEdit("reviewer", "PUBLISHED")).toBe(true);
+    expect(canEdit("reviewer", "IN_REVIEW")).toBe(true);
     for (const role of ["admin", "reviewer", "editor"] as const) {
       expect(canEdit(role, "ARCHIVED")).toBe(false);
     }
@@ -66,5 +68,50 @@ describe("editorial workflow", () => {
     expect(affectsPublicSite("PUBLISHED", "ARCHIVED")).toBe(true);
     expect(affectsPublicSite("DRAFT", "IN_REVIEW")).toBe(false);
     expect(affectsPublicSite("ARCHIVED", "DRAFT")).toBe(false);
+  });
+
+  it("lets every role propose changes to published content (saved as a revision)", () => {
+    for (const role of ["admin", "reviewer", "editor"] as const) {
+      expect(canEdit(role, "PUBLISHED")).toBe(true);
+    }
+  });
+
+  it("hides unpublish and archive while a revision is pending", () => {
+    expect(availableTransitions("admin", "PUBLISHED", true)).toEqual([]);
+    expect(availableTransitions("admin", "PUBLISHED", false)).toEqual(["unpublish", "archive"]);
+    // A pending revision only exists for published items; other states are unaffected.
+    expect(availableTransitions("admin", "DRAFT", true)).toEqual(["submit", "archive"]);
+  });
+});
+
+describe("revision workflow", () => {
+  it("lets editors submit and discard their draft changes, nothing more", () => {
+    expect(availableRevisionTransitions("editor", "DRAFT")).toEqual([
+      "submitRevision",
+      "discardRevision",
+    ]);
+    expect(availableRevisionTransitions("editor", "IN_REVIEW")).toEqual([]);
+  });
+
+  it("lets reviewers approve, return or discard changes in review", () => {
+    expect(availableRevisionTransitions("reviewer", "IN_REVIEW")).toEqual([
+      "approveRevision",
+      "returnRevision",
+      "discardRevision",
+    ]);
+  });
+
+  it("never applies changes without review: approve only from In review", () => {
+    for (const role of ["admin", "reviewer", "editor"] as const) {
+      expect(canTransitionRevision(role, "DRAFT", "approveRevision")).toBe(false);
+    }
+    expect(canTransitionRevision("editor", "IN_REVIEW", "approveRevision")).toBe(false);
+  });
+
+  it("locks changes in review to roles that can publish", () => {
+    expect(canEditItem("editor", "PUBLISHED", "DRAFT")).toBe(true);
+    expect(canEditItem("editor", "PUBLISHED", "IN_REVIEW")).toBe(false);
+    expect(canEditItem("reviewer", "PUBLISHED", "IN_REVIEW")).toBe(true);
+    expect(canEditItem("editor", "PUBLISHED", null)).toBe(true);
   });
 });

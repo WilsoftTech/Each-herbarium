@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AdminPageHeader } from "@/components/admin/admin-ui";
-import { canEdit, WorkflowPanel } from "@/features/cms";
+import { savedMessage } from "@/components/admin/saved-message";
+import { canEditItem, WorkflowPanel } from "@/features/cms";
 import { listMediaOptions } from "@/features/media";
 import {
   deleteProject,
-  getProjectForAdmin,
+  getProjectEditor,
   getProjectFormOptions,
   ProjectForm,
   transitionProject,
@@ -20,35 +21,39 @@ export default async function EditProjectPage({
 }: PageProps<"/admin/projects/[id]">) {
   const session = await requireAdmin();
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  const [project, images, options] = await Promise.all([
-    getProjectForAdmin(id),
+  const [editor, images, options] = await Promise.all([
+    getProjectEditor(id),
     listMediaOptions("IMAGE"),
     getProjectFormOptions(),
   ]);
-  if (!project) notFound();
+  if (!editor) notFound();
+  const { live, draft, revision, revisionError } = editor;
 
   return (
     <>
       <AdminPageHeader
-        title={project.title}
-        description={query.saved ? "Saved." : `/projects/${project.slug}`}
+        title={live.title}
+        description={savedMessage(query) ?? `/projects/${live.slug}`}
         back={{ label: "Projects", href: "/admin/projects" }}
       />
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_20rem]">
         <ProjectForm
-          project={project}
+          project={draft}
+          revisionId={revision?.id}
           images={images}
           {...options}
-          editable={canEdit(session.role, project.status)}
+          editable={canEditItem(session.role, live.status, revision?.status)}
         />
         <div className="xl:sticky xl:top-8 xl:self-start">
           <WorkflowPanel
             role={session.role}
-            item={project}
+            item={live}
+            revision={revision}
+            revisionError={revisionError}
             transition={transitionProject}
             remove={deleteProject}
-            previewHref={`/admin/preview/projects/${project.id}`}
-            publicHref={`/projects/${project.slug}`}
+            previewHref={`/admin/preview/projects/${live.id}`}
+            publicHref={`/projects/${live.slug}`}
           />
         </div>
       </div>

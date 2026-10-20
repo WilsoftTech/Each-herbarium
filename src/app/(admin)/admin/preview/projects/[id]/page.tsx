@@ -16,9 +16,13 @@ export default async function ProjectPreviewPage({
   if (!preview) notFound();
 
   return (
-    <PreviewFrame status={preview.status} editHref={`/admin/projects/${id}`}>
-      {preview.project ? (
-        <ProjectDetail project={preview.project} />
+    <PreviewFrame
+      status={preview.status}
+      editHref={`/admin/projects/${id}`}
+      pendingChanges={Boolean(preview.revision)}
+    >
+      {preview.value ? (
+        <ProjectDetail project={preview.value} />
       ) : (
         <div className="p-10">
           <EmptyState>{preview.error}</EmptyState>

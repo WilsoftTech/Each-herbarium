@@ -426,6 +426,32 @@ model TeamMember {
   @@map("team_members")
 }
 
+/// Pending changes to a published item (ADR 0011). The live row stays as it
+/// is until a reviewer approves the revision, which then applies `data` to it
+/// in one transaction and deletes the revision. At most one per item.
+model ContentRevision {
+  id          String        @id @default(cuid())
+  /// Collection key from src/lib/cache-tags.ts, e.g. "projects".
+  collection  String        @db.VarChar(40)
+  entityId    String        @map("entity_id")
+  /// DRAFT or IN_REVIEW only (CHECK constraint).
+  status      ContentStatus @default(DRAFT)
+  version     Int           @default(1)
+  /// Version of the live row when the revision was started.
+  baseVersion Int           @map("base_version")
+  /// The complete editor input. Validated again before it is applied.
+  data        Json
+  submittedAt DateTime?     @map("submitted_at")
+  createdById String?       @map("created_by_id")
+  updatedById String?       @map("updated_by_id")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  @@unique([collection, entityId])
+  @@index([status, updatedAt])
+  @@map("content_revisions")
+}
+
 // ---------------------------------------------------------------------------
 // Inquiries (written by the public forms in M05) and audit trail
 // ---------------------------------------------------------------------------

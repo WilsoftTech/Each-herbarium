@@ -8,9 +8,11 @@ import {
   type WorkflowCollection,
 } from "@/features/cms";
 import { isUsable, mediaSelect, toMediaAsset } from "@/features/media";
-import type { Prisma } from "@/generated/prisma/client";
+import type { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/services/db";
 import { slugSchema } from "@/validation/content";
+
+type Db = PrismaClient | Prisma.TransactionClient;
 
 export const teamGroups = ["LEADERSHIP", "BOARD", "ADVISER"] as const;
 
@@ -127,8 +129,8 @@ export async function listTeamForAdmin(params: ListParams) {
   };
 }
 
-export function getTeamMemberForAdmin(id: string) {
-  return getDb().teamMember.findUnique({ where: { id } });
+export function getTeamMemberForAdmin(id: string, db: Db = getDb()) {
+  return db.teamMember.findUnique({ where: { id } });
 }
 
 export type TeamMemberForAdmin = NonNullable<Awaited<ReturnType<typeof getTeamMemberForAdmin>>>;

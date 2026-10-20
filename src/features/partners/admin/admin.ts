@@ -7,10 +7,12 @@ import {
   type ListParams,
   type WorkflowCollection,
 } from "@/features/cms";
-import type { Prisma } from "@/generated/prisma/client";
+import type { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/services/db";
 import { slugSchema } from "@/validation/content";
 import { partnerSchema } from "../schema";
+
+type Db = PrismaClient | Prisma.TransactionClient;
 
 export const partnerInputSchema = z.object({
   name: z.string().min(1, "Enter the organisation's name.").max(200),
@@ -113,8 +115,8 @@ export async function listPartnersForAdmin(params: ListParams) {
   };
 }
 
-export function getPartnerForAdmin(id: string) {
-  return getDb().partner.findUnique({ where: { id } });
+export function getPartnerForAdmin(id: string, db: Db = getDb()) {
+  return db.partner.findUnique({ where: { id } });
 }
 
 export type PartnerForAdmin = NonNullable<Awaited<ReturnType<typeof getPartnerForAdmin>>>;

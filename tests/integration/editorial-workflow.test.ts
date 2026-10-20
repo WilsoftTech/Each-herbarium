@@ -72,6 +72,22 @@ async function transition(slug: string, name: string) {
   return transitionProject(idle, form({ id: row.id, version: row.version, transition: name }));
 }
 
+function revisionOf(entityId: string) {
+  return getDb().contentRevision.findUnique({
+    where: { collection_entityId: { collection: "projects", entityId } },
+  });
+}
+
+/** Posts a revision transition the way the workflow panel does. */
+async function reviseProject(slug: string, name: string) {
+  const row = await project(slug);
+  const revision = await revisionOf(row.id);
+  return transitionProject(
+    idle,
+    form({ id: row.id, version: revision?.version ?? 1, revision: revision?.id, transition: name }),
+  );
+}
+
 describe("project lifecycle", () => {
   const slug = uniqueSlug("test-project");
 
@@ -170,18 +186,84 @@ describe("project lifecycle", () => {
     });
   });
 
-  it("a reviewer's edit to published content goes live and expires the cache", async () => {
-    await signInAs(reviewer);
+  it("an editor's edit to published content is kept as pending changes, not shown", async () => {
+    await signInAs(editor);
     const row = await project(slug);
     await expectRedirect(
       saveProject(
         idle,
-        projectForm(slug, { id: row.id, version: row.version, title: "Edited live" }),
+        projectForm(slug, { id: row.id, version: row.version, title: "Edited title" }),
       ),
-      `/admin/projects/${row.id}?saved=1`,
+      `/admin/projects/${row.id}?revision=1`,
     );
+    // The live row and the public site are unchanged; nothing was expired.
+    expect(await project(slug)).toMatchObject({
+      title: "Integration test project",
+      version: row.version,
+    });
+    expect((await getProject(slug))?.title).toBe("Integration test project");
+    expect(updateTag).not.toHaveBeenCalled();
+    expect(await revisionOf(row.id)).toMatchObject({
+      status: "DRAFT",
+      version: 1,
+      baseVersion: row.version,
+      createdById: editor.id,
+    });
+
+    // Saving again updates the same revision (optimistic locking on the revision).
+    const revision = await revisionOf(row.id);
+    const again = projectForm(slug, {
+      id: row.id,
+      version: revision!.version,
+      revision: revision!.id,
+      title: "Edited again",
+    });
+    await expectRedirect(saveProject(idle, again), /revision=1/);
+    expect(await saveProject(idle, again)).toMatchObject({
+      ok: false,
+      message: expect.stringMatching(/Someone else changed/),
+    });
+    expect((await revisionOf(row.id))?.version).toBe(2);
+    expect((await getProject(slug))?.title).toBe("Integration test project");
+  });
+
+  it("an editor submits the changes but cannot approve them", async () => {
+    await signInAs(editor);
+    expect(await reviseProject(slug, "approveRevision")).toMatchObject({ ok: false });
+    expect(await reviseProject(slug, "submitRevision")).toMatchObject({ ok: true });
+    const row = await project(slug);
+    expect(await revisionOf(row.id)).toMatchObject({ status: "IN_REVIEW" });
+    expect(await reviseProject(slug, "approveRevision")).toMatchObject({ ok: false });
+    expect(await reviseProject(slug, "discardRevision")).toMatchObject({ ok: false });
+    expect((await getProject(slug))?.title).toBe("Integration test project");
+  });
+
+  it("a published item with pending changes cannot be unpublished or archived", async () => {
+    await signInAs(reviewer);
+    for (const name of ["unpublish", "archive"]) {
+      expect(await transition(slug, name)).toMatchObject({
+        ok: false,
+        message: expect.stringMatching(/changes waiting to be published/),
+      });
+    }
+    expect((await project(slug)).status).toBe("PUBLISHED");
+  });
+
+  it("a reviewer approves the changes: they go live and the cache expires", async () => {
+    await signInAs(reviewer);
+    const before = await project(slug);
+    expect(await reviseProject(slug, "approveRevision")).toMatchObject({ ok: true });
+    const row = await project(slug);
+    expect(row).toMatchObject({
+      status: "PUBLISHED",
+      title: "Edited again",
+      version: before.version + 1,
+      updatedById: reviewer.id,
+    });
+    expect(row.publishedAt).toEqual(before.publishedAt);
+    expect(await revisionOf(row.id)).toBeNull();
     expect(updateTag).toHaveBeenCalledWith("content:projects");
-    expect((await getProject(slug))?.title).toBe("Edited live");
+    expect((await getProject(slug))?.title).toBe("Edited again");
   });
 
   it("unpublishing removes it from the public site at once", async () => {
@@ -223,7 +305,10 @@ describe("project lifecycle", () => {
       "projects.create",
       "projects.submit",
       "projects.approve",
-      "projects.update",
+      "projects.revise",
+      "projects.revise",
+      "projects.revision-submit",
+      "projects.revision-approve",
       "projects.unpublish",
       "projects.archive",
       "projects.delete",
@@ -300,7 +385,7 @@ describe("publishing rules", () => {
     expect((await listTeamMembers()).some((member) => member.slug === slug)).toBe(false);
   });
 
-  it("an edited policy page goes live only when published, and expires the pages cache", async () => {
+  it("an edited policy page changes only when its pending changes are approved", async () => {
     await signInAs(reviewer);
     const page = await getDb().page.findUniqueOrThrow({ where: { slug: "terms" } });
     const fields = {
@@ -312,28 +397,75 @@ describe("publishing rules", () => {
       description: page.description,
       body: `${page.body}\n\n## Added by the test suite\nTemporary paragraph.`,
     };
-    await expectRedirect(savePage(idle, form(fields)), `/admin/pages/${page.id}?saved=1`);
+    await expectRedirect(savePage(idle, form(fields)), `/admin/pages/${page.id}?revision=1`);
+    expect(updateTag).not.toHaveBeenCalled();
+    expect((await getPage("terms"))?.body).toBe(page.body);
+
+    const revision = async () =>
+      getDb().contentRevision.findUniqueOrThrow({
+        where: { collection_entityId: { collection: "pages", entityId: page.id } },
+      });
+    const revise = async (transition: string) => {
+      const current = await revision();
+      return transitionPage(
+        idle,
+        form({ id: page.id, version: current.version, revision: current.id, transition }),
+      );
+    };
+    expect(await revise("submitRevision")).toMatchObject({ ok: true });
+    expect(await revise("approveRevision")).toMatchObject({ ok: true });
     expect(updateTag).toHaveBeenCalledWith("content:pages");
     expect((await getPage("terms"))?.body).toContain("Added by the test suite");
 
-    const version = async () =>
-      (await getDb().page.findUniqueOrThrow({ where: { id: page.id } })).version;
-    const move = async (transition: string) =>
-      transitionPage(idle, form({ id: page.id, version: await version(), transition }));
-
-    // Unpublished, the page disappears from the site.
-    expect(await move("unpublish")).toMatchObject({ ok: true });
-    expect(await getPage("terms")).toBeUndefined();
-
-    // Restore the seeded text as a draft, then publish it again through review.
+    // Restore the seeded text the same way: pending changes, then approval.
+    const live = await getDb().page.findUniqueOrThrow({ where: { id: page.id } });
     await expectRedirect(
-      savePage(idle, form({ ...fields, version: await version(), body: page.body })),
-      /saved=1/,
+      savePage(idle, form({ ...fields, version: live.version, body: page.body })),
+      /revision=1/,
     );
-    expect(await getPage("terms")).toBeUndefined();
-    expect(await move("submit")).toMatchObject({ ok: true });
-    expect(await move("approve")).toMatchObject({ ok: true });
+    expect((await getPage("terms"))?.body).toContain("Added by the test suite");
+    expect(await revise("submitRevision")).toMatchObject({ ok: true });
+    expect(await revise("approveRevision")).toMatchObject({ ok: true });
     expect((await getPage("terms"))?.body).toBe(page.body);
+  });
+
+  it("discarded changes leave the published version untouched", async () => {
+    await signInAs(editor);
+    const page = await getDb().page.findUniqueOrThrow({ where: { slug: "accessibility" } });
+    await expectRedirect(
+      savePage(
+        idle,
+        form({
+          id: page.id,
+          version: page.version,
+          title: "Discard me",
+          eyebrow: page.eyebrow,
+          lead: page.lead,
+          description: page.description,
+          body: page.body,
+        }),
+      ),
+      /revision=1/,
+    );
+    const revision = await getDb().contentRevision.findUniqueOrThrow({
+      where: { collection_entityId: { collection: "pages", entityId: page.id } },
+    });
+    expect(
+      await transitionPage(
+        idle,
+        form({
+          id: page.id,
+          version: revision.version,
+          revision: revision.id,
+          transition: "discardRevision",
+        }),
+      ),
+    ).toMatchObject({ ok: true });
+    expect(await getDb().contentRevision.findUnique({ where: { id: revision.id } })).toBeNull();
+    expect(await getDb().page.findUniqueOrThrow({ where: { id: page.id } })).toMatchObject({
+      title: page.title,
+      version: page.version,
+    });
   });
 
   it("site settings are saved by administrators and shown at once", async () => {

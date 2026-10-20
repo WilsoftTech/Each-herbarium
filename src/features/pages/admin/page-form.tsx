@@ -2,6 +2,7 @@ import { ActionForm } from "@/components/admin/action-form";
 import { AdminPanel } from "@/components/admin/admin-ui";
 import { TextField } from "@/components/admin/form-fields";
 import { SubmitButton } from "@/components/admin/submit-button";
+import { EditorTarget } from "@/features/cms";
 import { savePage } from "./actions";
 import type { PageForAdmin } from "./admin";
 
@@ -12,11 +13,19 @@ const formatHint = (
   </>
 );
 
-export function PageForm({ page, editable }: { page: PageForAdmin; editable: boolean }) {
+export function PageForm({
+  page,
+  revisionId,
+  editable,
+}: {
+  page: PageForAdmin;
+  /** Set when the form edits the pending changes of a published page. */
+  revisionId?: string | null;
+  editable: boolean;
+}) {
   return (
     <ActionForm action={savePage} label="Page text" className="space-y-6">
-      <input type="hidden" name="id" value={page.id} />
-      <input type="hidden" name="version" value={page.version} />
+      <EditorTarget item={page} revisionId={revisionId} />
       <fieldset disabled={!editable} className="space-y-6">
         <AdminPanel title="Header">
           <TextField
@@ -61,7 +70,11 @@ export function PageForm({ page, editable }: { page: PageForAdmin; editable: boo
           />
         </AdminPanel>
       </fieldset>
-      {editable ? <SubmitButton pendingLabel="Saving…">Save changes</SubmitButton> : null}
+      {editable ? (
+        <SubmitButton pendingLabel="Saving…">
+          {page.status === "PUBLISHED" ? "Save pending changes" : "Save changes"}
+        </SubmitButton>
+      ) : null}
     </ActionForm>
   );
 }

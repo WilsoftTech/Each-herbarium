@@ -1,8 +1,18 @@
 import "server-only";
-import { pageCount, pageWindow, type ListParams } from "@/features/cms";
-import type { Prisma } from "@/generated/prisma/client";
+import {
+  loadForEditing,
+  loadPreview,
+  pageCount,
+  pageWindow,
+  type ListParams,
+} from "@/features/cms";
+import type { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/services/db";
 import { projectInclude, toProject } from "../queries";
+import { projectSave } from "./save";
+import { projectWorkflow } from "./workflow";
+
+type Db = PrismaClient | Prisma.TransactionClient;
 
 /** One page of projects for the admin list, with per-status counts. Admin pages call requireAdmin() first. */
 export async function listProjectsForAdmin(params: ListParams) {
@@ -44,8 +54,8 @@ export async function listProjectsForAdmin(params: ListParams) {
 }
 
 /** A project with everything the editor shows, whatever its status. */
-export function getProjectForAdmin(id: string) {
-  return getDb().project.findUnique({
+export function getProjectForAdmin(id: string, db: Db = getDb()) {
+  return db.project.findUnique({
     where: { id },
     include: {
       gallery: { orderBy: { position: "asc" }, select: { mediaId: true } },
@@ -56,6 +66,11 @@ export function getProjectForAdmin(id: string) {
 }
 
 export type ProjectForAdmin = NonNullable<Awaited<ReturnType<typeof getProjectForAdmin>>>;
+
+/** The live project and, if it has pending changes, the form values with them applied. */
+export function getProjectEditor(id: string) {
+  return loadForEditing(projectWorkflow, projectSave, id, (db) => getProjectForAdmin(id, db));
+}
 
 /** Programmes and partners a project can link to (any status; only published ones show publicly). */
 export async function getProjectFormOptions() {
@@ -77,19 +92,15 @@ export async function getProjectFormOptions() {
 
 /**
  * A project of any status mapped to the public contract, for the admin
- * preview. Returns an error message instead when the draft cannot be shown yet.
+ * preview, with its pending changes applied if it has any.
  */
-export async function getProjectPreview(id: string) {
-  const row = await getDb().project.findUnique({ where: { id }, include: projectInclude });
-  if (!row) return null;
-  try {
-    return { project: toProject(row), status: row.status, error: null };
-  } catch {
-    return {
-      project: null,
-      status: row.status,
-      error:
-        "This draft cannot be previewed until every image has alt text of at least 20 characters and a caption.",
-    };
-  }
+export function getProjectPreview(id: string) {
+  return loadPreview(
+    projectWorkflow,
+    projectSave,
+    id,
+    (db) => db.project.findUnique({ where: { id }, include: projectInclude }),
+    toProject,
+    "This project cannot be previewed until every image has alt text of at least 20 characters and a caption.",
+  );
 }

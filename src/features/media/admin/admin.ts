@@ -114,7 +114,7 @@ export async function findMediaUsage(
   db: Db,
   id: string,
 ): Promise<{ label: string; href: string }[]> {
-  const [programmes, projects, gallery, articleImages, articleFiles, resources, team] =
+  const [programmes, projects, gallery, articleImages, articleFiles, resources, team, pending] =
     await Promise.all([
       db.programme.findMany({
         where: { imageId: id },
@@ -143,6 +143,11 @@ export async function findMediaUsage(
         select: { id: true, name: true },
         take: 50,
       }),
+      // Pending revisions hold references as JSON, outside foreign keys.
+      db.$queryRaw<{ collection: string; entity_id: string }[]>`
+        SELECT "collection", "entity_id" FROM "content_revisions"
+        WHERE "data"::text LIKE ${`%"${id}"%`}
+        LIMIT 50`,
     ]);
   return [
     ...programmes.map((row) => ({
@@ -170,5 +175,9 @@ export async function findMediaUsage(
       href: `/admin/resources/${row.id}`,
     })),
     ...team.map((row) => ({ label: `Team: ${row.name}`, href: `/admin/team/${row.id}` })),
+    ...pending.map((row) => ({
+      label: `Pending changes (${row.collection})`,
+      href: `/admin/${row.collection}/${row.entity_id}`,
+    })),
   ];
 }

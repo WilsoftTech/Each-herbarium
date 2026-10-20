@@ -2,26 +2,23 @@ import { ActionForm } from "@/components/admin/action-form";
 import { AdminPanel } from "@/components/admin/admin-ui";
 import { CheckboxField, SelectField, TextField } from "@/components/admin/form-fields";
 import { SubmitButton } from "@/components/admin/submit-button";
-import { formData } from "@/features/cms";
+import { formData, EditorTarget } from "@/features/cms";
 import type { MediaOption } from "@/features/media";
 import { saveTeamMember } from "./actions";
 import type { TeamMemberForAdmin } from "./admin";
 
 type TeamMemberFormProps = {
+  /** Set when the form edits the pending changes of a published item. */
+  revisionId?: string | null;
   member?: TeamMemberForAdmin;
   images: readonly MediaOption[];
   editable: boolean;
 };
 
-export function TeamMemberForm({ member, images, editable }: TeamMemberFormProps) {
+export function TeamMemberForm({ member, revisionId, images, editable }: TeamMemberFormProps) {
   return (
     <ActionForm action={saveTeamMember} label="Team member details" className="space-y-6">
-      {member ? (
-        <>
-          <input type="hidden" name="id" value={member.id} />
-          <input type="hidden" name="version" value={member.version} />
-        </>
-      ) : null}
+      <EditorTarget item={member} revisionId={revisionId} />
       <fieldset disabled={!editable} className="space-y-6">
         <AdminPanel title="Profile">
           <TextField
@@ -97,7 +94,11 @@ export function TeamMemberForm({ member, images, editable }: TeamMemberFormProps
       </fieldset>
       {editable ? (
         <SubmitButton pendingLabel="Saving…">
-          {member ? "Save changes" : "Create draft"}
+          {!member
+            ? "Create draft"
+            : member.status === "PUBLISHED"
+              ? "Save pending changes"
+              : "Save changes"}
         </SubmitButton>
       ) : null}
     </ActionForm>

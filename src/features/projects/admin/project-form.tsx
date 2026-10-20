@@ -7,13 +7,15 @@ import {
   TextField,
 } from "@/components/admin/form-fields";
 import { SubmitButton } from "@/components/admin/submit-button";
-import { formData, statusLabel } from "@/features/cms";
+import { EditorTarget, formData, statusLabel } from "@/features/cms";
 import type { MediaOption } from "@/features/media";
 import { saveProject } from "./actions";
 import type { ProjectForAdmin } from "./queries";
 
 type ProjectFormProps = {
   project?: ProjectForAdmin;
+  /** Set when the form edits the pending changes of a published project. */
+  revisionId?: string | null;
   images: readonly MediaOption[];
   programmes: readonly { id: string; title: string; status: keyof typeof statusLabel }[];
   partners: readonly { id: string; name: string; status: keyof typeof statusLabel }[];
@@ -24,7 +26,14 @@ type ProjectFormProps = {
 const paragraphHint = "Separate paragraphs with a blank line.";
 
 /** Create or edit a project. All fields are validated again on the server. */
-export function ProjectForm({ project, images, programmes, partners, editable }: ProjectFormProps) {
+export function ProjectForm({
+  project,
+  revisionId,
+  images,
+  programmes,
+  partners,
+  editable,
+}: ProjectFormProps) {
   const landscape = project?.landscape as { heading: string; body: string[] } | undefined;
   const story = (project?.story ?? []) as { heading: string; body: string[] }[];
   const imageOptions = [
@@ -34,12 +43,7 @@ export function ProjectForm({ project, images, programmes, partners, editable }:
 
   return (
     <ActionForm action={saveProject} label="Project details" className="space-y-6">
-      {project ? (
-        <>
-          <input type="hidden" name="id" value={project.id} />
-          <input type="hidden" name="version" value={project.version} />
-        </>
-      ) : null}
+      <EditorTarget item={project} revisionId={revisionId} />
       <fieldset disabled={!editable} className="space-y-6">
         <AdminPanel title="Basics">
           <TextField
@@ -176,7 +180,11 @@ export function ProjectForm({ project, images, programmes, partners, editable }:
 
       {editable ? (
         <SubmitButton pendingLabel="Saving…">
-          {project ? "Save changes" : "Create draft"}
+          {!project
+            ? "Create draft"
+            : project.status === "PUBLISHED"
+              ? "Save pending changes"
+              : "Save changes"}
         </SubmitButton>
       ) : null}
     </ActionForm>

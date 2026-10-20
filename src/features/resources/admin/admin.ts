@@ -8,10 +8,12 @@ import {
   type WorkflowCollection,
 } from "@/features/cms";
 import { mediaSelect, toDocumentAsset } from "@/features/media";
-import type { Prisma } from "@/generated/prisma/client";
+import type { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/services/db";
 import { slugSchema } from "@/validation/content";
 import { articleInclude, toResource } from "../queries";
+
+type Db = PrismaClient | Prisma.TransactionClient;
 
 const isoDate = z.iso.date("Use the date picker or YYYY-MM-DD.").nullable();
 
@@ -208,33 +210,17 @@ export async function listDownloadsForAdmin(params: ListParams) {
   };
 }
 
-export function getArticleForAdmin(id: string) {
-  return getDb().article.findUnique({ where: { id } });
+export function getArticleForAdmin(id: string, db: Db = getDb()) {
+  return db.article.findUnique({ where: { id } });
 }
 
 export type ArticleForAdmin = NonNullable<Awaited<ReturnType<typeof getArticleForAdmin>>>;
 
-export function getDownloadForAdmin(id: string) {
-  return getDb().resource.findUnique({ where: { id } });
+export function getDownloadForAdmin(id: string, db: Db = getDb()) {
+  return db.resource.findUnique({ where: { id } });
 }
 
 export type DownloadForAdmin = NonNullable<Awaited<ReturnType<typeof getDownloadForAdmin>>>;
-
-/** An article of any status mapped to the public contract, for the admin preview. */
-export async function getArticlePreview(id: string) {
-  const row = await getDb().article.findUnique({ where: { id }, include: articleInclude });
-  if (!row) return null;
-  try {
-    return { resource: toResource(row), status: row.status, error: null };
-  } catch {
-    return {
-      resource: null,
-      status: row.status,
-      error:
-        "This draft cannot be previewed until its image has alt text of at least 20 characters and a caption.",
-    };
-  }
-}
 
 /** YYYY-MM-DD for a date input. */
 export const dateInputValue = (date: Date | null | undefined) =>

@@ -2,25 +2,23 @@ import { ActionForm } from "@/components/admin/action-form";
 import { AdminPanel } from "@/components/admin/admin-ui";
 import { CheckboxField, SelectField, TextField } from "@/components/admin/form-fields";
 import { SubmitButton } from "@/components/admin/submit-button";
+import { EditorTarget } from "@/features/cms";
 import type { MediaOption } from "@/features/media";
 import { saveDownload } from "./actions";
 import { dateInputValue, type DownloadForAdmin } from "./admin";
 
 type DownloadFormProps = {
+  /** Set when the form edits the pending changes of a published item. */
+  revisionId?: string | null;
   download?: DownloadForAdmin;
   documents: readonly MediaOption[];
   editable: boolean;
 };
 
-export function DownloadForm({ download, documents, editable }: DownloadFormProps) {
+export function DownloadForm({ download, revisionId, documents, editable }: DownloadFormProps) {
   return (
     <ActionForm action={saveDownload} label="Resource details" className="space-y-6">
-      {download ? (
-        <>
-          <input type="hidden" name="id" value={download.id} />
-          <input type="hidden" name="version" value={download.version} />
-        </>
-      ) : null}
+      <EditorTarget item={download} revisionId={revisionId} />
       <fieldset disabled={!editable} className="space-y-6">
         <AdminPanel
           title="Resource"
@@ -75,7 +73,11 @@ export function DownloadForm({ download, documents, editable }: DownloadFormProp
       </fieldset>
       {editable ? (
         <SubmitButton pendingLabel="Saving…">
-          {download ? "Save changes" : "Create draft"}
+          {!download
+            ? "Create draft"
+            : download.status === "PUBLISHED"
+              ? "Save pending changes"
+              : "Save changes"}
         </SubmitButton>
       ) : null}
     </ActionForm>

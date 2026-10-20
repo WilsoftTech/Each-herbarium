@@ -14,9 +14,13 @@ export default async function PagePreviewPage({ params }: PageProps<"/admin/prev
   if (!preview) notFound();
 
   return (
-    <PreviewFrame status={preview.status} editHref={`/admin/pages/${id}`}>
-      {preview.page ? (
-        <PolicyPage page={preview.page} />
+    <PreviewFrame
+      status={preview.status}
+      pendingChanges={Boolean(preview.revision)}
+      editHref={`/admin/pages/${id}`}
+    >
+      {preview.value ? (
+        <PolicyPage page={preview.value} />
       ) : (
         <div className="p-10">
           <EmptyState>{preview.error}</EmptyState>

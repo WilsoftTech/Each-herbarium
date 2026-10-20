@@ -14,7 +14,7 @@ const expected: Record<Role, Permission[]> = {
     "admin:access",
     "content:edit-draft",
     "content:submit",
-    "content:edit-live",
+    "content:edit-in-review",
     "content:publish",
     "media:upload",
     "media:edit",
@@ -40,9 +40,9 @@ describe("role permissions", () => {
     }
   });
 
-  it("editors cannot publish or change live content", () => {
+  it("editors cannot publish, or change content waiting for review", () => {
     expect(can("editor", "content:publish")).toBe(false);
-    expect(can("editor", "content:edit-live")).toBe(false);
+    expect(can("editor", "content:edit-in-review")).toBe(false);
     expect(can("editor", "media:edit")).toBe(false);
     expect(can("editor", "media:delete")).toBe(false);
   });

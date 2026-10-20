@@ -9,11 +9,11 @@ export {
 } from "./admin/actions";
 export {
   getArticleForAdmin,
-  getArticlePreview,
   getDownloadForAdmin,
   listArticlesForAdmin,
   listDownloadsForAdmin,
 } from "./admin/admin";
+export { getArticleEditor, getArticlePreview, getDownloadEditor } from "./admin/editor";
 export { ArticleForm } from "./admin/article-form";
 export { DownloadForm } from "./admin/download-form";
 export { ArticleDetail } from "./components/article-detail";

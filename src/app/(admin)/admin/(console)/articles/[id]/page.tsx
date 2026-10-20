@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AdminPageHeader } from "@/components/admin/admin-ui";
-import { canEdit, WorkflowPanel } from "@/features/cms";
+import { savedMessage } from "@/components/admin/saved-message";
+import { canEditItem, WorkflowPanel } from "@/features/cms";
 import { listMediaOptions } from "@/features/media";
 import {
   ArticleForm,
-  getArticleForAdmin,
+  getArticleEditor,
   deleteArticle,
   transitionArticle,
 } from "@/features/resources";
@@ -19,31 +20,35 @@ export default async function EditArticlesPage({
 }: PageProps<"/admin/articles/[id]">) {
   const session = await requireAdmin();
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  const [item, images, documents] = await Promise.all([
-    getArticleForAdmin(id),
+  const [editor, images, documents] = await Promise.all([
+    getArticleEditor(id),
     listMediaOptions("IMAGE"),
     listMediaOptions("DOCUMENT"),
   ]);
-  if (!item) notFound();
+  if (!editor) notFound();
+  const { live: item, draft, revision, revisionError } = editor;
 
   return (
     <>
       <AdminPageHeader
         title={item.title}
-        description={query.saved ? "Saved." : `/${item.slug}`}
+        description={savedMessage(query) ?? `/${item.slug}`}
         back={{ label: "Articles & publications", href: "/admin/articles" }}
       />
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_20rem]">
         <ArticleForm
-          article={item}
+          article={draft}
+          revisionId={revision?.id}
           images={images}
           documents={documents}
-          editable={canEdit(session.role, item.status)}
+          editable={canEditItem(session.role, item.status, revision?.status)}
         />
         <div className="xl:sticky xl:top-8 xl:self-start">
           <WorkflowPanel
             role={session.role}
             item={item}
+            revision={revision}
+            revisionError={revisionError}
             transition={transitionArticle}
             remove={deleteArticle}
             previewHref={`/admin/preview/articles/${item.id}`}

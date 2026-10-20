@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AdminPageHeader } from "@/components/admin/admin-ui";
-import { canEdit, WorkflowPanel } from "@/features/cms";
+import { savedMessage } from "@/components/admin/saved-message";
+import { canEditItem, WorkflowPanel } from "@/features/cms";
 import { listMediaOptions } from "@/features/media";
 import {
   ProgrammeForm,
-  getProgrammeForAdmin,
+  getProgrammeEditor,
   deleteProgramme,
   transitionProgramme,
 } from "@/features/programmes";
@@ -19,26 +20,30 @@ export default async function EditProgrammesPage({
 }: PageProps<"/admin/programmes/[id]">) {
   const session = await requireAdmin();
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  const [item, images] = await Promise.all([getProgrammeForAdmin(id), listMediaOptions("IMAGE")]);
-  if (!item) notFound();
+  const [editor, images] = await Promise.all([getProgrammeEditor(id), listMediaOptions("IMAGE")]);
+  if (!editor) notFound();
+  const { live: item, draft, revision, revisionError } = editor;
 
   return (
     <>
       <AdminPageHeader
         title={item.title}
-        description={query.saved ? "Saved." : `/${item.slug}`}
+        description={savedMessage(query) ?? `/${item.slug}`}
         back={{ label: "Programmes", href: "/admin/programmes" }}
       />
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_20rem]">
         <ProgrammeForm
-          programme={item}
+          programme={draft}
+          revisionId={revision?.id}
           images={images}
-          editable={canEdit(session.role, item.status)}
+          editable={canEditItem(session.role, item.status, revision?.status)}
         />
         <div className="xl:sticky xl:top-8 xl:self-start">
           <WorkflowPanel
             role={session.role}
             item={item}
+            revision={revision}
+            revisionError={revisionError}
             transition={transitionProgramme}
             remove={deleteProgramme}
             publicHref={`/our-work/${item.slug}`}

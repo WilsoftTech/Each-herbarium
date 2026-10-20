@@ -2,24 +2,23 @@ import { ActionForm } from "@/components/admin/action-form";
 import { AdminPanel } from "@/components/admin/admin-ui";
 import { CheckboxField, TextField } from "@/components/admin/form-fields";
 import { SubmitButton } from "@/components/admin/submit-button";
+import { EditorTarget } from "@/features/cms";
 import { savePartner } from "./actions";
 import type { PartnerForAdmin } from "./admin";
 
 export function PartnerForm({
   partner,
+  revisionId,
   editable,
 }: {
   partner?: PartnerForAdmin;
+  /** Set when the form edits the pending changes of a published partner. */
+  revisionId?: string | null;
   editable: boolean;
 }) {
   return (
     <ActionForm action={savePartner} label="Partner details" className="space-y-6">
-      {partner ? (
-        <>
-          <input type="hidden" name="id" value={partner.id} />
-          <input type="hidden" name="version" value={partner.version} />
-        </>
-      ) : null}
+      <EditorTarget item={partner} revisionId={revisionId} />
       <fieldset disabled={!editable} className="space-y-6">
         <AdminPanel
           title="Partner"
@@ -78,7 +77,11 @@ export function PartnerForm({
       </fieldset>
       {editable ? (
         <SubmitButton pendingLabel="Saving…">
-          {partner ? "Save changes" : "Create draft"}
+          {!partner
+            ? "Create draft"
+            : partner.status === "PUBLISHED"
+              ? "Save pending changes"
+              : "Save changes"}
         </SubmitButton>
       ) : null}
     </ActionForm>

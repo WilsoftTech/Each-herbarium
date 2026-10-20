@@ -7,10 +7,12 @@ import {
   type ListParams,
   type WorkflowCollection,
 } from "@/features/cms";
-import type { Prisma } from "@/generated/prisma/client";
+import type { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/services/db";
 import { slugSchema } from "@/validation/content";
 import { programmeSelect, toProgramme } from "../queries";
+
+type Db = PrismaClient | Prisma.TransactionClient;
 
 export const programmeInputSchema = z.object({
   title: z.string().min(1, "Enter a title.").max(120),
@@ -105,8 +107,8 @@ export async function listProgrammesForAdmin(params: ListParams) {
   };
 }
 
-export function getProgrammeForAdmin(id: string) {
-  return getDb().programme.findUnique({ where: { id } });
+export function getProgrammeForAdmin(id: string, db: Db = getDb()) {
+  return db.programme.findUnique({ where: { id } });
 }
 
 export type ProgrammeForAdmin = NonNullable<Awaited<ReturnType<typeof getProgrammeForAdmin>>>;
