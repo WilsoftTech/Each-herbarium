@@ -2,9 +2,10 @@ import { ActionForm } from "@/components/admin/action-form";
 import { AdminPanel } from "@/components/admin/admin-ui";
 import { CheckboxField, SelectField, TextField } from "@/components/admin/form-fields";
 import { SubmitButton } from "@/components/admin/submit-button";
-import { EditorTarget } from "@/features/cms";
+import { EditorTarget, SectionFields } from "@/features/cms";
 import type { MediaOption } from "@/features/media";
 import { homeContentSchema } from "../home-content";
+import { isLandingSlug, landingSections } from "../landing-content";
 import { pageEntry } from "../registry";
 import { savePage } from "./actions";
 import type { PageForAdmin } from "./admin";
@@ -19,8 +20,8 @@ const formatHint = (
 
 /**
  * Editor for a managed page. Which fields show depends on the page registry:
- * prose pages edit their text, the homepage its sections, landing pages
- * their header. The designed layout of each route stays in code.
+ * prose pages edit their text, the homepage and landing pages their header
+ * and designed sections. The layout of each route stays in code.
  */
 export function PageForm({
   page,
@@ -109,12 +110,24 @@ export function PageForm({
           <HomeFields content={home?.success ? home.data : null} images={images} />
         ) : null}
 
-        {kind === "landing" ? (
-          <p className="text-sm text-muted-foreground">
-            The sections below the header are part of this page&apos;s design. Programmes, projects,
-            articles, partners and team members shown there are managed in their own sections of the
-            admin.
-          </p>
+        {isLandingSlug(page.slug) ? (
+          <>
+            <p className="text-sm text-muted-foreground">
+              The sections below follow the page from top to bottom. Their design and order are
+              fixed; programmes, projects, articles, partners and team members shown on the page are
+              managed in their own sections of the admin.
+            </p>
+            <SectionFields
+              name={page.slug}
+              spec={landingSections[page.slug]}
+              content={
+                page.content && typeof page.content === "object" && !Array.isArray(page.content)
+                  ? (page.content as Record<string, Record<string, unknown>>)
+                  : null
+              }
+              images={images}
+            />
+          </>
         ) : null}
 
         <AdminPanel title="Search and sharing">

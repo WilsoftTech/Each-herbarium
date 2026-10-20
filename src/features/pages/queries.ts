@@ -1,14 +1,22 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { isUsable, mediaSelect, toMediaAsset, type MediaRow } from "@/features/media";
+import { isUsable, mediaSelect, toMediaAsset, usableImages, type MediaRow } from "@/features/media";
 import type { Prisma, PrismaClient } from "@/generated/prisma/client";
+import { sectionImageIds } from "@/features/cms";
 import { contentTags } from "@/lib/cache-tags";
 import { getDb } from "@/services/db";
 import { homeContentSchema, homeImageIds } from "./home-content";
 import {
+  isLandingSlug,
+  landingContentSchema,
+  landingSections,
+  type LandingSlug,
+} from "./landing-content";
+import {
   homePageSchema,
   pageSchema,
   type HomePage,
+  type LandingPage,
   type ManagedPageSlug,
   type Page,
 } from "./schema";
@@ -21,8 +29,8 @@ export const pageInclude = {
 
 export type PageRow = Prisma.PageGetPayload<{ include: typeof pageInclude }>;
 
-/** A homepage row with the media its sections refer to. */
-export type HomeRow = PageRow & { sectionMedia: MediaRow[] };
+/** A page row with the media its designed sections refer to. */
+export type PageRowWithMedia = PageRow & { sectionMedia: MediaRow[] };
 
 /**
  * The public image, or null when it is missing, not uploaded or lacks the
@@ -56,7 +64,7 @@ export function toPage(row: PageRow): Page {
 }
 
 /** Maps the homepage row and its section media. Throws if the content breaks the contract. */
-export function toHomePage(row: HomeRow): HomePage {
+export function toHomePage(row: PageRowWithMedia): HomePage {
   const parsed = homePageSchema.parse({
     page: toPage(row),
     content: homeContentSchema.parse(row.content),
@@ -68,6 +76,7 @@ export function toHomePage(row: HomeRow): HomePage {
     ...parsed,
     images: {
       heritage: image(content.heritage.imageId),
+      landscapes: content.heritage.landscapes.map((landscape) => image(landscape.imageId)),
       research: image(content.research.imageId),
       community: image(content.community.imageId),
       panels: [
@@ -78,16 +87,37 @@ export function toHomePage(row: HomeRow): HomePage {
   };
 }
 
+/** Maps a landing page row, its sections and their media. Throws if the content breaks the contract. */
+export function toLandingPage<S extends LandingSlug>(
+  slug: S,
+  row: PageRowWithMedia,
+): LandingPage<S> {
+  return {
+    slug,
+    page: toPage(row),
+    content: landingContentSchema(slug).parse(row.content),
+    images: usableImages(row.sectionMedia),
+  };
+}
+
+/** Media ids referred to by a page's designed sections (homepage or landing page). */
+function contentImageIds(slug: string, content: unknown): string[] {
+  if (slug === "home") {
+    const parsed = homeContentSchema.safeParse(content);
+    return parsed.success ? homeImageIds(parsed.data) : [];
+  }
+  return isLandingSlug(slug) ? sectionImageIds(landingSections[slug], content) : [];
+}
+
 /** Reads a page with its images. Shared by public queries and admin previews. */
-export async function readHomeRow(db: Db, where: Prisma.PageWhereUniqueInput) {
+export async function readPageRow(db: Db, where: Prisma.PageWhereUniqueInput) {
   const row = await db.page.findUnique({ where, include: pageInclude });
   if (!row) return null;
-  const parsed = homeContentSchema.safeParse(row.content);
-  const ids = parsed.success ? homeImageIds(parsed.data) : [];
+  const ids = contentImageIds(row.slug, row.content);
   const sectionMedia = ids.length
     ? await db.mediaAsset.findMany({ where: { id: { in: ids } }, select: mediaSelect })
     : [];
-  return { ...row, sectionMedia } satisfies HomeRow;
+  return { ...row, sectionMedia } satisfies PageRowWithMedia;
 }
 
 /** The published version of a managed page, or undefined. */
@@ -109,8 +139,20 @@ export async function getHomePage(): Promise<HomePage | undefined> {
   cacheLife("max");
   cacheTag(contentTags.pages, contentTags.media);
 
-  const row = await readHomeRow(getDb(), { slug: "home" });
+  const row = await readPageRow(getDb(), { slug: "home" });
   return row && row.status === "PUBLISHED" ? toHomePage(row) : undefined;
+}
+
+/** The published version of a landing page with its sections, or undefined. */
+export async function getLandingPage<S extends LandingSlug>(
+  slug: S,
+): Promise<LandingPage<S> | undefined> {
+  "use cache";
+  cacheLife("max");
+  cacheTag(contentTags.pages, contentTags.media);
+
+  const row = await readPageRow(getDb(), { slug });
+  return row && row.status === "PUBLISHED" ? toLandingPage(slug, row) : undefined;
 }
 
 /** Slugs of published, indexable pages, for the sitemap. */

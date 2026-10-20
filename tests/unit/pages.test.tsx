@@ -3,6 +3,12 @@ import type { Metadata } from "next";
 import type { ReactElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { landingSections } from "@/features/pages/landing-content";
+import { pageRegistry } from "@/features/pages/registry";
+import { designedProgrammeSections } from "@/features/programmes/designed-content";
+import { seedLandingContent } from "../../prisma/seed/landing-content";
+import { seedHomeContent } from "../../prisma/seed/landing-pages";
+import { seedProgrammeContent } from "../../prisma/seed/programme-content";
 import { noindexRoutes, publicRoutes } from "../routes";
 
 type PageModule = {
@@ -46,7 +52,9 @@ const text = (html: string) =>
   html
     .replace(/<script[\s\S]*?<\/script>/g, "")
     .replace(/<[^>]+>/g, "")
-    .replace(/&#x27;/g, "'");
+    .replace(/&#x27;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, "&");
 
 describe.each(publicRoutes)("%s", (route) => {
   it("renders exactly one h1 and server-renders visible content", async () => {
@@ -163,5 +171,68 @@ describe("content integrity", () => {
       const { html } = await renderRoute(route);
       expect(html, route).toMatch(/data-pending="(projects|resources)"/);
     }
+  });
+});
+
+/**
+ * Visible words in seeded section content: every string except link
+ * destinations and media ids, with rich-text markup reduced to its text.
+ */
+function seededWords(value: unknown, key = ""): string[] {
+  if (typeof value === "string") {
+    if (!value || key === "href" || key === "imageId") return [];
+    return value
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+      .replace(/\*([^*]+)\*/g, "$1")
+      .split(/\n\s*\n/)
+      .map((part) => part.trim());
+  }
+  if (Array.isArray(value)) return value.flatMap((item) => seededWords(item, key));
+  if (value && typeof value === "object") {
+    return Object.entries(value).flatMap(([child, item]) => seededWords(item, child));
+  }
+  return [];
+}
+
+describe("designed sections come from the CMS", () => {
+  const imageId = (asset: { src: string }) => asset.src;
+  const landing = seedLandingContent(imageId);
+  const programmes = seedProgrammeContent(imageId);
+
+  it.each(Object.keys(landingSections) as (keyof typeof landing)[])(
+    "%s shows every seeded word of its sections",
+    async (slug) => {
+      // Shown only when nothing is published in the collection they introduce.
+      const conditional = new Set(slug === "resources" ? ["Documents", "Downloads"] : []);
+      const { html } = await renderRoute(pageRegistry[slug].route);
+      for (const words of seededWords(landing[slug])) {
+        if (!conditional.has(words)) expect(text(html), words).toContain(words);
+      }
+    },
+  );
+
+  it.each(Object.keys(designedProgrammeSections) as (keyof typeof programmes)[])(
+    "/our-work/%s shows every seeded word of its sections",
+    async (slug) => {
+      const { html } = await renderRoute(`/our-work/${slug}`);
+      for (const words of seededWords(programmes[slug])) {
+        expect(text(html), words).toContain(words);
+      }
+    },
+  );
+
+  it("the homepage shows its landscapes and regional presence", async () => {
+    const home = seedHomeContent(imageId);
+    const { html } = await renderRoute("/");
+    for (const words of seededWords([home.heritage.landscapes, home.presence])) {
+      expect(text(html), words).toContain(words);
+    }
+    expect(html).toMatch(/data-pending="regionalPresence"/);
+  });
+
+  it("keeps scientific names in italics", async () => {
+    const { html } = await renderRoute("/our-work/medicinal-plants");
+    expect(html).toContain("<i>Warburgia ugandensis</i>");
+    expect(html).toContain("<i>Prunus africana</i>");
   });
 });

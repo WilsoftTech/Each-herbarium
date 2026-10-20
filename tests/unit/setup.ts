@@ -16,6 +16,7 @@ vi.mock("next/cache", () => ({
   updateTag: vi.fn(),
   revalidateTag: vi.fn(),
   revalidatePath: vi.fn(),
+  refresh: vi.fn(),
 }));
 
 // Sessions come from a test double (tests/integration/auth-double.ts); the

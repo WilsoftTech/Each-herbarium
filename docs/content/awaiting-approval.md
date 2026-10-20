@@ -4,6 +4,8 @@ What EACH needs to supply or confirm before the public site can present it as fa
 
 The source of truth is [`src/content/pending.ts`](../../src/content/pending.ts). Every placeholder on the site names one of the keys below and renders a visible label: **Awaiting content from EACH** (missing) or **Draft for EACH review** (proposed wording). A unit test (`tests/unit/content.test.ts`) fails if a key is missing from this document or no longer shown on the site.
 
+Since [ADR 0013](../decisions/0013-designed-sections-in-the-cms.md) staff resolve most of these in the CMS without a code change: draft wording is edited in the page's sections and its marker unticked once EACH approves it; an "awaiting content" notice disappears when its text is filled in; an empty fact shows its marker until a value is entered. Removing a key from this register is still a code change.
+
 ## Missing content
 
 | Key                    | What is needed                                                                                               | Shown on                                                                 |

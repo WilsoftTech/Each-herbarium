@@ -8,11 +8,11 @@ import { SplitFeature } from "@/components/sections/split-feature";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Container } from "@/components/ui/container";
 import { PendingContent } from "@/components/ui/pending-content";
+import { RichParagraphs } from "@/components/ui/rich-text";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { media } from "@/config/media";
 import {
-  getProgramme,
+  getDesignedProgramme,
   nextProgramme,
   ProgrammeDetails,
   programmeMetadata,
@@ -21,41 +21,22 @@ import { listProjectsForProgramme, ProjectCards } from "@/features/projects";
 
 const slug = "plant-conservation";
 
-/** The programme's CMS record (title, summary, intro, image). The rest of the page is designed copy. */
+/** The programme's CMS record and its designed page sections (designed-content.ts). */
 async function loadProgramme() {
-  const programme = await getProgramme(slug);
-  if (!programme) notFound();
-  return programme;
+  const designed = await getDesignedProgramme(slug);
+  if (!designed) notFound();
+  return designed;
 }
 
 export async function generateMetadata() {
-  return programmeMetadata(await loadProgramme());
+  return programmeMetadata((await loadProgramme()).programme);
 }
 
-// How plant conservation works in general; not a description of EACH's activities.
-const approaches = [
-  {
-    title: "Know what grows where",
-    body: "Surveys and identified specimens establish which species are present and how common they are.",
-  },
-  {
-    title: "Understand the threats",
-    body: "Land clearance, over-harvesting, invasive species and a changing climate affect plants differently. Assessments show which species are most at risk.",
-  },
-  {
-    title: "Protect plants where they grow",
-    body: "Conserving habitats keeps plants in the ecosystems, and alongside the pollinators and communities, they depend on.",
-  },
-  {
-    title: "Safeguard them in collections",
-    body: "Seed banks, living collections and herbaria keep a record, and sometimes a reserve, when wild populations are under pressure.",
-  },
-] as const;
-
 export default async function PlantConservationPage() {
-  const programme = await loadProgramme();
+  const { programme, content, images } = await loadProgramme();
   const projects = await listProjectsForProgramme(programme.slug);
   const next = (await nextProgramme(programme.slug)) ?? programme;
+  const photograph = images[content.photograph.imageId];
 
   return (
     <>
@@ -77,17 +58,14 @@ export default async function PlantConservationPage() {
 
       <Section id="why" aria-labelledby="why-title">
         <SplitFeature
-          eyebrow="Why it matters"
-          title="A remarkable flora, under pressure"
+          eyebrow={content.why.eyebrow}
+          title={content.why.title}
           titleId="why-title"
-          image={media.rwenzoriVegetation}
+          image={images[content.why.imageId] ?? programme.image}
           aspect="landscape"
         >
           <p>{programme.intro}</p>
-          <p>
-            The afroalpine plants of the Rwenzori, the hardwoods of Uganda&apos;s forests and the
-            grasses of its savannas each depend on conditions that are changing.
-          </p>
+          <RichParagraphs source={content.why.text} className="space-y-5" />
         </SplitFeature>
       </Section>
 
@@ -96,28 +74,41 @@ export default async function PlantConservationPage() {
           <Container>
             <SectionHeading
               id="approach-title"
-              eyebrow="How plants are conserved"
-              title="Four parts of conserving a plant"
-              description="Conservationists combine these approaches. EACH's own activities within them will be described once confirmed."
+              eyebrow={content.approach.eyebrow}
+              title={content.approach.title}
+              description={content.approach.description}
             />
           </Container>
         </Reveal>
         <Container className="mt-16">
-          <NumberedList items={approaches} columns={2} />
-          <PendingContent item="programmeDetails" className="mt-14" />
+          <NumberedList items={content.approach.items} columns={2} />
+          {content.approach.details ? (
+            <RichParagraphs
+              source={content.approach.details}
+              className="mt-14 max-w-3xl space-y-5 text-lead text-pretty text-muted-foreground"
+            />
+          ) : (
+            <PendingContent item="programmeDetails" className="mt-14" />
+          )}
         </Container>
       </Section>
 
-      <FullBleedImage
-        image={media.rwenzoriGroundselValley}
-        eyebrow="Rwenzori Mountains"
-        statement="Giant groundsels like these grow only on the high mountains of East Africa."
-      />
+      {photograph ? (
+        <FullBleedImage
+          image={photograph}
+          eyebrow={content.photograph.eyebrow}
+          statement={content.photograph.statement}
+        />
+      ) : null}
 
       <Section aria-labelledby="related-title">
         <Reveal>
           <Container>
-            <SectionHeading id="related-title" eyebrow="Projects" title="Related projects" />
+            <SectionHeading
+              id="related-title"
+              eyebrow={content.related.eyebrow}
+              title={content.related.title}
+            />
             <ProjectCards projects={projects} className="mt-14" />
           </Container>
         </Reveal>

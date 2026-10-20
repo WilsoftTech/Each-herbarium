@@ -1,15 +1,37 @@
 import "server-only";
-import { ActionError, parseInput, type SaveOperations } from "@/features/cms";
+import {
+  ActionError,
+  parseInput,
+  parseSections,
+  sectionImageFields,
+  type SaveOperations,
+} from "@/features/cms";
 import { assertMedia } from "@/features/media";
 import type { Prisma } from "@/generated/prisma/client";
 import { homeImageIds } from "../home-content";
+import { isLandingSlug, landingSections } from "../landing-content";
 import { pageEntry } from "../registry";
 import { pageInputSchema, parseHomeContent, readPageForm, type PageInput } from "./admin";
 
+/** Errors for chosen images that are not finished image uploads, keyed by field. */
+async function imageErrors(db: Prisma.TransactionClient, images: { name: string; id: string }[]) {
+  if (!images.length) return {};
+  const ready = await db.mediaAsset.findMany({
+    where: { id: { in: images.map((image) => image.id) }, kind: "IMAGE", status: "READY" },
+    select: { id: true },
+  });
+  const found = new Set(ready.map((row) => row.id));
+  return Object.fromEntries(
+    images
+      .filter((image) => !found.has(image.id))
+      .map((image) => [image.name, "Choose an image from the media library."]),
+  );
+}
+
 /**
  * Checks the fields that depend on the kind of page (page registry) and
- * returns the values to store: prose pages keep their body, the homepage its
- * validated sections, landing pages neither.
+ * returns the values to store: prose pages keep their body, the homepage and
+ * landing pages their validated designed sections.
  */
 async function prepare(db: Prisma.TransactionClient, slug: string, input: PageInput) {
   const entry = pageEntry(slug);
@@ -31,6 +53,16 @@ async function prepare(db: Prisma.TransactionClient, slug: string, input: PageIn
     } else {
       const missing = await assertMedia(db, homeImageIds(parsed.content), "IMAGE");
       if (missing) errors["content.heritage.imageId"] ??= missing;
+      content = parsed.content;
+    }
+  }
+  if (isLandingSlug(slug)) {
+    const spec = landingSections[slug];
+    const parsed = parseSections(spec, input.content);
+    if (parsed.errors) {
+      Object.assign(errors, parsed.errors);
+    } else {
+      Object.assign(errors, await imageErrors(db, sectionImageFields(spec, parsed.content)));
       content = parsed.content;
     }
   }

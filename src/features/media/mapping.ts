@@ -59,3 +59,21 @@ export function toDocumentAsset(row: MediaRow): DocumentAsset {
 export function isUsable(row: MediaRow | null | undefined): row is MediaRow {
   return row?.status === "READY";
 }
+
+/**
+ * Usable images keyed by media id, for content that refers to images by id
+ * (designed page sections). Unfinished uploads and images without the
+ * required alt text and caption are left out.
+ */
+export function usableImages(rows: readonly MediaRow[]): Record<string, MediaAsset> {
+  const images: Record<string, MediaAsset> = {};
+  for (const row of rows) {
+    if (!isUsable(row)) continue;
+    try {
+      images[row.id] = toMediaAsset(row);
+    } catch {
+      // Left out: publishing refuses such images, and pages skip them.
+    }
+  }
+  return images;
+}

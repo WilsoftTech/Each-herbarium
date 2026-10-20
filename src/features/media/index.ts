@@ -14,6 +14,7 @@ export {
   mediaSrc,
   toDocumentAsset,
   toMediaAsset,
+  usableImages,
   type MediaRow,
 } from "./mapping";
 export { assertMedia, listMediaOptions, type MediaOption } from "./references";

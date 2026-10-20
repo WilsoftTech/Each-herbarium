@@ -127,6 +127,7 @@ export async function findMediaUsage(
     settings,
     pending,
     pageSections,
+    programmeSections,
   ] = await Promise.all([
     db.programme.findMany({
       where: { imageId: id },
@@ -158,7 +159,7 @@ export async function findMediaUsage(
     db.page.findMany({ where: { heroImageId: id }, select: { id: true, title: true }, take: 50 }),
     db.partner.findMany({ where: { logoId: id }, select: { id: true, name: true }, take: 50 }),
     db.siteSettings.count({ where: { socialImageId: id } }),
-    // Pending revisions and homepage sections hold references as JSON,
+    // Pending revisions and designed page sections hold references as JSON,
     // outside foreign keys. Ids are generated (no LIKE wildcards in them).
     db.$queryRaw<{ collection: string; entity_id: string }[]>`
         SELECT "collection", "entity_id" FROM "content_revisions"
@@ -166,6 +167,10 @@ export async function findMediaUsage(
         LIMIT 50`,
     db.$queryRaw<{ id: string; title: string }[]>`
         SELECT "id", "title" FROM "pages"
+        WHERE "content"::text LIKE ${`%"${id}"%`}
+        LIMIT 50`,
+    db.$queryRaw<{ id: string; title: string }[]>`
+        SELECT "id", "title" FROM "programmes"
         WHERE "content"::text LIKE ${`%"${id}"%`}
         LIMIT 50`,
   ]);
@@ -199,6 +204,10 @@ export async function findMediaUsage(
     ...pageSections.map((row) => ({
       label: `Page sections: ${row.title}`,
       href: `/admin/pages/${row.id}`,
+    })),
+    ...programmeSections.map((row) => ({
+      label: `Programme page sections: ${row.title}`,
+      href: `/admin/programmes/${row.id}`,
     })),
     ...partnerLogos.map((row) => ({
       label: `Partner logo: ${row.name}`,

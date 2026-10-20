@@ -1,10 +1,8 @@
 import { Reveal } from "@/components/motion/reveal";
 import { Container } from "@/components/ui/container";
 import { Eyebrow } from "@/components/ui/eyebrow";
-import { KeyFacts } from "@/components/ui/key-facts";
-import { PendingContent } from "@/components/ui/pending-content";
+import { KeyFacts, type KeyFact } from "@/components/ui/key-facts";
 import { Section } from "@/components/ui/section";
-import { siteConfig } from "@/config/site";
 
 const rings = [40, 80, 120, 160, 200, 240];
 const ticks = Array.from({ length: 72 }, (_, index) => index * 5);
@@ -60,42 +58,40 @@ function SurveyGraphic() {
 }
 
 /**
- * Where EACH works. States only what is confirmed (EACH begins in Uganda);
- * sites and any wider regional presence are shown as outstanding content.
+ * Where EACH works, beside a decorative survey graphic. The words and facts
+ * come from the homepage content; facts not yet confirmed carry placeholder
+ * markers supplied by the caller.
  */
-export function RegionPresence({ headingId = "presence-title" }: { headingId?: string }) {
+export function RegionPresence({
+  headingId = "presence-title",
+  eyebrow,
+  title,
+  text,
+  facts,
+}: {
+  headingId?: string;
+  eyebrow: string;
+  title: string;
+  text: string;
+  facts: readonly KeyFact[];
+}) {
   return (
     <Section surface="dark" aria-labelledby={headingId} className="overflow-hidden">
       <Reveal>
         <Container className="grid items-center gap-16 lg:grid-cols-12">
           <div className="lg:col-span-6">
-            <Eyebrow data-reveal>Regional presence</Eyebrow>
+            <Eyebrow data-reveal>{eyebrow}</Eyebrow>
             <h2
               id={headingId}
               data-reveal
               className="mt-5 font-display text-display-md font-normal text-balance"
             >
-              Rooted in Uganda, looking across East Africa
+              {title}
             </h2>
             <p data-reveal className="mt-6 text-lead text-pretty text-muted-foreground">
-              {siteConfig.name} begins its work in Uganda. The places where EACH works, and any
-              expansion across the region, will be shown here once confirmed.
+              {text}
             </p>
-            <KeyFacts
-              className="mt-10"
-              facts={[
-                { term: "Where we begin", value: "Uganda" },
-                { term: "Region", value: siteConfig.region },
-                {
-                  term: "Sites and districts",
-                  value: <PendingContent item="regionalPresence" variant="badge" />,
-                },
-                {
-                  term: "Wider region",
-                  value: <PendingContent item="regionalPresence" variant="badge" />,
-                },
-              ]}
-            />
+            <KeyFacts className="mt-10" facts={facts} />
           </div>
           <div data-reveal className="mx-auto w-full max-w-md lg:col-span-5 lg:col-start-8">
             <SurveyGraphic />

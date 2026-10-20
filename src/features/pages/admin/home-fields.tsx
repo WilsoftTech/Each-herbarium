@@ -4,6 +4,7 @@ import { formData } from "@/features/cms";
 import type { MediaOption } from "@/features/media";
 import {
   homeSectionLabel,
+  landscapeCount,
   movableSectionKeys,
   type HomeContent,
   type HomeSectionKey,
@@ -262,6 +263,44 @@ export function HomeFields({ content, images }: HomeFieldsProps) {
           images={images}
           value={content?.heritage.imageId}
         />
+        {Array.from({ length: landscapeCount }, (_, index) => {
+          const landscape = content?.heritage.landscapes[index];
+          return (
+            <fieldset key={index} className="space-y-5 rounded-sm border border-border p-4">
+              <legend className="px-1 text-sm font-medium">Landscape {index + 1}</legend>
+              <div className="grid gap-5 md:grid-cols-2">
+                <TextField
+                  name={field("heritage", "landscapes", index, "name")}
+                  label="Short name"
+                  required
+                  maxLength={40}
+                  defaultValue={landscape?.name}
+                />
+                <TextField
+                  name={field("heritage", "landscapes", index, "title")}
+                  label="Title"
+                  required
+                  maxLength={120}
+                  defaultValue={landscape?.title}
+                />
+              </div>
+              <TextField
+                name={field("heritage", "landscapes", index, "body")}
+                label="Text"
+                required
+                rows={5}
+                hint={paragraphHint}
+                defaultValue={landscape ? formData.joinParagraphs(landscape.body) : ""}
+              />
+              <ImageField
+                name={field("heritage", "landscapes", index, "imageId")}
+                label="Image"
+                images={images}
+                value={landscape?.imageId}
+              />
+            </fieldset>
+          );
+        })}
       </AdminPanel>
 
       <AdminPanel
@@ -283,6 +322,49 @@ export function HomeFields({ content, images }: HomeFieldsProps) {
           maxLength={60}
           defaultValue={content?.projects.linkLabel}
         />
+      </AdminPanel>
+
+      <AdminPanel
+        title={homeSectionLabel.presence}
+        description="States only what is confirmed. Leave sites and wider region empty to show placeholder markers."
+      >
+        <HeadingFields section="presence" value={content?.presence} />
+        <TextField
+          name={field("presence", "text")}
+          label="Introduction"
+          required
+          rows={3}
+          maxLength={600}
+          defaultValue={content?.presence.text}
+        />
+        <div className="grid gap-5 md:grid-cols-2">
+          <TextField
+            name={field("presence", "start")}
+            label="Where we begin"
+            required
+            maxLength={120}
+            defaultValue={content?.presence.start}
+          />
+          <TextField
+            name={field("presence", "region")}
+            label="Region"
+            required
+            maxLength={120}
+            defaultValue={content?.presence.region}
+          />
+          <TextField
+            name={field("presence", "sites")}
+            label="Sites and districts"
+            maxLength={200}
+            defaultValue={content?.presence.sites}
+          />
+          <TextField
+            name={field("presence", "wider")}
+            label="Wider region"
+            maxLength={200}
+            defaultValue={content?.presence.wider}
+          />
+        </div>
       </AdminPanel>
 
       <AdminPanel title={homeSectionLabel.research}>

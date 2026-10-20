@@ -10,10 +10,11 @@ import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Container } from "@/components/ui/container";
 import { Notice } from "@/components/ui/notice";
 import { PendingContent } from "@/components/ui/pending-content";
+import { RichParagraphs } from "@/components/ui/rich-text";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
 import {
-  getProgramme,
+  getDesignedProgramme,
   nextProgramme,
   ProgrammeDetails,
   programmeMetadata,
@@ -22,41 +23,21 @@ import { referenceSpecimens } from "@/content/specimens";
 
 const slug = "medicinal-plants";
 
-/** The programme's CMS record (title, summary, intro, image). The rest of the page is designed copy. */
+/** The programme's CMS record and its designed page sections (designed-content.ts). */
 async function loadProgramme() {
-  const programme = await getProgramme(slug);
-  if (!programme) notFound();
-  return programme;
+  const designed = await getDesignedProgramme(slug);
+  if (!designed) notFound();
+  return designed;
 }
 
 export async function generateMetadata() {
-  return programmeMetadata(await loadProgramme());
+  return programmeMetadata((await loadProgramme()).programme);
 }
-
-// Draft approach for expert review (pending: `medicinalReview`).
-const approach = [
-  {
-    title: "Identify the plant precisely",
-    body: "Common names vary between languages and places. A scientific name, backed by a herbarium voucher specimen, makes clear which plant is meant.",
-  },
-  {
-    title: "Record use in its context",
-    body: "A traditional use is documented as what a community does and knows, with who, where and how. It is not presented as a proven treatment.",
-  },
-  {
-    title: "Ask before recording",
-    body: "Knowledge of medicinal plants is recorded only with the consent of the people who hold it, and credited to them.",
-  },
-  {
-    title: "Keep wild plants for the future",
-    body: "Harvesting bark, roots or whole plants can threaten wild populations, so conservation status is part of every record.",
-  },
-] as const;
 
 const voucher = referenceSpecimens[0];
 
 export default async function MedicinalPlantsPage() {
-  const programme = await loadProgramme();
+  const { programme, content } = await loadProgramme();
   const next = (await nextProgramme(programme.slug)) ?? programme;
 
   return (
@@ -69,9 +50,10 @@ export default async function MedicinalPlantsPage() {
           />
         }
         eyebrow="Our work"
-        title="Medicinal plants, in their scientific and cultural context"
+        title={content.header.title}
         lead={<p>{programme.intro}</p>}
         aside={
+          // A safety statement: fixed in code so it cannot be removed through the CMS.
           <Notice title="This is not medical advice">
             <p>
               Nothing on this site recommends using any plant to treat a condition. Some plants are
@@ -88,21 +70,13 @@ export default async function MedicinalPlantsPage() {
 
       <Section surface="muted" aria-labelledby="example-title">
         <SplitFeature
-          eyebrow="An example"
-          title="Uganda greenheart"
+          eyebrow={content.example.eyebrow}
+          title={content.example.title}
           titleId="example-title"
           image={programme.image}
           aspect="landscape"
         >
-          <p>
-            <i>Warburgia ugandensis</i> is a tree of East African forests and woodlands. Its bark
-            and leaves are widely used in traditional medicine in the region, which is one reason
-            the tree is harvested from the wild.
-          </p>
-          <p>
-            Recording a plant like this responsibly means naming it precisely, documenting how and
-            by whom it is used, and noting the pressure that harvesting places on it.
-          </p>
+          <RichParagraphs source={content.example.text} className="space-y-5" />
         </SplitFeature>
       </Section>
 
@@ -112,19 +86,21 @@ export default async function MedicinalPlantsPage() {
             <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
               <SectionHeading
                 id="approach-title"
-                eyebrow="Our approach"
-                title="Responsible plant knowledge"
+                eyebrow={content.approach.eyebrow}
+                title={content.approach.title}
               />
-              <PendingContent
-                item="medicinalReview"
-                variant="badge"
-                className="self-start md:self-end"
-              />
+              {content.approach.marker ? (
+                <PendingContent
+                  item="medicinalReview"
+                  variant="badge"
+                  className="self-start md:self-end"
+                />
+              ) : null}
             </div>
           </Container>
         </Reveal>
         <Container className="mt-16">
-          <NumberedList items={approach} columns={2} />
+          <NumberedList items={content.approach.items} columns={2} />
         </Container>
       </Section>
 
@@ -134,15 +110,13 @@ export default async function MedicinalPlantsPage() {
             <div className="lg:col-span-6">
               <SectionHeading
                 id="context-title"
-                eyebrow="Scientific context"
-                title="Why a specimen matters"
-                description="A voucher specimen is a pressed, labelled sample of the exact plant that was studied or described. Anyone can return to it to check the identification."
+                eyebrow={content.context.eyebrow}
+                title={content.context.title}
+                description={content.context.description}
               />
-              <p data-reveal className="mt-6 leading-8 text-pretty text-muted-foreground">
-                Conservation status matters too. <i>Prunus africana</i> (African cherry), whose bark
-                is harvested for international trade, is listed in Appendix II of CITES, the
-                convention that regulates international trade in threatened species.
-              </p>
+              <div data-reveal className="mt-6 leading-8 text-pretty text-muted-foreground">
+                <RichParagraphs source={content.context.text} className="space-y-5" />
+              </div>
             </div>
             <div className="mx-auto w-full max-w-sm lg:col-span-4 lg:col-start-8">
               <SpecimenSheet specimen={voucher} />

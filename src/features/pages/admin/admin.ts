@@ -1,10 +1,22 @@
 import "server-only";
 import { z } from "zod";
-import { formData, type WorkflowCollection } from "@/features/cms";
+import {
+  formData,
+  readSections,
+  sectionImageIds,
+  sectionsKeyField,
+  type WorkflowCollection,
+} from "@/features/cms";
 import type { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/services/db";
-import { homeContentSchema, movableSectionKeys, type HomeContent } from "../home-content";
-import { pageInclude, readHomeRow, toHomePage, toPage } from "../queries";
+import {
+  homeContentSchema,
+  landscapeCount,
+  movableSectionKeys,
+  type HomeContent,
+} from "../home-content";
+import { isLandingSlug, landingSections } from "../landing-content";
+import { pageInclude, readPageRow, toHomePage, toLandingPage, toPage } from "../queries";
 import { pageEntry, pageRegistry } from "../registry";
 
 type Db = PrismaClient | Prisma.TransactionClient;
@@ -28,7 +40,10 @@ export const pageInputSchema = z.object({
   heroImageId: z.string().min(1).nullable(),
   seoTitle: z.string().trim().min(1).max(120).nullable(),
   noindex: z.boolean(),
-  /** Homepage sections; validated with homeContentSchema for the homepage. */
+  /**
+   * Designed sections: the homepage's (home-content.ts) or a landing page's
+   * (landing-content.ts). Checked against the page's own declaration when saving.
+   */
   content: z.unknown().nullable(),
 });
 
@@ -83,12 +98,27 @@ function readHomeContent(form: FormData): unknown {
       statementEyebrow: t("heritage.statementEyebrow"),
       statement: t("heritage.statement"),
       imageId: t("heritage.imageId"),
+      landscapes: Array.from({ length: landscapeCount }, (_, index) => ({
+        name: t(`heritage.landscapes.${index}.name`),
+        title: t(`heritage.landscapes.${index}.title`),
+        body: paragraphs(t(`heritage.landscapes.${index}.body`)),
+        imageId: t(`heritage.landscapes.${index}.imageId`),
+      })),
     },
     projects: {
       eyebrow: t("projects.eyebrow"),
       title: t("projects.title"),
       description: t("projects.description"),
       linkLabel: t("projects.linkLabel"),
+    },
+    presence: {
+      eyebrow: t("presence.eyebrow"),
+      title: t("presence.title"),
+      text: t("presence.text"),
+      start: t("presence.start"),
+      region: t("presence.region"),
+      sites: t("presence.sites"),
+      wider: t("presence.wider"),
     },
     research: feature("research"),
     community: feature("community"),
@@ -110,6 +140,12 @@ function readHomeContent(form: FormData): unknown {
   };
 }
 
+/** Reads a landing page's sections editor, or null if absent. */
+function readLandingContent(form: FormData): unknown {
+  const slug = formData.text(form, sectionsKeyField);
+  return isLandingSlug(slug) ? readSections(form, landingSections[slug]) : null;
+}
+
 export function readPageForm(form: FormData) {
   const { text, optionalText, checkbox } = formData;
   return {
@@ -122,7 +158,7 @@ export function readPageForm(form: FormData) {
     heroImageId: optionalText(form, "heroImageId"),
     seoTitle: optionalText(form, "seoTitle"),
     noindex: checkbox(form, "noindex"),
-    content: readHomeContent(form),
+    content: readHomeContent(form) ?? readLandingContent(form),
   };
 }
 
@@ -137,10 +173,14 @@ export function parseHomeContent(
   if (result.success) return { content: result.data, errors: null };
   const errors: Record<string, string> = {};
   for (const issue of result.error.issues) {
+    const path = issue.path.map(String);
     const key =
-      issue.path[0] === "layout"
+      path[0] === "layout"
         ? "content.layout.hidden"
-        : ["content", ...issue.path.map(String)].join(".");
+        : // Landscape text is edited in one textarea per landscape.
+          path[1] === "landscapes" && path[3] === "body"
+          ? ["content", ...path.slice(0, 4)].join(".")
+          : ["content", ...path].join(".");
     errors[key] ??= issue.message;
   }
   return { content: null, errors };
@@ -185,17 +225,35 @@ export const pageWorkflow: WorkflowCollection = {
     }
     if (entry.kind === "prose" && !row.body.trim()) return "Enter the page text.";
     if (entry.kind === "home") {
-      const home = await readHomeRow(db, { id });
+      const home = await readPageRow(db, { id });
       try {
-        const mapped = toHomePage(home!);
-        const { images } = mapped;
+        const { images } = toHomePage(home!);
         if (
-          ![images.heritage, images.research, images.community, ...images.panels].every(Boolean)
+          ![
+            images.heritage,
+            images.research,
+            images.community,
+            ...images.landscapes,
+            ...images.panels,
+          ].every(Boolean)
         ) {
           return "Every homepage image must be uploaded, with alt text of at least 20 characters and a caption.";
         }
       } catch {
         return "The homepage needs its hero image and every section filled in.";
+      }
+    }
+    if (isLandingSlug(row.slug)) {
+      const full = await readPageRow(db, { id });
+      let landing;
+      try {
+        landing = toLandingPage(row.slug, full!);
+      } catch {
+        return "Fill in every section of the page before publishing.";
+      }
+      const ids = sectionImageIds(landingSections[row.slug], landing.content);
+      if (!ids.every((imageId) => landing.images[imageId])) {
+        return "Every image on the page must be uploaded, with alt text of at least 20 characters and a caption.";
       }
     }
     return null;

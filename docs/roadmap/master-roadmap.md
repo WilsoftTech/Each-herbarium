@@ -34,7 +34,7 @@ Delivered (2026-10-19). The route list in the M03 brief was adopted unchanged (2
 
 ### M04 — Database, CMS and editorial workflows
 
-Content models (projects, articles, resources, partners, media), Prisma + Neon persistence, R2 media, admin authentication behind `requireAdmin()`, draft, review and publish workflow. Static content moves to the CMS.
+Content models (pages, programmes, projects, articles, resources, partners, team, media, settings), Prisma + Neon persistence, Neon Managed Auth and Object Storage, admin authorisation behind `requireAdmin()`, draft, review and publish workflow with pending revisions. Static content moves to the CMS, including the designed sections of every landing page and founding programme page (ADR 0013, confirmed by the owner on 2026-10-20). Production migration and seeding need owner approval.
 
 ### M05 — Forms, communication and community engagement
 

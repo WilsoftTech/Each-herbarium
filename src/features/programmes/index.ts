@@ -5,5 +5,17 @@ export { getProgrammeEditor } from "./admin/editor";
 export { ProgrammeForm } from "./admin/programme-form";
 export { ProgrammeDetails } from "./components/programme-details";
 export { programmeMetadata } from "./metadata";
-export { getProgramme, listProgrammes, nextProgramme } from "./queries";
+export {
+  designedProgrammeSections,
+  isDesignedProgrammeSlug,
+  type DesignedProgrammeContent,
+  type DesignedProgrammeSlug,
+} from "./designed-content";
+export {
+  getDesignedProgramme,
+  getProgramme,
+  listProgrammes,
+  nextProgramme,
+  type DesignedProgramme,
+} from "./queries";
 export { bespokeProgrammeSlugs, programmeHref, programmeSchema, type Programme } from "./schema";

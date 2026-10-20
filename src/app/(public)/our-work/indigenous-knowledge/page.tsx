@@ -7,10 +7,11 @@ import { Statement } from "@/components/sections/statement";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Container } from "@/components/ui/container";
 import { PendingContent } from "@/components/ui/pending-content";
+import { RichParagraphs } from "@/components/ui/rich-text";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
 import {
-  getProgramme,
+  getDesignedProgramme,
   nextProgramme,
   ProgrammeDetails,
   programmeMetadata,
@@ -18,39 +19,19 @@ import {
 
 const slug = "indigenous-knowledge";
 
-/** The programme's CMS record (title, summary, intro, image). The rest of the page is designed copy. */
+/** The programme's CMS record and its designed page sections (designed-content.ts). */
 async function loadProgramme() {
-  const programme = await getProgramme(slug);
-  if (!programme) notFound();
-  return programme;
+  const designed = await getDesignedProgramme(slug);
+  if (!designed) notFound();
+  return designed;
 }
 
 export async function generateMetadata() {
-  return programmeMetadata(await loadProgramme());
+  return programmeMetadata((await loadProgramme()).programme);
 }
 
-// Draft principles for EACH and its community partners to agree (pending: `communityProtocols`).
-const principles = [
-  {
-    title: "Consent comes first",
-    body: "Knowledge is recorded only with the free, prior and informed consent of the people who hold it, and they can withdraw it.",
-  },
-  {
-    title: "Credit the custodians",
-    body: "Communities and individuals are named as the source of what they share, in the way they choose.",
-  },
-  {
-    title: "Communities decide what is shared",
-    body: "Some knowledge is not for publication. Communities decide what may be made public, and what stays private.",
-  },
-  {
-    title: "Benefits are shared",
-    body: "When plant knowledge leads to research or other benefits, the people it came from share in them. The Nagoya Protocol under the Convention on Biological Diversity sets out this principle.",
-  },
-] as const;
-
 export default async function IndigenousKnowledgePage() {
-  const programme = await loadProgramme();
+  const { programme, content } = await loadProgramme();
   const next = (await nextProgramme(programme.slug)) ?? programme;
 
   return (
@@ -64,17 +45,17 @@ export default async function IndigenousKnowledgePage() {
           />
         }
         eyebrow="Our work"
-        title="Knowledge that belongs to its custodians"
+        title={content.header.title}
         lead={<p>{programme.intro}</p>}
         image={programme.image}
       />
 
       <Statement
         id="living-knowledge"
-        eyebrow="Living knowledge"
+        eyebrow={content.statement.eyebrow}
         surface="light"
-        text="A plant's name in a local language often carries knowledge about where it grows, when it flowers and how it is used."
-        detail="That knowledge is passed between generations and changes as landscapes change. Recording it well keeps it in the hands of the people who hold it."
+        text={content.statement.text}
+        detail={content.statement.detail}
       />
 
       <Section surface="muted" aria-labelledby="principles-title">
@@ -83,20 +64,29 @@ export default async function IndigenousKnowledgePage() {
             <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
               <SectionHeading
                 id="principles-title"
-                eyebrow="Principles"
-                title="How knowledge should be recorded"
+                eyebrow={content.principles.eyebrow}
+                title={content.principles.title}
               />
-              <PendingContent
-                item="communityProtocols"
-                variant="badge"
-                className="self-start md:self-end"
-              />
+              {content.principles.marker ? (
+                <PendingContent
+                  item="communityProtocols"
+                  variant="badge"
+                  className="self-start md:self-end"
+                />
+              ) : null}
             </div>
           </Container>
         </Reveal>
         <Container className="mt-16">
-          <NumberedList items={principles} columns={2} />
-          <PendingContent item="communityProtocols" className="mt-14" />
+          <NumberedList items={content.principles.items} columns={2} />
+          {content.principles.details ? (
+            <RichParagraphs
+              source={content.principles.details}
+              className="mt-14 max-w-3xl space-y-5 text-lead text-pretty text-muted-foreground"
+            />
+          ) : (
+            <PendingContent item="communityProtocols" className="mt-14" />
+          )}
         </Container>
       </Section>
 

@@ -216,6 +216,43 @@ export function seedHomeContent(imageId: (asset: MediaAsset) => string): HomeCon
       statementEyebrow: "Plant heritage",
       statement: "Some of these plants grow nowhere else on Earth.",
       imageId: imageId(media.rwenzoriMountSpeke),
+      // General ecological description only; no claims about EACH's work in these places.
+      landscapes: [
+        {
+          name: "Mountains",
+          title: "Gardens above the clouds",
+          body: [
+            "High on the Rwenzori Mountains and East Africa's other great peaks, giant groundsels and giant lobelias grow in the cold, wet afroalpine zone.",
+            "Below them, heather and bamboo zones give way to montane forest, each band shaped by altitude, rainfall and frost.",
+          ],
+          imageId: imageId(media.rwenzoriGroundselValley),
+        },
+        {
+          name: "Forests",
+          title: "Tropical forests",
+          body: [
+            "Uganda's forests, from Bwindi and Budongo to Mabira, shelter tall hardwoods, climbers, ferns and a dense understorey of shrubs and herbs.",
+            "Streams that rise in the forest carry water to the farms and towns beyond it.",
+          ],
+          imageId: imageId(media.mabiraStream),
+        },
+        {
+          name: "Wetlands",
+          title: "Papyrus wetlands",
+          body: [
+            "Papyrus swamps fringe many of East Africa's lakes and rivers. They slow and filter water, store carbon in waterlogged peat, and provide materials and food for nearby communities.",
+          ],
+          imageId: imageId(media.papyrusSwamp),
+        },
+        {
+          name: "Savannas",
+          title: "Savannas and drylands",
+          body: [
+            "In the drier north-east of Uganda, grasslands, open woodland and candelabra euphorbias are adapted to long dry seasons and the occasional fire.",
+          ],
+          imageId: imageId(media.kidepoEuphorbia),
+        },
+      ],
     },
     projects: {
       eyebrow: "Featured conservation projects",
@@ -223,6 +260,15 @@ export function seedHomeContent(imageId: (asset: MediaAsset) => string): HomeCon
       description:
         "Project case studies will appear here. Until EACH publishes its first projects, placeholders show how they will be presented.",
       linkLabel: "All projects",
+    },
+    presence: {
+      eyebrow: "Regional presence",
+      title: "Rooted in Uganda, looking across East Africa",
+      text: "East African Community Herbariums begins its work in Uganda. The places where EACH works, and any expansion across the region, will be shown here once confirmed.",
+      start: "Uganda",
+      region: "East Africa",
+      sites: "",
+      wider: "",
     },
     research: {
       eyebrow: "Research and botanical knowledge",

@@ -11,9 +11,9 @@ import { Statement } from "@/components/sections/statement";
 import { StoryScroller } from "@/components/sections/story-scroller";
 import { Container } from "@/components/ui/container";
 import { ArrowRightIcon } from "@/components/ui/icons";
+import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { ecosystems } from "@/content/ecosystems";
 import { BitwiireFeature } from "@/features/partners";
 import { ProjectCards, type Project } from "@/features/projects";
 import { ResourceList, type Resource } from "@/features/resources";
@@ -105,7 +105,12 @@ export function HomePageView({ home, programmes, projects, resources }: HomePage
             </Container>
           </Reveal>
           <Container className="mt-8 pb-section-sm">
-            <StoryScroller steps={ecosystems} />
+            <StoryScroller
+              steps={content.heritage.landscapes.flatMap((landscape, index) => {
+                const image = images.landscapes[index];
+                return image ? [{ ...landscape, id: `landscape-${index + 1}`, image }] : [];
+              })}
+            />
           </Container>
         </Section>
         {images.heritage ? (
@@ -137,7 +142,29 @@ export function HomePageView({ home, programmes, projects, resources }: HomePage
         </Reveal>
       </Section>
     ),
-    presence: () => <RegionPresence />,
+    presence: () => (
+      <RegionPresence
+        eyebrow={content.presence.eyebrow}
+        title={content.presence.title}
+        text={content.presence.text}
+        facts={[
+          { term: "Where we begin", value: content.presence.start },
+          { term: "Region", value: content.presence.region },
+          {
+            term: "Sites and districts",
+            value: content.presence.sites || (
+              <PendingContent item="regionalPresence" variant="badge" />
+            ),
+          },
+          {
+            term: "Wider region",
+            value: content.presence.wider || (
+              <PendingContent item="regionalPresence" variant="badge" />
+            ),
+          },
+        ]}
+      />
+    ),
     research: () =>
       images.research ? (
         <Section aria-labelledby="research-title">

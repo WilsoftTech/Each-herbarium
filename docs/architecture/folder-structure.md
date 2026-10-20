@@ -12,8 +12,10 @@ This describes the repository **as it is now**. Planned folders are listed separ
 ├── prisma/
 │   ├── schema.prisma            Data model (ADR 0007); client generated to src/generated/prisma
 │   ├── migrations/              Versioned SQL migrations (init + hand-written CHECKs and audit trigger)
-│   ├── seed.ts                  Create-only migration of the M03 content into the CMS
-│   └── seed/                    Seed data: programmes, projects, articles, partners, pages, types
+│   ├── seed.ts                  Create-only migration of the M03 content into the CMS; fills
+│   │                            designed sections that existing rows lack (never overwrites)
+│   └── seed/                    Seed data: programmes, projects, articles, partners, pages, landing
+│                                and programme sections, fill-content.ts (backfill), types
 ├── scripts/                     tsx command-line tools: create-admin, cleanup-media,
 │                                check-migrations (safeguard), script-env (env + client)
 ├── public/
@@ -72,12 +74,12 @@ This describes the repository **as it is now**. Planned folders are listed separ
 │   ├── content/                 Typed static copy that is not CMS-bound
 │   │   ├── pending.ts           Register of content awaiting EACH (placeholders name these keys)
 │   │   ├── programmes.ts        Programmes and the herbarium
-│   │   ├── ecosystems.ts        Landscape chapters for the scroll story
 │   │   └── specimens.ts         Reference specimens (Kew-imaged, collected in Uganda)
 │   ├── features/                Business modules (ADR 0002, 0006, 0007)
 │   │   ├── cms/                 Workflow and revision rules, shared save/transition/delete, revision
 │   │   │                        editor and preview loaders, action results, form parsing, list params,
-│   │   │                        dashboard, WorkflowPanel, EditorTarget, SeoFields, StatusFilter
+│   │   │                        dashboard, WorkflowPanel, EditorTarget, SeoFields, StatusFilter,
+│   │   │                        sections.ts + SectionFields (designed-section declarations, ADR 0013)
 │   │   ├── auth/                Sign-in, sign-out and password Server Actions and forms
 │   │   ├── users/               Staff accounts and roles (administrators only)
 │   │   ├── media/               Upload rules, mapping, references, admin actions and forms
@@ -85,7 +87,9 @@ This describes the repository **as it is now**. Planned folders are listed separ
 │   │   │                        Each: schema.ts, queries.ts (published, cached), components/,
 │   │   │                        admin/ (adapter, save operations, editor loaders, actions, form),
 │   │   │                        index.ts. pages/ also: registry.ts (managed fixed pages),
-│   │   │                        home-content.ts (homepage sections), metadata.ts
+│   │   │                        home-content.ts (homepage sections), landing-content.ts and
+│   │   │                        components/landing/ (landing sections and views), metadata.ts.
+│   │   │                        programmes/ also: designed-content.ts (founding programme pages)
 │   ├── hooks/                   useScrolled, useBodyScrollLock
 │   ├── lib/                     utils.ts (cn), motion.ts, metadata.ts (pageMetadata), structured-data.ts
 │   ├── generated/prisma/        Prisma client (generated, git-ignored)
@@ -98,12 +102,14 @@ This describes the repository **as it is now**. Planned folders are listed separ
 │   ├── test-database.ts         Test database URL and schema (refuses production)
 │   ├── unit/                    Vitest (node; jsdom per file): every page, content contracts and
 │   │                            register, navigation, metadata, components, permissions, workflow,
-│   │                            upload rules, rich text, env, admin input, migration safeguard
+│   │                            upload rules, rich text, env, admin input, migration safeguard,
+│   │                            designed sections (declarations, seed copy, backfill)
 │   ├── integration/             Vitest against the test schema: authorisation, editorial workflow and
 │   │                            revisions, CMS pages/settings/sitemap, database constraints and drift,
 │   │                            media, sign-in; auth test double
 │   └── e2e/                     Playwright: routes, links, interactions, navigation, header, mega menu,
-│                                mobile, motion, layout/axe, platform, admin (publish flow);
+│                                mobile, motion, layout/axe, platform, admin (publish flow,
+│                                designed-section edits);
 │                                global-setup + fixtures/e2e-data.ts (e2e staff accounts)
 ├── AGENTS.md  CLAUDE.md  ROADMAP.md  README.md
 ├── components.json              shadcn/ui configuration (aliases, new-york style)

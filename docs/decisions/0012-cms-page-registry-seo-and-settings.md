@@ -4,6 +4,7 @@
 - **Date:** 2026-10-21
 - **Milestone:** M04
 - Extends [ADR 0007](0007-cms-editorial-workflow.md) (CMS) and [ADR 0011](0011-content-revisions.md) (revisions).
+- **Amended by [ADR 0013](0013-designed-sections-in-the-cms.md):** the designed sections below landing-page headers, the founding programme pages' sections and the homepage landscapes and regional presence are now managed in the CMS. Statements below that call them code-owned are superseded.
 
 ## Context
 

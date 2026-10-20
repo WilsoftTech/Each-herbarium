@@ -1,6 +1,7 @@
 // Public API of the CMS core (editorial workflow shared by every content type).
 export { idleState, type ActionState } from "./action-state";
 export { EditorTarget } from "./components/editor-target";
+export { SectionFields } from "./components/section-fields";
 export { readSeoFields, SeoFields } from "./components/seo-fields";
 export { StatusFilter } from "./components/status-filter";
 export { WorkflowPanel } from "./components/workflow-panel";
@@ -41,6 +42,27 @@ export {
   type ListParams,
 } from "./list-params";
 export { ActionError, ConflictError, fieldErrorsOf, parseInput, runAction } from "./run-action";
+export {
+  contentField,
+  field,
+  headingFields,
+  introducedHeadingFields,
+  joinItems,
+  nextLinkFields,
+  parseItems,
+  parseSections,
+  readSections,
+  sectionFieldName,
+  sectionFormValues,
+  sectionImageFields,
+  sectionImageIds,
+  sectionsKeyField,
+  sectionsSchema,
+  type FieldSpec,
+  type SectionsSpec,
+  type SectionsValue,
+  type SectionSpec,
+} from "./sections";
 export {
   availableRevisionTransitions,
   availableTransitions,

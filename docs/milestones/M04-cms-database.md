@@ -1,6 +1,6 @@
 # M04 — Database, CMS and editorial workflows
 
-**Status:** IN PROGRESS (see the exit gate below) · **Depends on:** M03
+**Status:** PASS WITH CONDITIONS (production migration awaits owner approval; see the exit gate) · **Depends on:** M03
 
 Neon setup authorized by the owner on 2026-10-20. Backend choices: [ADR 0010](../decisions/0010-neon-managed-backend.md) (Prisma on Neon, Managed Auth, private Object Storage, a liveness Function). Integration tests use the `dev` branch. Setup and operational checks: [Neon verification report](../audits/M04-neon-verification.md). CMS completion and its evidence: [M04 CMS verification report](../audits/M04-cms-verification.md).
 
@@ -12,12 +12,13 @@ Let authorised EACH staff manage every applicable piece of public content secure
 
 - Custom admin on Prisma + Neon PostgreSQL, Neon Managed Auth and private Neon Object Storage ([ADR 0007](../decisions/0007-cms-editorial-workflow.md), [ADR 0010](../decisions/0010-neon-managed-backend.md)).
 - Content models: pages (registry of fixed routes, homepage sections), programmes, projects, articles, resources, partners, team, media, site settings ([ADR 0012](../decisions/0012-cms-page-registry-seo-and-settings.md)).
+- Designed sections of every landing page and of the four founding programme pages, edited through typed declarations, not a page builder ([ADR 0013](../decisions/0013-designed-sections-in-the-cms.md)). Scope confirmed by the owner on 2026-10-20: full website integration includes them.
 - `requireAdmin()` with server-side role checks on every admin page, action, preview and route handler; CMS membership required in addition to a managed identity.
 - Draft → review → published → archived workflow, with pending revisions so unapproved edits to published content never go live ([ADR 0011](../decisions/0011-content-revisions.md)); previews of drafts and pending changes.
 - Public routes read only published content; cache tags expire on publish, revision approval, unpublish and archive; sitemap and robots.
 - Migration of M03 static content into the CMS (seed and data migrations).
 
-Out of scope: public user accounts, researcher accounts, the Digital Herbarium specimen database, editable designed body copy of landing pages (ADR 0012), MFA and auth email (operational follow-ups).
+Out of scope: public user accounts, researcher accounts, the Digital Herbarium specimen database, MFA and auth email (operational follow-ups). Kept in code by rule (ADR 0013): the protected brand, integrity statements, notices about website features that do not exist yet, the placeholder register, reference specimens and interface labels.
 
 ## Admin routes
 
@@ -25,7 +26,7 @@ Out of scope: public user accounts, researcher accounts, the Digital Herbarium s
 | ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
 | `/admin`                                                                        | Dashboard: live figures, quick actions, waiting for review, needs attention, recent audit (administrators), content by status | All                                                         |
 | `/admin/reviews`                                                                | Items in review and pending changes to published content                                                                      | All (approval: reviewer, administrator)                     |
-| `/admin/pages`, `/admin/pages/[id]`                                             | Homepage sections, landing headers, policy text, images, SEO                                                                  | All (registry-driven editor)                                |
+| `/admin/pages`, `/admin/pages/[id]`                                             | Homepage sections, landing headers and designed sections, policy text, images, SEO                                            | All (registry-driven editor)                                |
 | `/admin/programmes`, `/new`, `/[id]`                                            | Programmes                                                                                                                    | All                                                         |
 | `/admin/projects`, `/new`, `/[id]`                                              | Projects                                                                                                                      | All                                                         |
 | `/admin/articles`, `/new`, `/[id]`                                              | Articles and publications                                                                                                     | All                                                         |
@@ -81,16 +82,32 @@ Every transition and save runs in a transaction with an optimistic-lock check an
 
 See the [CMS verification report](../audits/M04-cms-verification.md) for the commands and their output.
 
-- [ ] Every mutation is authorised on the server; unauthenticated and unauthorised requests are rejected (tested).
-- [ ] Inputs are validated on the server.
-- [ ] Migrations are reviewed; no destructive migration runs without approval.
-- [ ] Publishing revalidates the affected public pages.
-- [ ] Editing published content never exposes unapproved changes.
-- [ ] Every applicable public page is connected to its authoritative CMS source.
-- [ ] Secrets only in environment variables; `.env.example` updated.
-- [ ] Unit tests for validation and authorisation; integration and e2e for the publish and revision flows.
-- [ ] Full verification suite passes.
-- [ ] Production database migrated and seeded (requires owner approval).
+- [x] Every mutation is authorised on the server; unauthenticated and unauthorised requests are rejected (tested).
+- [x] Inputs are validated on the server.
+- [x] Migrations are reviewed; no destructive migration runs without approval.
+- [x] Publishing revalidates the affected public pages.
+- [x] Editing published content never exposes unapproved changes.
+- [x] Every applicable public page is connected to its authoritative CMS source (including designed sections, ADR 0013).
+- [x] Secrets only in environment variables; `.env.example` updated (no variables added in the closeout).
+- [x] Unit tests for validation and authorisation; integration and e2e for the publish and revision flows.
+- [x] Full verification suite passes.
+- [ ] **BLOCKED (owner approval):** production database migrated and seeded. Read-only check on 2026-10-21: 4 of 6 migrations not applied.
+
+## Verification record
+
+Run on 2026-10-21 (Windows 11, Node 24.13.0, npm 11.6.2) against the Neon `dev` branch. Details: [M04 CMS verification](../audits/M04-cms-verification.md).
+
+| Check              | Command                             | Result                                             |
+| ------------------ | ----------------------------------- | -------------------------------------------------- |
+| Format             | `npm run format:check`              | Pass                                               |
+| Typecheck          | `npm run typecheck`                 | Pass                                               |
+| Lint               | `npm run lint`                      | Pass, no findings                                  |
+| Migrations         | `npm run db:check-migrations`       | Pass; dev up to date                               |
+| Unit + integration | `npm test`                          | Pass: 25 files, 463 tests                          |
+| Build              | `npm run build`                     | Pass: 79/79 pages, public routes static            |
+| E2E                | `npm run test:e2e`                  | Pass: 142 passed, 3 skipped (opt-in screenshots)   |
+| Production         | `prisma migrate status` (read-only) | 4 migrations pending; not applied (needs approval) |
+| Milestone commit   | `git log`                           | Recorded in `ROADMAP.md` after the commit          |
 
 ## Risks
 

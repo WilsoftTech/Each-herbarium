@@ -120,25 +120,32 @@ export function WorkflowPanel({
           ) : null}
         </div>
 
-        {names.length ? (
-          <ActionForm action={transition} label="Change status">
-            <input type="hidden" name="id" value={item.id} />
-            <input type="hidden" name="version" value={item.version} />
-            <div className="flex flex-wrap gap-3">
-              {names.map((name) => (
-                <SubmitButton
-                  key={name}
-                  name="transition"
-                  value={name}
-                  size="sm"
-                  variant={name === "approve" || name === "submit" ? "primary" : "outline"}
-                >
-                  {transitions[name].label}
-                </SubmitButton>
-              ))}
-            </div>
-          </ActionForm>
-        ) : null}
+        {/*
+          Always mounted, so the result of a transition stays on screen when
+          the new status leaves this person no further transitions (an editor
+          who has just submitted for review).
+        */}
+        <ActionForm action={transition} label="Change status">
+          {names.length ? (
+            <>
+              <input type="hidden" name="id" value={item.id} />
+              <input type="hidden" name="version" value={item.version} />
+              <div className="flex flex-wrap gap-3">
+                {names.map((name) => (
+                  <SubmitButton
+                    key={name}
+                    name="transition"
+                    value={name}
+                    size="sm"
+                    variant={name === "approve" || name === "submit" ? "primary" : "outline"}
+                  >
+                    {transitions[name].label}
+                  </SubmitButton>
+                ))}
+              </div>
+            </>
+          ) : null}
+        </ActionForm>
         {revision && item.status === "PUBLISHED" ? (
           <p className="text-sm text-muted-foreground">
             Unpublishing and archiving are unavailable while changes are pending.
@@ -160,56 +167,65 @@ export function WorkflowPanel({
         ) : null}
       </AdminPanel>
 
-      {revision ? (
-        <AdminPanel title="Pending changes" className="border-accent/60">
-          <div className="flex items-center gap-3">
-            <StatusBadge status={revision.status} />
-            <span className="text-xs text-muted-foreground">Revision {revision.version}</span>
-          </div>
-          <p className="text-sm text-muted-foreground">{revisionGuidance[revision.status]}</p>
-          {revisionError ? (
-            <p role="alert" className="text-sm text-destructive">
-              These changes can no longer be applied: {revisionError} Discard them, or a reviewer
-              can fix the published item first.
-            </p>
-          ) : null}
-          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
-            <dt className="text-muted-foreground">Last changed</dt>
-            <dd>{formatAdminDate(revision.updatedAt)}</dd>
-            {revision.submittedAt ? (
-              <>
-                <dt className="text-muted-foreground">Submitted</dt>
-                <dd>{formatAdminDate(revision.submittedAt)}</dd>
-              </>
-            ) : null}
-          </dl>
-          {revisionNames.length ? (
-            <ActionForm action={transition} label="Pending changes">
-              <input type="hidden" name="id" value={item.id} />
-              <input type="hidden" name="version" value={revision.version} />
-              <input type="hidden" name="revision" value={revision.id} />
-              <div className="flex flex-wrap gap-3">
-                {revisionNames.map((name) => (
-                  <SubmitButton
-                    key={name}
-                    name="transition"
-                    value={name}
-                    size="sm"
-                    variant={
-                      name === "approveRevision" || name === "submitRevision"
-                        ? "primary"
-                        : name === "discardRevision"
-                          ? "destructive"
-                          : "outline"
-                    }
-                  >
-                    {revisionTransitions[name].label}
-                  </SubmitButton>
-                ))}
+      {/*
+        Mounted for every published item, so the result of approving or
+        discarding pending changes stays on screen after the panel itself
+        is gone. Pending changes exist only for published items.
+      */}
+      {item.status === "PUBLISHED" ? (
+        <ActionForm action={transition} label="Pending changes">
+          {revision ? (
+            <AdminPanel title="Pending changes" className="border-accent/60">
+              <div className="flex items-center gap-3">
+                <StatusBadge status={revision.status} />
+                <span className="text-xs text-muted-foreground">Revision {revision.version}</span>
               </div>
-            </ActionForm>
+              <p className="text-sm text-muted-foreground">{revisionGuidance[revision.status]}</p>
+              {revisionError ? (
+                <p role="alert" className="text-sm text-destructive">
+                  These changes can no longer be applied: {revisionError} Discard them, or a
+                  reviewer can fix the published item first.
+                </p>
+              ) : null}
+              <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+                <dt className="text-muted-foreground">Last changed</dt>
+                <dd>{formatAdminDate(revision.updatedAt)}</dd>
+                {revision.submittedAt ? (
+                  <>
+                    <dt className="text-muted-foreground">Submitted</dt>
+                    <dd>{formatAdminDate(revision.submittedAt)}</dd>
+                  </>
+                ) : null}
+              </dl>
+              {revisionNames.length ? (
+                <>
+                  <input type="hidden" name="id" value={item.id} />
+                  <input type="hidden" name="version" value={revision.version} />
+                  <input type="hidden" name="revision" value={revision.id} />
+                  <div className="flex flex-wrap gap-3">
+                    {revisionNames.map((name) => (
+                      <SubmitButton
+                        key={name}
+                        name="transition"
+                        value={name}
+                        size="sm"
+                        variant={
+                          name === "approveRevision" || name === "submitRevision"
+                            ? "primary"
+                            : name === "discardRevision"
+                              ? "destructive"
+                              : "outline"
+                        }
+                      >
+                        {revisionTransitions[name].label}
+                      </SubmitButton>
+                    ))}
+                  </div>
+                </>
+              ) : null}
+            </AdminPanel>
           ) : null}
-        </AdminPanel>
+        </ActionForm>
       ) : null}
     </div>
   );

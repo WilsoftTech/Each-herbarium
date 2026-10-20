@@ -42,6 +42,26 @@ async function newSession(browser: Browser, role: Role): Promise<Page> {
   return page;
 }
 
+/**
+ * One signed-in page per role, shared by the editorial flows below. Sign-in is
+ * rate limited per account and per address (src/services/rate-limit.ts), so
+ * the flows reuse a session instead of signing in for every step.
+ */
+const sessions = new Map<Role, Page>();
+
+async function session(browser: Browser, role: Role): Promise<Page> {
+  const existing = sessions.get(role);
+  if (existing && !existing.isClosed()) return existing;
+  const page = await newSession(browser, role);
+  sessions.set(role, page);
+  return page;
+}
+
+test.afterAll(async () => {
+  for (const page of sessions.values()) await page.context().close();
+  sessions.clear();
+});
+
 async function expectAccessible(page: Page) {
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
@@ -181,8 +201,8 @@ test.describe.serial("publish flow", () => {
   const revisedTitle = `${title} (revised)`;
   let editUrl = "";
 
-  test("an editor creates a draft that is not public", async ({ page }) => {
-    await signIn(page, "editor");
+  test("an editor creates a draft that is not public", async ({ browser }) => {
+    const page = await session(browser, "editor");
     await page.goto("/admin/projects/new");
     await page.getByLabel(/^Title\b/).fill(title);
     await page.getByLabel("Slug").fill(slug);
@@ -204,8 +224,8 @@ test.describe.serial("publish flow", () => {
     expect(response?.status()).toBe(404);
   });
 
-  test("the editor submits it for review but cannot approve it", async ({ page }) => {
-    await signIn(page, "editor");
+  test("the editor submits it for review but cannot approve it", async ({ browser }) => {
+    const page = await session(browser, "editor");
     await page.goto(editUrl);
     await page.getByRole("button", { name: "Submit for review" }).click();
     await expect(page.getByRole("status")).toContainText("Submit for review: done.");
@@ -217,7 +237,7 @@ test.describe.serial("publish flow", () => {
   test("a reviewer approves: the page and the project list update immediately", async ({
     browser,
   }) => {
-    const page = await newSession(browser, "reviewer");
+    const page = await session(browser, "reviewer");
     await page.goto(editUrl);
     await page.getByRole("link", { name: "Preview" }).click();
     await expect(
@@ -234,13 +254,15 @@ test.describe.serial("publish flow", () => {
     await expect(visitor.getByRole("heading", { level: 1, name: title })).toBeVisible();
     await visitor.goto("/projects");
     await expect(visitor.getByRole("heading", { name: title })).toBeVisible();
+    const sitemap = await visitor.request.get("/sitemap.xml");
+    expect(await sitemap.text()).toContain(`/projects/${slug}`);
     await visitor.close();
   });
 
   test("an editor's changes to the published project stay private until approved", async ({
     browser,
   }) => {
-    const page = await newSession(browser, "editor");
+    const page = await session(browser, "editor");
     await page.goto(editUrl);
     await expect(page.getByText("Published", { exact: true }).first()).toBeVisible();
     await page.getByLabel(/^Title\b/).fill(revisedTitle);
@@ -275,7 +297,7 @@ test.describe.serial("publish flow", () => {
   test("the review queue lists the changes; a reviewer approves and the site updates", async ({
     browser,
   }) => {
-    const page = await newSession(browser, "reviewer");
+    const page = await session(browser, "reviewer");
     await page.goto("/admin/reviews");
     await expect(page.getByRole("heading", { level: 1, name: "Review queue" })).toBeVisible();
     await expect(page.getByRole("link", { name: title })).toBeVisible();
@@ -289,14 +311,15 @@ test.describe.serial("publish flow", () => {
     const visitor = await browser.newPage();
     await visitor.goto(`/projects/${slug}`);
     await expect(visitor.getByRole("heading", { level: 1, name: revisedTitle })).toBeVisible();
-    await expect(visitor).toHaveTitle(new RegExp(revisedTitle));
+    // The title contains parentheses, so compare text rather than build a pattern.
+    expect(await visitor.title()).toContain(revisedTitle);
     await visitor.goto("/");
     await expect(visitor.getByRole("heading", { name: revisedTitle })).toBeVisible();
     await visitor.close();
   });
 
   test("archiving removes it from the site immediately", async ({ browser }) => {
-    const page = await newSession(browser, "reviewer");
+    const page = await session(browser, "reviewer");
     await page.goto(editUrl);
     await page.getByRole("button", { name: "Archive" }).click();
     await expect(page.getByRole("status")).toContainText("Archive: done.");
@@ -313,6 +336,99 @@ test.describe.serial("publish flow", () => {
   });
 });
 
+test.describe.serial("designed page sections", () => {
+  const original = "How a specimen is made";
+  const changed = `How a herbarium specimen is made ${Date.now()}`;
+  const heading = "[name='content.process.title']";
+
+  async function openHerbarium(page: Page) {
+    await page.goto("/admin/pages");
+    await page.getByRole("link", { name: /^The herbarium:/ }).click();
+    await expect(page.locator(heading)).toBeVisible();
+  }
+
+  /** Saves, submits and approves a new section heading as a reviewer. */
+  async function publishHeading(page: Page, value: string) {
+    await openHerbarium(page);
+    await page.locator(heading).fill(value);
+    await page.getByRole("button", { name: "Save pending changes" }).click();
+    await expect(page).toHaveURL(/\?revision=1$/);
+    await page.getByRole("button", { name: "Submit changes for review" }).click();
+    await expect(page.getByRole("status")).toContainText("done.");
+    await page.getByRole("button", { name: "Approve and publish changes" }).click();
+    await expect(page.getByRole("status")).toContainText("Approve and publish changes: done.");
+  }
+
+  test("an editor's change to a designed section stays private until approved", async ({
+    browser,
+  }) => {
+    const editor = await session(browser, "editor");
+    await openHerbarium(editor);
+    await expect(editor.locator(heading)).toHaveValue(original);
+    await expectAccessible(editor);
+    await editor.locator(heading).fill(changed);
+    await editor.getByRole("button", { name: "Save pending changes" }).click();
+    await expect(editor).toHaveURL(/\?revision=1$/);
+
+    // The public page keeps the approved wording.
+    const visitor = await browser.newPage();
+    await visitor.goto("/herbarium");
+    await expect(visitor.getByRole("heading", { level: 2, name: original })).toBeVisible();
+    await expect(visitor.getByRole("heading", { name: changed })).toHaveCount(0);
+
+    // The preview renders the real page composition with the pending change.
+    await editor.getByRole("link", { name: "Preview pending changes" }).click();
+    await expect(
+      editor.getByRole("note").filter({ hasText: "Preview of pending changes" }),
+    ).toBeVisible();
+    await expect(editor.getByRole("heading", { level: 2, name: changed })).toBeVisible();
+    await expect(
+      editor.getByRole("heading", { level: 2, name: "Collection status" }),
+    ).toBeVisible();
+
+    await openHerbarium(editor);
+    await editor.getByRole("button", { name: "Submit changes for review" }).click();
+    await expect(editor.getByRole("status")).toContainText("Submit changes for review: done.");
+    await editor.reload();
+    await expect(editor.getByRole("button", { name: "Approve and publish changes" })).toHaveCount(
+      0,
+    );
+    await visitor.goto("/herbarium");
+    await expect(visitor.getByRole("heading", { level: 2, name: original })).toBeVisible();
+
+    const reviewer = await session(browser, "reviewer");
+    await openHerbarium(reviewer);
+    await reviewer.getByRole("button", { name: "Approve and publish changes" }).click();
+    await expect(reviewer.getByRole("status")).toContainText("Approve and publish changes: done.");
+
+    // Approval expires the cached page: the next request shows the new heading.
+    await visitor.goto("/herbarium");
+    await expect(visitor.getByRole("heading", { level: 2, name: changed })).toBeVisible();
+    await expect(visitor.getByRole("heading", { name: original })).toHaveCount(0);
+    await visitor.close();
+  });
+
+  test("a reviewer restores the approved wording the same way", async ({ browser }) => {
+    const reviewer = await session(browser, "reviewer");
+    await publishHeading(reviewer, original);
+    const visitor = await browser.newPage();
+    await visitor.goto("/herbarium");
+    await expect(visitor.getByRole("heading", { level: 2, name: original })).toBeVisible();
+    await visitor.close();
+  });
+
+  test("founding programme editors include the designed sections", async ({ browser }) => {
+    const page = await session(browser, "reviewer");
+    await page.goto("/admin/programmes");
+    await page.getByRole("link", { name: "Plant conservation" }).click();
+    await expect(page.getByRole("heading", { name: "Why it matters" })).toBeVisible();
+    await expect(page.locator("[name='content.approach.items']")).toHaveValue(
+      /## Know what grows where/,
+    );
+    await expectAccessible(page);
+  });
+});
+
 test.describe.serial("managed page header", () => {
   const original = "Measuring what matters";
   const changed = `Measuring results ${Date.now()}`;
@@ -320,7 +436,7 @@ test.describe.serial("managed page header", () => {
   async function editImpact(page: Page, value: string) {
     await page.goto("/admin/pages");
     await page.getByRole("link", { name: /^Impact:/ }).click();
-    await page.getByLabel(/^Title\b/).fill(value);
+    await page.locator("[name='title']").fill(value);
     await page.getByRole("button", { name: "Save pending changes" }).click();
     await expect(page).toHaveURL(/\?revision=1$/);
     await page.getByRole("button", { name: "Submit changes for review" }).click();
@@ -330,7 +446,7 @@ test.describe.serial("managed page header", () => {
   }
 
   test("a reviewer publishes a new page headline without redeployment", async ({ browser }) => {
-    const page = await newSession(browser, "reviewer");
+    const page = await session(browser, "reviewer");
     await editImpact(page, changed);
     const visitor = await browser.newPage();
     await visitor.goto("/impact");

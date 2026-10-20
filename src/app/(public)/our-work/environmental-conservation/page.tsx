@@ -7,11 +7,11 @@ import { SplitFeature } from "@/components/sections/split-feature";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Container } from "@/components/ui/container";
 import { PendingContent } from "@/components/ui/pending-content";
+import { RichParagraphs } from "@/components/ui/rich-text";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { media } from "@/config/media";
 import {
-  getProgramme,
+  getDesignedProgramme,
   nextProgramme,
   ProgrammeDetails,
   programmeMetadata,
@@ -20,37 +20,24 @@ import { listProjectsForProgramme, ProjectCards } from "@/features/projects";
 
 const slug = "environmental-conservation";
 
-/** The programme's CMS record (title, summary, intro, image). The rest of the page is designed copy. */
+/** The programme's CMS record and its designed page sections (designed-content.ts). */
 async function loadProgramme() {
-  const programme = await getProgramme(slug);
-  if (!programme) notFound();
-  return programme;
+  const designed = await getDesignedProgramme(slug);
+  if (!designed) notFound();
+  return designed;
 }
 
 export async function generateMetadata() {
-  return programmeMetadata(await loadProgramme());
+  return programmeMetadata((await loadProgramme()).programme);
 }
 
-const services = [
-  {
-    title: "Water",
-    body: "Forests and wetlands catch, store and filter the water that towns and farms rely on.",
-  },
-  { title: "Soil", body: "Roots and ground cover hold soil on slopes and riverbanks." },
-  {
-    title: "Carbon",
-    body: "Forests and papyrus peat store carbon that would otherwise reach the atmosphere.",
-  },
-  {
-    title: "Livelihoods",
-    body: "Ecosystems provide materials, food, grazing and medicine for nearby communities.",
-  },
-] as const;
-
 export default async function EnvironmentalConservationPage() {
-  const programme = await loadProgramme();
+  const { programme, content, images } = await loadProgramme();
   const projects = await listProjectsForProgramme(programme.slug);
   const next = (await nextProgramme(programme.slug)) ?? programme;
+  const forestImage = images[content.forests.imageId];
+  const photograph = images[content.photograph.imageId];
+  const mosaicImage = images[content.mosaics.imageId];
 
   return (
     <>
@@ -76,13 +63,13 @@ export default async function EnvironmentalConservationPage() {
             <div className="lg:col-span-6">
               <SectionHeading
                 id="ecosystems-title"
-                eyebrow="Ecosystems"
-                title="Plants live in places"
+                eyebrow={content.ecosystems.eyebrow}
+                title={content.ecosystems.title}
                 description={programme.intro}
               />
             </div>
             <dl data-reveal className="grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:col-span-6">
-              {services.map((service) => (
+              {content.ecosystems.items.map((service) => (
                 <div key={service.title} className="border-t border-border pt-5">
                   <dt className="font-display text-heading">{service.title}</dt>
                   <dd className="mt-2 leading-7 text-muted-foreground">{service.body}</dd>
@@ -93,51 +80,61 @@ export default async function EnvironmentalConservationPage() {
         </Reveal>
       </Section>
 
-      <Section surface="muted" aria-labelledby="forest-title">
-        <SplitFeature
-          eyebrow="Forests"
-          title="Where rivers begin"
-          titleId="forest-title"
-          image={media.mabiraStream}
-          aspect="landscape"
-        >
-          <p>
-            Uganda&apos;s forests, from Mabira to Budongo and Bwindi, hold much of the
-            country&apos;s plant diversity. Streams that rise under their canopy feed the land
-            beyond.
-          </p>
-        </SplitFeature>
-      </Section>
+      {forestImage ? (
+        <Section surface="muted" aria-labelledby="forest-title">
+          <SplitFeature
+            eyebrow={content.forests.eyebrow}
+            title={content.forests.title}
+            titleId="forest-title"
+            image={forestImage}
+            aspect="landscape"
+          >
+            <RichParagraphs source={content.forests.text} className="space-y-5" />
+          </SplitFeature>
+        </Section>
+      ) : null}
 
-      <FullBleedImage
-        image={media.kidepoSavanna}
-        eyebrow="Savannas and drylands"
-        statement="Grasslands and drylands are rich ecosystems in their own right, shaped by season, grazing and fire."
-      />
+      {photograph ? (
+        <FullBleedImage
+          image={photograph}
+          eyebrow={content.photograph.eyebrow}
+          statement={content.photograph.statement}
+        />
+      ) : null}
 
       <Section aria-labelledby="edges-title">
-        <SplitFeature
-          eyebrow="Mosaics"
-          title="Where forest meets grassland"
-          titleId="edges-title"
-          image={media.semulikiVegetation}
-          aspect="landscape"
-          reverse
-        >
-          <p>
-            Many East African landscapes are mosaics of forest, grassland and wetland. The edges
-            between them are often especially rich in plants, and especially exposed to change.
-          </p>
-        </SplitFeature>
+        {mosaicImage ? (
+          <SplitFeature
+            eyebrow={content.mosaics.eyebrow}
+            title={content.mosaics.title}
+            titleId="edges-title"
+            image={mosaicImage}
+            aspect="landscape"
+            reverse
+          >
+            <RichParagraphs source={content.mosaics.text} className="space-y-5" />
+          </SplitFeature>
+        ) : null}
         <Container className="mt-section-sm">
-          <PendingContent item="programmeDetails" />
+          {content.mosaics.details ? (
+            <RichParagraphs
+              source={content.mosaics.details}
+              className="max-w-3xl space-y-5 text-lead text-pretty text-muted-foreground"
+            />
+          ) : (
+            <PendingContent item="programmeDetails" />
+          )}
         </Container>
       </Section>
 
       <Section surface="muted" aria-labelledby="related-title">
         <Reveal>
           <Container>
-            <SectionHeading id="related-title" eyebrow="Projects" title="Related projects" />
+            <SectionHeading
+              id="related-title"
+              eyebrow={content.related.eyebrow}
+              title={content.related.title}
+            />
             <ProjectCards projects={projects} className="mt-14" />
           </Container>
         </Reveal>

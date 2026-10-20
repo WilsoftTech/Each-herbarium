@@ -28,6 +28,18 @@ const validProject = {
   landscapeHeading: "Forest",
   landscapeBody: ["A forest."],
   story: [],
+  country: null,
+  startDate: null,
+  endDate: null,
+  operationalStatus: null,
+  objectives: [],
+  activities: [],
+  outcomes: [],
+  references: [],
+  featured: false,
+  seoTitle: null,
+  seoDescription: null,
+  noindex: false,
 };
 
 describe("slugs", () => {
@@ -77,6 +89,8 @@ describe("admin input schemas", () => {
       websiteUrl: null,
       sortOrder: 0,
       placeholder: false,
+      category: "",
+      logoId: null,
     };
     expect(partnerInputSchema.safeParse(partner).success).toBe(true);
     expect(partnerInputSchema.safeParse({ ...partner, href: "https://evil.example" }).success).toBe(
@@ -118,6 +132,11 @@ describe("admin input schemas", () => {
       imageId: null,
       documentId: null,
       placeholder: false,
+      references: [],
+      featured: false,
+      seoTitle: null,
+      seoDescription: null,
+      noindex: false,
     };
     expect(articleInputSchema.safeParse(article).success).toBe(true);
     expect(articleInputSchema.safeParse({ ...article, publishedOn: "20/10/2026" }).success).toBe(
@@ -133,6 +152,10 @@ describe("admin input schemas", () => {
       eyebrow: "Policies",
       lead: "",
       body: "Text",
+      heroImageId: null,
+      seoTitle: null,
+      noindex: false,
+      content: null,
     };
     expect(pageInputSchema.safeParse(page).success).toBe(false);
     expect(pageInputSchema.safeParse({ ...page, description: "x".repeat(30) }).success).toBe(true);

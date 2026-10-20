@@ -73,6 +73,19 @@ const panelSchema = z.object({
   action: linkSchema,
 });
 
+/** One landscape of the plant heritage scroll story. */
+const landscapeSchema = z.object({
+  name: short("a short name", 40),
+  title: short("a title", 120),
+  body: paragraphsSchema,
+  imageId: imageIdSchema,
+});
+
+/** Number of landscapes in the scroll story (the design shows four). */
+export const landscapeCount = 4;
+
+const optionalFact = z.string().trim().max(200, "Keep this under 200 characters.");
+
 export const homeLayoutSchema = z
   .object({
     order: z.array(z.enum(homeSectionKeys)),
@@ -107,11 +120,23 @@ export const homeContentSchema = z.object({
     statementEyebrow: short("a label for the photograph"),
     statement: short("the statement over the photograph", 200),
     imageId: imageIdSchema,
+    landscapes: z
+      .array(landscapeSchema)
+      .length(landscapeCount, `Describe all ${landscapeCount} landscapes.`),
   }),
   projects: z.object({
     ...headingSchema,
     description: z.string().trim().max(600),
     linkLabel: short("a link label", 60),
+  }),
+  presence: z.object({
+    ...headingSchema,
+    text: short("the introduction", 600),
+    start: short("where EACH begins", 120),
+    region: short("the region", 120),
+    /** Empty until confirmed: a placeholder marker shows instead. */
+    sites: optionalFact,
+    wider: optionalFact,
   }),
   research: featureSchema,
   community: featureSchema,
@@ -129,6 +154,7 @@ export type HomeContent = z.infer<typeof homeContentSchema>;
 export function homeImageIds(content: HomeContent): string[] {
   return [
     content.heritage.imageId,
+    ...content.heritage.landscapes.map((landscape) => landscape.imageId),
     content.research.imageId,
     content.community.imageId,
     ...content.involved.panels.map((panel) => panel.imageId),

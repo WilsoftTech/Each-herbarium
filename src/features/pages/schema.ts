@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { contentStatusSchema, mediaAssetSchema, slugSchema } from "@/validation/content";
+import type { MediaAsset } from "@/config/media";
 import { homeContentSchema } from "./home-content";
+import type { LandingContent, LandingSlug } from "./landing-content";
 
 export {
   isManagedPageSlug,
@@ -40,6 +42,8 @@ export type Page = z.infer<typeof pageSchema>;
  */
 export type HomeImages = {
   heritage: z.infer<typeof mediaAssetSchema> | null;
+  /** In the order of content.heritage.landscapes. */
+  landscapes: (z.infer<typeof mediaAssetSchema> | null)[];
   research: z.infer<typeof mediaAssetSchema> | null;
   community: z.infer<typeof mediaAssetSchema> | null;
   panels: [z.infer<typeof mediaAssetSchema> | null, z.infer<typeof mediaAssetSchema> | null];
@@ -51,3 +55,19 @@ export const homePageSchema = z.object({
 });
 
 export type HomePage = z.infer<typeof homePageSchema> & { images: HomeImages };
+
+/**
+ * A landing page: header fields, its designed sections (landing-content.ts)
+ * and the usable images those sections refer to, by media id. A section
+ * image that is missing or lacks its alt text and caption is absent from
+ * `images`, and the view leaves that image out rather than breaking.
+ */
+export type LandingPage<S extends LandingSlug> = {
+  slug: S;
+  page: Page;
+  content: LandingContent<S>;
+  images: Record<string, MediaAsset>;
+};
+
+/** Any landing page, discriminated by slug. */
+export type AnyLandingPage = { [S in LandingSlug]: LandingPage<S> }[LandingSlug];

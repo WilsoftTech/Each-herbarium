@@ -1,5 +1,5 @@
 import "server-only";
-import { updateTag } from "next/cache";
+import { refresh, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import type { PrismaClient, Prisma } from "@/generated/prisma/client";
 import { contentTags, type ContentCollection } from "@/lib/cache-tags";
@@ -299,6 +299,8 @@ export async function applyTransition<T>(
     }, transactionOptions);
 
     if (affectsPublicSite(result.from, result.to)) expireCollection(collection);
+    // The editor shows the new status and the actions it now allows.
+    refresh();
     return { ok: true, message: `${rule.label}: done.` };
   });
 }
@@ -374,6 +376,8 @@ async function applyRevisionTransition<T>(
     }, transactionOptions);
 
     if (applied) expireCollection(collection);
+    // The editor shows the pending changes' new state (or that they are gone).
+    refresh();
     return { ok: true, message: `${rule.label}: done.` };
   });
 }

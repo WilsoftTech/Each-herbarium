@@ -2,8 +2,9 @@ import { ActionForm } from "@/components/admin/action-form";
 import { AdminPanel } from "@/components/admin/admin-ui";
 import { CheckboxField, SelectField, TextField } from "@/components/admin/form-fields";
 import { SubmitButton } from "@/components/admin/submit-button";
-import { EditorTarget, formData, SeoFields } from "@/features/cms";
+import { EditorTarget, formData, SectionFields, SeoFields } from "@/features/cms";
 import type { MediaOption } from "@/features/media";
+import { designedProgrammeSections, isDesignedProgrammeSlug } from "../designed-content";
 import { saveProgramme } from "./actions";
 import type { ProgrammeForAdmin } from "./admin";
 
@@ -110,6 +111,27 @@ export function ProgrammeForm({ programme, revisionId, images, editable }: Progr
             hint="Highlighted where the site lists programmes."
           />
         </AdminPanel>
+
+        {programme && isDesignedProgrammeSlug(programme.slug) ? (
+          <>
+            <p className="text-sm text-muted-foreground">
+              This founding programme has its own designed page. The sections below follow that page
+              from top to bottom; their design and order are fixed.
+            </p>
+            <SectionFields
+              name={programme.slug}
+              spec={designedProgrammeSections[programme.slug]}
+              content={
+                programme.content &&
+                typeof programme.content === "object" &&
+                !Array.isArray(programme.content)
+                  ? (programme.content as Record<string, Record<string, unknown>>)
+                  : null
+              }
+              images={images}
+            />
+          </>
+        ) : null}
 
         <SeoFields value={programme} />
       </fieldset>

@@ -234,7 +234,7 @@ model Page {
   body        String        @default("")
   heroImageId String?       @map("hero_image_id")
   heroImage   MediaAsset?   @relation("PageHeroImage", fields: [heroImageId], references: [id], onDelete: Restrict)
-  /// Typed section content validated by the page registry (homepage).
+  /// Typed section content validated by the page registry (homepage and landing pages).
   content     Json          @default("{}")
   /// Search title, when it should differ from the page title.
   seoTitle    String?       @map("seo_title")
@@ -264,6 +264,8 @@ model Programme {
   objectives     String[]           @default([])
   /// Rich text (src/lib/rich-text.ts).
   body           String             @default("")
+  /// Designed page sections of the founding programmes (designed-content.ts).
+  content        Json               @default("{}")
   featured       Boolean            @default(false)
   seoTitle       String?            @map("seo_title")
   seoDescription String?            @map("seo_description")

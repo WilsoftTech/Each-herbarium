@@ -2,16 +2,20 @@ import "server-only";
 import { z } from "zod";
 import {
   formData,
+  readSections,
   readSeoFields,
   pageCount,
   pageWindow,
+  sectionImageIds,
+  sectionsKeyField,
   type ListParams,
   type WorkflowCollection,
 } from "@/features/cms";
 import type { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/services/db";
 import { seoInputSchema, slugSchema } from "@/validation/content";
-import { programmeSelect, toProgramme } from "../queries";
+import { designedProgrammeSections, isDesignedProgrammeSlug } from "../designed-content";
+import { programmeSelect, readDesignedProgramme, toProgramme } from "../queries";
 
 type Db = PrismaClient | Prisma.TransactionClient;
 
@@ -27,10 +31,18 @@ export const programmeInputSchema = z.object({
   objectives: z.array(z.string().min(1).max(400)).max(20, "List at most 20 objectives."),
   body: z.string().max(20_000),
   featured: z.boolean(),
+  /** Designed page sections of a founding programme; checked against its declaration when saving. */
+  content: z.unknown().nullable(),
   ...seoInputSchema.shape,
 });
 
 export type ProgrammeInput = z.infer<typeof programmeInputSchema>;
+
+/** Reads a founding programme's designed sections editor, or null if absent. */
+function readDesignedContent(form: FormData): unknown {
+  const slug = formData.text(form, sectionsKeyField);
+  return isDesignedProgrammeSlug(slug) ? readSections(form, designedProgrammeSections[slug]) : null;
+}
 
 export function readProgrammeForm(form: FormData) {
   const { text, checkbox, integer, lines } = formData;
@@ -47,6 +59,7 @@ export function readProgrammeForm(form: FormData) {
     // Keep line structure: the rich-text format depends on it.
     body: (typeof form.get("body") === "string" ? String(form.get("body")) : "").trim(),
     featured: checkbox(form, "featured"),
+    content: readDesignedContent(form),
     ...readSeoFields(form),
   };
 }
@@ -78,6 +91,19 @@ export const programmeWorkflow: WorkflowCollection = {
       toProgramme(row);
     } catch {
       return "The image needs alt text of at least 20 characters and a caption before publishing.";
+    }
+    if (isDesignedProgrammeSlug(row.slug)) {
+      let designed;
+      try {
+        designed = await readDesignedProgramme(db, row.slug, { id });
+      } catch {
+        return "Fill in every section of the programme's designed page before publishing.";
+      }
+      const content = designed?.content;
+      const ids = sectionImageIds(designedProgrammeSections[row.slug], content);
+      if (!ids.every((imageId) => designed?.images[imageId])) {
+        return "Every image on the page must be uploaded, with alt text of at least 20 characters and a caption.";
+      }
     }
     return null;
   },

@@ -11,7 +11,41 @@ developmentDatabaseUrl();
 const roles = ["admin", "reviewer", "editor"] as const;
 const db = createScriptClient();
 
+/**
+ * The browser suite edits two published pages and restores them in the same
+ * run. If a run was interrupted, its pending changes and its marked values
+ * (the suite's own wording plus a run id) are left behind; clear them so the
+ * next run starts from the approved wording. Nothing else is touched.
+ */
+async function recoverInterruptedRun() {
+  const pages = await db.page.findMany({
+    where: { slug: { in: ["herbarium", "impact"] } },
+    select: { id: true, slug: true, title: true, content: true },
+  });
+  await db.contentRevision.deleteMany({
+    where: { collection: "pages", entityId: { in: pages.map((page) => page.id) } },
+  });
+  for (const page of pages) {
+    if (page.slug === "impact" && page.title.startsWith("Measuring results ")) {
+      await db.page.update({ where: { id: page.id }, data: { title: "Measuring what matters" } });
+    }
+    const content = page.content as { process?: { title?: string } };
+    if (
+      page.slug === "herbarium" &&
+      content.process?.title?.startsWith("How a herbarium specimen is made ")
+    ) {
+      await db.page.update({
+        where: { id: page.id },
+        data: {
+          content: { ...content, process: { ...content.process, title: "How a specimen is made" } },
+        },
+      });
+    }
+  }
+}
+
 async function setup() {
+  await recoverInterruptedRun();
   const credentials: Record<string, { email: string; password: string }> = {};
   const runId = Date.now();
   for (const role of roles) {

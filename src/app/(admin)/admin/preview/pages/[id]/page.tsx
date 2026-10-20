@@ -2,9 +2,14 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { EmptyState } from "@/components/admin/admin-ui";
 import { PreviewFrame } from "@/components/admin/preview-banner";
-import { PageHeader } from "@/components/sections/page-header";
 import { herbariumProgramme } from "@/content/programmes";
-import { getPagePreview, HomePageView, pickFeatured, PolicyPage } from "@/features/pages";
+import {
+  getPagePreview,
+  HomePageView,
+  pickFeatured,
+  PolicyPage,
+  renderLandingPage,
+} from "@/features/pages";
 import { listProgrammes } from "@/features/programmes";
 import { listProjects } from "@/features/projects";
 import { listResources } from "@/features/resources";
@@ -34,20 +39,7 @@ export default async function PagePreviewPage({ params }: PageProps<"/admin/prev
       ) : value.kind === "prose" ? (
         <PolicyPage page={value.page} />
       ) : (
-        <>
-          <PageHeader
-            eyebrow={value.page.eyebrow}
-            title={value.page.title}
-            lead={value.page.lead ? <p>{value.page.lead}</p> : undefined}
-            image={value.page.image ?? undefined}
-          />
-          <div className="px-6 pb-16">
-            <EmptyState>
-              The rest of {value.route} is part of the page&apos;s design and is not shown in this
-              preview.
-            </EmptyState>
-          </div>
-        </>
+        await renderLandingPage(value.landing)
       )}
     </PreviewFrame>
   );

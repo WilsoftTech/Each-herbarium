@@ -4,15 +4,23 @@ import { notFound } from "next/navigation";
 import type { MediaAsset } from "@/config/media";
 import { getSiteSettings } from "@/features/settings";
 import { pageMetadata } from "@/lib/metadata";
-import { getPage } from "./queries";
+import type { LandingSlug } from "./landing-content";
+import { getLandingPage, getPage } from "./queries";
 import { pageRegistry, type ManagedPageSlug } from "./registry";
-import type { Page } from "./schema";
+import type { LandingPage, Page } from "./schema";
 
 /** The published page for a fixed route, or a 404 when it is not published. */
 export async function loadManagedPage(slug: ManagedPageSlug): Promise<Page> {
   const page = await getPage(slug);
   if (!page) notFound();
   return page;
+}
+
+/** The published landing page with its designed sections, or a 404 when it is not published. */
+export async function loadLandingPage<S extends LandingSlug>(slug: S): Promise<LandingPage<S>> {
+  const landing = await getLandingPage(slug);
+  if (!landing) notFound();
+  return landing;
 }
 
 /**
