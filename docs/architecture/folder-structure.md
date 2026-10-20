@@ -6,8 +6,16 @@ This describes the repository **as it is now**. Planned folders are listed separ
 
 ```text
 .
-├── .github/workflows/ci.yml     CI: format, typecheck, lint, unit, build, e2e
+├── .github/workflows/ci.yml     CI: PostgreSQL service; format, migration check, typecheck, lint,
+│                                migrate, seed, tests, build, e2e
 ├── docs/                        Engineering knowledge base (see below)
+├── prisma/
+│   ├── schema.prisma            Data model (ADR 0007); client generated to src/generated/prisma
+│   ├── migrations/              Versioned SQL migrations (init + hand-written CHECKs and audit trigger)
+│   ├── seed.ts                  Create-only migration of the M03 content into the CMS
+│   └── seed/                    Seed data: programmes, projects, articles, partners, pages, types
+├── scripts/                     tsx command-line tools: create-admin, cleanup-media,
+│                                check-migrations (safeguard), script-env (env + client)
 ├── public/
 │   ├── brand/                   Original EACH logo (each-logo.jpeg) and asset rules
 │   └── images/                  Licensed stand-in photography (README lists licences)
@@ -31,8 +39,16 @@ This describes the repository **as it is now**. Planned folders are listed separ
 │   │   │   ├── projects/        page.tsx, [slug]/page.tsx (generateStaticParams)
 │   │   │   ├── resources/       page.tsx, [slug]/page.tsx (generateStaticParams)
 │   │   │   └── design-system/page.tsx  Design system preview (noindex, not linked)
-│   │   └── (admin)/admin/page.tsx  Admin entry, guarded by requireAdmin() (denies all until M04)
+│   │   ├── (admin)/admin/
+│   │   │   ├── layout.tsx       noindex, instant = false (per-request rendering)
+│   │   │   ├── sign-in/         Sign-in page (outside the console)
+│   │   │   ├── (console)/       AdminShell layout; dashboard, account, pages, programmes, projects,
+│   │   │   │                    articles, resources, partners, team, media, settings, users, audit
+│   │   │   └── preview/         Draft previews (projects, articles, pages), behind requireAdmin()
+│   │   └── media/[...key]/route.ts  Streams uploaded files from the private Neon Object Storage bucket
 │   ├── components/
+│   │   ├── admin/               Admin UI: AdminShell, ActionForm, form fields, ContentTable, CollectionList,
+│   │   │                        StatusBadge, Pagination, PreviewFrame
 │   │   ├── ui/                  Primitives: Button (shadcn), Container, Section, SectionHeading, Eyebrow,
 │   │   │                        Grid, MediaCard, PhotoCredit, icons, PendingContent, Notice, Breadcrumbs,
 │   │   │                        JsonLd, KeyFacts, Prose, BotanicalIllustration
@@ -52,23 +68,37 @@ This describes the repository **as it is now**. Planned folders are listed separ
 │   │   ├── programmes.ts        Programmes and the herbarium
 │   │   ├── ecosystems.ts        Landscape chapters for the scroll story
 │   │   └── specimens.ts         Reference specimens (Kew-imaged, collected in Uganda)
-│   ├── features/                Business modules (ADR 0002, ADR 0006)
-│   │   ├── projects/            schema.ts, data.ts, queries.ts (server-only), components/, index.ts
-│   │   ├── resources/           schema.ts, data.ts, queries.ts (server-only), components/, index.ts
-│   │   └── partners/            schema.ts, data.ts, queries.ts (server-only), components/, index.ts
+│   ├── features/                Business modules (ADR 0002, 0006, 0007)
+│   │   ├── cms/                 Workflow rules, shared save/transition/delete, action results,
+│   │   │                        form parsing, list params, dashboard, WorkflowPanel, StatusFilter
+│   │   ├── auth/                Sign-in, sign-out and password Server Actions and forms
+│   │   ├── users/               Staff accounts and roles (administrators only)
+│   │   ├── media/               Upload rules, mapping, references, admin actions and forms
+│   │   ├── programmes/  projects/  resources/  partners/  team/  pages/  settings/
+│   │   │                        Each: schema.ts, queries.ts (published, cached), components/,
+│   │   │                        admin/ (adapter, queries, actions, form), index.ts
 │   ├── hooks/                   useScrolled, useBodyScrollLock
 │   ├── lib/                     utils.ts (cn), motion.ts, metadata.ts (pageMetadata), structured-data.ts
-│   ├── services/admin-auth.ts   requireAdmin() authorisation guard (server-only)
+│   ├── generated/prisma/        Prisma client (generated, git-ignored)
+│   ├── services/                db (Prisma), auth (Neon Managed Auth), admin-auth (requireAdmin), permissions
+│   │                            (role matrix), audit, rate-limit, storage (Neon S3)
 │   └── validation/              env.ts (env schema), content.ts (media, status, slug contracts)
 ├── tests/
 │   ├── routes.ts                The approved public route list, shared by unit and e2e tests
+│   ├── global-setup.ts          Rebuilds the each_test schema: migrate deploy + seed
+│   ├── test-database.ts         Test database URL and schema (refuses production)
 │   ├── unit/                    Vitest (node; jsdom per file): every page, content contracts and
-│   │                            register, navigation, structured data, metadata, components
+│   │                            register, navigation, metadata, components, permissions, workflow,
+│   │                            upload rules, rich text, env, admin input, migration safeguard
+│   ├── integration/             Vitest against the test schema: authorisation, editorial workflow,
+│   │                            database constraints and drift, media, sign-in; auth test double
 │   └── e2e/                     Playwright: routes, links, interactions, navigation, header, mega menu,
-│                                mobile, motion, layout/axe, platform; screenshots.spec.ts (opt-in evidence)
+│                                mobile, motion, layout/axe, platform, admin (publish flow);
+│                                global-setup + fixtures/e2e-data.ts (e2e staff accounts)
 ├── AGENTS.md  CLAUDE.md  ROADMAP.md  README.md
 ├── components.json              shadcn/ui configuration (aliases, new-york style)
 ├── .env.example                 Documented environment variables
+├── prisma.config.ts             Prisma 7 config (schema, migrations, seed; loads .env.local)
 ├── .gitattributes               LF line endings; binary images
 ├── .prettierrc.json  .prettierignore
 ├── next.config.ts               Cache Components, partial prefetching, security headers
@@ -79,11 +109,9 @@ This describes the repository **as it is now**. Planned folders are listed separ
 
 ## Planned
 
-| Folder                               | Purpose                                    | Expected |
-| ------------------------------------ | ------------------------------------------ | -------- |
-| `src/features/<feature>/` (more)     | Inquiries, volunteering and other modules  | M04–M05  |
-| `src/app/(admin)/admin/layout.tsx`   | Admin shell                                | M04      |
-| `src/services/` database and storage | Prisma, R2 adapters behind feature queries | M04      |
+| Folder                           | Purpose                         | Expected |
+| -------------------------------- | ------------------------------- | -------- |
+| `src/features/<feature>/` (more) | Inquiries (forms), volunteering | M05      |
 
 ## Docs
 

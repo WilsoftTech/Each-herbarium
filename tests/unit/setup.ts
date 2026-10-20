@@ -1,4 +1,32 @@
-import { afterEach } from "vitest";
+import { afterEach, vi } from "vitest";
+import { developmentDatabaseUrl, TEST_SCHEMA } from "../test-database";
+
+// Every test talks to the dedicated test schema (rebuilt by tests/global-setup.ts),
+// never to development content.
+process.env.DATABASE_URL = developmentDatabaseUrl();
+process.env.DATABASE_SCHEMA = TEST_SCHEMA;
+process.env.NEON_AUTH_COOKIE_SECRET ??= "test-secret-that-is-at-least-32-characters-long";
+process.env.NEON_AUTH_BASE_URL ??= "https://auth.example/neondb/auth";
+
+// Cache Components APIs only work inside Next.js. Tagging is a no-op here, and
+// the expiry calls are spies so tests can assert which tags a change expires.
+vi.mock("next/cache", () => ({
+  cacheLife: vi.fn(),
+  cacheTag: vi.fn(),
+  updateTag: vi.fn(),
+  revalidateTag: vi.fn(),
+  revalidatePath: vi.fn(),
+}));
+
+// Sessions come from a test double (tests/integration/auth-double.ts); the
+// authorisation code under test (requireAdmin, permissions, actions) is real.
+vi.mock("@/services/auth", () => import("../integration/auth-double"));
+
+// Request APIs for Server Actions and admin pages called directly in tests.
+vi.mock("next/headers", () => ({
+  headers: vi.fn(async () => new Headers()),
+  cookies: vi.fn(async () => ({ get: () => undefined, getAll: () => [], has: () => false })),
+}));
 
 // Browser API stand-ins for component tests that opt into jsdom with
 // `// @vitest-environment jsdom`. Node-environment tests skip all of this.

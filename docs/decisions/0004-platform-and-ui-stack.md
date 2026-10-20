@@ -1,5 +1,7 @@
 # 0004. Platform and UI stack
 
+> M04 backend update: [ADR 0010](0010-neon-managed-backend.md) selects Neon Managed Auth and Neon Object Storage. The original R2 and self-hosted identity choices below are superseded.
+
 - **Status:** Accepted (set by the project brief, M01 revision 2)
 - **Date:** 2026-10-19
 - **Milestone:** M01 (revision 2)
@@ -16,7 +18,7 @@
 | Hosting             | Vercel                                                                                               | M07 (preview deployments may be enabled earlier, with approval) |
 | CI                  | GitHub Actions                                                                                       | M01                                                             |
 
-Not yet decided: the admin identity provider (M04 ADR) and the CMS approach (M04 ADR).
+Decided in M04: the CMS approach ([ADR 0007](0007-cms-editorial-workflow.md)), the admin identity provider ([ADR 0008](0008-admin-authentication.md)) and the media pipeline ([ADR 0009](0009-media-storage.md)).
 
 ## shadcn/ui preparation
 

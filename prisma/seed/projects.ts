@@ -1,18 +1,18 @@
 import { media } from "@/config/media";
-import type { ProjectInput } from "./schema";
+import type { SeedProject } from "./types";
 
 /**
- * Static project source for M03, replaced by the CMS in M04.
+ * Initial projects, migrated from the M03 static source.
  *
  * EACH has not supplied any projects yet. These entries are placeholders that
- * show the case-study layout: they carry `status: "placeholder"`, are labelled
- * on every page, are not indexed, and describe only the landscape in the
+ * show the case-study layout: they are flagged `placeholder`, are labelled on
+ * every page, are not indexed, and describe only the landscape in the
  * photograph, never a project.
  */
-export const projectEntries: readonly ProjectInput[] = [
+export const seedProjects: readonly SeedProject[] = [
   {
     slug: "placeholder-montane-forest",
-    status: "placeholder",
+    placeholder: true,
     title: "Placeholder case study: montane forest",
     summary:
       "Shows how a project in a montane forest landscape will be presented. It does not describe an EACH project.",
@@ -34,7 +34,7 @@ export const projectEntries: readonly ProjectInput[] = [
   },
   {
     slug: "placeholder-papyrus-wetland",
-    status: "placeholder",
+    placeholder: true,
     title: "Placeholder case study: papyrus wetland",
     summary: "Shows how a wetland project will be presented. It does not describe an EACH project.",
     ecosystem: "Papyrus wetland",
@@ -55,7 +55,7 @@ export const projectEntries: readonly ProjectInput[] = [
   },
   {
     slug: "placeholder-dryland-savanna",
-    status: "placeholder",
+    placeholder: true,
     title: "Placeholder case study: dryland savanna",
     summary: "Shows how a savanna project will be presented. It does not describe an EACH project.",
     ecosystem: "Dryland savanna",

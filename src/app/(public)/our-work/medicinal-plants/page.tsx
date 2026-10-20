@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { Reveal } from "@/components/motion/reveal";
 import { NumberedList } from "@/components/sections/numbered-list";
 import { PageHeader } from "@/components/sections/page-header";
@@ -11,19 +12,29 @@ import { Notice } from "@/components/ui/notice";
 import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { nextProgramme, programmeBySlug } from "@/content/programmes";
+import { getProgramme, nextProgramme } from "@/features/programmes";
 import { referenceSpecimens } from "@/content/specimens";
 import { pageMetadata } from "@/lib/metadata";
 
-const programme = programmeBySlug("medicinal-plants");
+const slug = "medicinal-plants";
 
-export const metadata = pageMetadata({
-  title: "Medicinal plants",
-  description:
-    "How EACH approaches East Africa's medicinal plants: accurate identification, cultural context, consent and conservation. Not medical advice.",
-  path: programme.href,
-  image: programme.image,
-});
+/** The programme's CMS record (title, summary, intro, image). The rest of the page is designed copy. */
+async function loadProgramme() {
+  const programme = await getProgramme(slug);
+  if (!programme) notFound();
+  return programme;
+}
+
+export async function generateMetadata() {
+  const programme = await loadProgramme();
+  return pageMetadata({
+    title: programme.title,
+    description:
+      "How EACH approaches East Africa's medicinal plants: accurate identification, cultural context, consent and conservation. Not medical advice.",
+    path: programme.href,
+    image: programme.image,
+  });
+}
 
 // Draft approach for expert review (pending: `medicinalReview`).
 const approach = [
@@ -47,8 +58,9 @@ const approach = [
 
 const voucher = referenceSpecimens[0];
 
-export default function MedicinalPlantsPage() {
-  const next = nextProgramme(programme.slug);
+export default async function MedicinalPlantsPage() {
+  const programme = await loadProgramme();
+  const next = (await nextProgramme(programme.slug)) ?? programme;
 
   return (
     <>

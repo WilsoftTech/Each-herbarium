@@ -19,6 +19,8 @@ const modules = import.meta.glob<PageModule>("../../src/app/**/page.tsx");
 
 /** Module for a concrete route, plus the params a dynamic segment receives. */
 function resolve(route: string) {
+  const exact = modules[`../../src/app/(public)${route === "/" ? "" : route}/page.tsx`];
+  if (exact) return { load: exact, params: {} };
   for (const [file, load] of Object.entries(modules)) {
     if (!file.startsWith("../../src/app/(public)/")) continue;
     const pattern = file

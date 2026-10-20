@@ -17,8 +17,9 @@ import { env } from "@/config/env";
 import { media } from "@/config/media";
 import { siteConfig } from "@/config/site";
 import { ecosystems } from "@/content/ecosystems";
-import { herbariumProgramme, programmes } from "@/content/programmes";
+import { herbariumProgramme } from "@/content/programmes";
 import { BitwiireFeature } from "@/features/partners";
+import { listProgrammes } from "@/features/programmes";
 import { listProjects, ProjectCards } from "@/features/projects";
 import { listResources, ResourceList } from "@/features/resources";
 import { pageMetadata } from "@/lib/metadata";
@@ -45,7 +46,11 @@ function SectionLink({ href, children }: { href: string; children: string }) {
 }
 
 export default async function Home() {
-  const [projects, resources] = await Promise.all([listProjects(), listResources()]);
+  const [programmes, projects, resources] = await Promise.all([
+    listProgrammes(),
+    listProjects(),
+    listResources(),
+  ]);
 
   return (
     <>

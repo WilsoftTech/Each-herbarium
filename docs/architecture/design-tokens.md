@@ -19,16 +19,19 @@ Checked against the original logo `public/brand/each-logo.jpeg` in M02 by averag
 
 ## Semantic colour tokens
 
-| Utility                                                  | Light surface (default) | Dark surface (`data-surface="dark"`) |
-| -------------------------------------------------------- | ----------------------- | ------------------------------------ |
-| `bg-background` / `text-foreground`                      | ivory / charcoal        | charcoal / ivory                     |
-| `bg-card` / `text-card-foreground`                       | `#FFFFFF` / charcoal    | `#1C2220` / ivory                    |
-| `text-primary`, `bg-primary` + `text-primary-foreground` | green / ivory           | light green / charcoal               |
-| `text-accent`, `bg-accent` + `text-accent-foreground`    | blue / white            | light blue / charcoal                |
-| `bg-muted` / `text-muted-foreground`                     | `#E8EBE3` / `#4A524E`   | `#232A27` / `#B7BEB9`                |
-| `border-border`                                          | `#D9DDD3`               | `#2C3330`                            |
-| `ring-ring` (focus outline)                              | blue                    | light blue                           |
-| `bg-scrim`                                               | charcoal at 50%         | same                                 |
+| Utility                                                                    | Light surface (default) | Dark surface (`data-surface="dark"`) |
+| -------------------------------------------------------------------------- | ----------------------- | ------------------------------------ |
+| `bg-background` / `text-foreground`                                        | ivory / charcoal        | charcoal / ivory                     |
+| `bg-card` / `text-card-foreground`                                         | `#FFFFFF` / charcoal    | `#1C2220` / ivory                    |
+| `text-primary`, `bg-primary` + `text-primary-foreground`                   | green / ivory           | light green / charcoal               |
+| `text-accent`, `bg-accent` + `text-accent-foreground`                      | blue / white            | light blue / charcoal                |
+| `bg-muted` / `text-muted-foreground`                                       | `#E8EBE3` / `#4A524E`   | `#232A27` / `#B7BEB9`                |
+| `border-border`                                                            | `#D9DDD3`               | `#2C3330`                            |
+| `ring-ring` (focus outline)                                                | blue                    | light blue                           |
+| `bg-scrim`                                                                 | charcoal at 50%         | same                                 |
+| `text-destructive`, `bg-destructive` + `text-destructive-foreground` (M04) | `#B42318` / white       | `#F97066` / charcoal                 |
+
+`destructive` is for form errors and irreversible actions in the admin area (the `destructive` Button variant). Measured in M04 with the WCAG formula: `#B42318` is 6.11:1 on ivory and 6.57:1 on white (white text on it 6.57:1); `#F97066` is 6.32:1 on charcoal. All pass AA for body text.
 
 Apply `data-surface="dark"` to any container to switch a whole section to the dark palette. Its background and text colour are set in the base layer, so utilities such as `bg-transparent` can override them (the transparent header relies on this).
 

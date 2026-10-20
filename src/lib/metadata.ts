@@ -44,3 +44,21 @@ export function pageMetadata({
     ...(noindex ? { robots: { index: false, follow: true } } : {}),
   };
 }
+
+/**
+ * Slug that can never match content (it fails slugSchema), used when a
+ * collection has nothing published yet.
+ */
+export const NO_CONTENT_SLUG = "__none__";
+
+/**
+ * Params for a dynamic route's generateStaticParams. With Cache Components a
+ * route must return at least one entry, so an empty collection yields a
+ * sentinel slug whose page responds 404. Pages published later are rendered
+ * on their first request.
+ */
+export function staticParams<T extends Record<string, string>>(
+  params: T[],
+): T[] | { slug: string }[] {
+  return params.length ? params : [{ slug: NO_CONTENT_SLUG }];
+}

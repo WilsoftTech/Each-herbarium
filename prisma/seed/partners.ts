@@ -1,14 +1,14 @@
-import type { PartnerInput } from "./schema";
+import type { SeedPartner } from "./types";
 
 /**
- * Static partner source for M03, replaced by the CMS in M04. Only confirmed
+ * Initial partners, migrated from the M03 static source. Only confirmed
  * partners are listed. Bitwiire Herbarium Cafe is an independent partner:
  * neither organisation owns the other.
  */
-export const partnerEntries: readonly PartnerInput[] = [
+export const seedPartners: readonly SeedPartner[] = [
   {
     slug: "bitwiire-herbarium-cafe",
-    status: "published",
+    placeholder: false,
     name: "Bitwiire Herbarium Cafe",
     relationship: "independent-partner",
     description:

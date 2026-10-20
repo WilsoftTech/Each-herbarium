@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { Reveal } from "@/components/motion/reveal";
 import { FullBleedImage } from "@/components/sections/full-bleed-image";
 import { Hero } from "@/components/sections/hero";
@@ -10,19 +11,29 @@ import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { media } from "@/config/media";
-import { nextProgramme, programmeBySlug } from "@/content/programmes";
+import { getProgramme, nextProgramme } from "@/features/programmes";
 import { listProjectsForProgramme, ProjectCards } from "@/features/projects";
 import { pageMetadata } from "@/lib/metadata";
 
-const programme = programmeBySlug("plant-conservation");
+const slug = "plant-conservation";
 
-export const metadata = pageMetadata({
-  title: "Plant conservation",
-  description:
-    "Why East Africa's native plants need protecting, and how plants are conserved in the wild, in collections and in herbaria.",
-  path: programme.href,
-  image: programme.image,
-});
+/** The programme's CMS record (title, summary, intro, image). The rest of the page is designed copy. */
+async function loadProgramme() {
+  const programme = await getProgramme(slug);
+  if (!programme) notFound();
+  return programme;
+}
+
+export async function generateMetadata() {
+  const programme = await loadProgramme();
+  return pageMetadata({
+    title: programme.title,
+    description:
+      "Why East Africa's native plants need protecting, and how plants are conserved in the wild, in collections and in herbaria.",
+    path: programme.href,
+    image: programme.image,
+  });
+}
 
 // How plant conservation works in general; not a description of EACH's activities.
 const approaches = [
@@ -45,8 +56,9 @@ const approaches = [
 ] as const;
 
 export default async function PlantConservationPage() {
+  const programme = await loadProgramme();
   const projects = await listProjectsForProgramme(programme.slug);
-  const next = nextProgramme(programme.slug);
+  const next = (await nextProgramme(programme.slug)) ?? programme;
 
   return (
     <>

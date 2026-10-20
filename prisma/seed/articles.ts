@@ -1,44 +1,43 @@
 import { media } from "@/config/media";
-import type { ResourceInput } from "./schema";
+import type { SeedArticle } from "./types";
 
 /**
- * Static resource source for M03, replaced by the CMS in M04.
- *
- * EACH has not published any resources yet. These placeholders show how a
- * publication, a guide and a story will be listed and read. They are labelled
- * on every page, are not indexed and have no authors, dates or text.
+ * Initial articles (publications, guides, stories), migrated from the M03
+ * static source. EACH has not published any yet: these placeholders show how
+ * each type is listed and read. They are labelled on every page, are not
+ * indexed and have no authors, dates or text.
  */
-export const resourceEntries: readonly ResourceInput[] = [
+export const seedArticles: readonly SeedArticle[] = [
   {
     slug: "placeholder-publication",
-    status: "placeholder",
-    type: "publication",
+    placeholder: true,
+    type: "PUBLICATION",
     title: "Placeholder publication",
     summary:
       "Shows how an EACH publication will be listed, with its authors, date, abstract and download.",
-    published: null,
+    publishedOn: null,
     authors: [],
     image: media.herbariumSheetCallistemon,
     body: [],
   },
   {
     slug: "placeholder-field-guide",
-    status: "placeholder",
-    type: "guide",
+    placeholder: true,
+    type: "GUIDE",
     title: "Placeholder field guide",
     summary: "Shows how a guide for students, volunteers or visitors will be presented.",
-    published: null,
+    publishedOn: null,
     authors: [],
     image: media.rwenzoriVegetation,
     body: [],
   },
   {
     slug: "placeholder-field-story",
-    status: "placeholder",
-    type: "story",
+    placeholder: true,
+    type: "STORY",
     title: "Placeholder story from the field",
     summary: "Shows how news and stories from EACH's work will be told.",
-    published: null,
+    publishedOn: null,
     authors: [],
     image: media.budongoTree,
     body: [],

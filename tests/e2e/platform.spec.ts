@@ -12,14 +12,16 @@ test("responses carry the baseline security headers", async ({ request }) => {
   expect(headers["x-powered-by"]).toBeUndefined();
 });
 
-test("the admin area denies access without revealing itself", async ({ page }) => {
-  const response = await page.goto("/admin");
-
-  expect(response?.status()).toBe(404);
-  await expect(page.getByRole("heading", { level: 1, name: "Page not found" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Administration" })).toHaveCount(0);
-  await expect(page).not.toHaveTitle(/admin/i);
-  const robots = page.locator('meta[name="robots"]');
-  await expect(robots.first()).toBeAttached();
+test("the admin area requires signing in and is never indexed", async ({ page }) => {
+  await page.goto("/admin");
+  await expect(page).toHaveURL(/\/admin\/sign-in$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Sign in" })).toBeVisible();
   await expect(page.locator('meta[name="robots"]:not([content*="noindex"])')).toHaveCount(0);
+});
+
+test("uploaded media are only served for known keys", async ({ request }) => {
+  const response = await request.get("/media/../../etc/passwd");
+  expect([400, 404]).toContain(response.status());
+  const unknown = await request.get("/media/2026/01/00000000-0000-0000-0000-000000000000.jpg");
+  expect(unknown.status()).toBe(404);
 });

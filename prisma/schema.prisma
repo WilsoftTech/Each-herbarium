@@ -1,0 +1,476 @@
+// EACH content database (PostgreSQL on Neon). ADR 0007.
+//
+// Conventions:
+// - Table and column names are snake_case in the database (@@map / @map).
+// - Every editorial model carries the same workflow columns: status,
+//   placeholder, version (optimistic locking), timestamps and actor ids.
+// - Slugs, roles and the single settings row are also enforced by CHECK
+//   constraints added by hand in the migration SQL, so the database rejects
+//   bad data even if application validation is bypassed.
+// - Media referenced by content cannot be deleted (ON DELETE RESTRICT).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Authentication (Better Auth tables; field names are fixed by Better Auth)
+// ---------------------------------------------------------------------------
+
+model User {
+  id            String   @id
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false) @map("email_verified")
+  image         String?
+  /// admin | reviewer | editor. Never accepted from client input (Better Auth `input: false`).
+  role          String   @default("editor")
+  /// Deactivated users cannot sign in and lose existing sessions.
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  sessions    Session[]
+  accounts    Account[]
+  auditEvents AuditEvent[]
+  uploads     MediaAsset[] @relation("MediaUploadedBy")
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime @map("expires_at")
+  token     String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  userId                String    @map("user_id")
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?
+  /// Password hash (scrypt) for the email-and-password provider.
+  password              String?
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@index([identifier])
+  @@map("verifications")
+}
+
+/// Shared by Better Auth (sign-in limits) and the application limiter
+/// (keys prefixed "app:"), so limits hold across serverless instances.
+model RateLimit {
+  id          String @id @default(cuid())
+  key         String @unique
+  count       Int
+  lastRequest BigInt @map("last_request")
+
+  @@map("rate_limits")
+}
+
+// ---------------------------------------------------------------------------
+// Editorial workflow
+// ---------------------------------------------------------------------------
+
+enum ContentStatus {
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+  ARCHIVED
+
+  @@map("content_status")
+}
+
+enum MediaKind {
+  IMAGE
+  DOCUMENT
+
+  @@map("media_kind")
+}
+
+enum MediaStatus {
+  /// Row written before the object is stored; cleaned up if never completed.
+  PENDING
+  READY
+
+  @@map("media_status")
+}
+
+/// Where a media file lives: the repository's public folder (licensed
+/// stand-in photography from M03) or Neon Object Storage (uploads).
+enum MediaStorage {
+  STATIC
+  R2
+  NEON
+
+  @@map("media_storage")
+}
+
+model MediaAsset {
+  id           String       @id @default(cuid())
+  storage      MediaStorage
+  /// STATIC: path under /public, e.g. "/images/x.jpg". R2: random object key.
+  key          String       @unique
+  kind         MediaKind
+  status       MediaStatus  @default(PENDING)
+  mimeType     String       @map("mime_type")
+  byteSize     Int          @map("byte_size")
+  /// Original file name, shown in the library only.
+  fileName     String       @map("file_name")
+  /// SHA-256 of the file contents (hex), for integrity and duplicate checks.
+  checksum     String?
+  width        Int?
+  height       Int?
+  alt          String       @default("")
+  caption      String       @default("")
+  creditAuthor String       @map("credit_author")
+  license      String
+  licenseUrl   String?      @map("license_url")
+  sourceUrl    String?      @map("source_url")
+  uploadedById String?      @map("uploaded_by_id")
+  uploadedBy   User?        @relation("MediaUploadedBy", fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  programmeImages Programme[]      @relation("ProgrammeImage")
+  projectImages   Project[]        @relation("ProjectImage")
+  projectGallery  ProjectGallery[]
+  articleImages   Article[]        @relation("ArticleImage")
+  articleFiles    Article[]        @relation("ArticleDocument")
+  resourceFiles   Resource[]       @relation("ResourceDocument")
+  teamPhotos      TeamMember[]     @relation("TeamPhoto")
+
+  @@index([kind, status, createdAt])
+  @@index([status, createdAt])
+  @@map("media_assets")
+}
+
+/// Single row (id = 1): organisation-wide details editable by administrators.
+model SiteSettings {
+  id            Int      @id @default(1)
+  contactEmail  String?  @map("contact_email")
+  phone         String?
+  postalAddress String?  @map("postal_address")
+  officeHours   String?  @map("office_hours")
+  /// [{ label, url }]
+  socialLinks   Json     @default("[]") @map("social_links")
+  updatedById   String?  @map("updated_by_id")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("site_settings")
+}
+
+/// Prose pages managed in the CMS (privacy, terms, accessibility).
+model Page {
+  id          String        @id @default(cuid())
+  slug        String        @unique @db.VarChar(120)
+  status      ContentStatus @default(DRAFT)
+  placeholder Boolean       @default(false)
+  version     Int           @default(1)
+  title       String
+  description String
+  eyebrow     String        @default("")
+  lead        String        @default("")
+  /// Rich text: "## " headings, "- " list items, blank-line paragraphs,
+  /// [text](/path) links. Rendered by src/lib/rich-text.ts, never as HTML.
+  body        String        @default("")
+  publishedAt DateTime?     @map("published_at")
+  createdById String?       @map("created_by_id")
+  updatedById String?       @map("updated_by_id")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@map("pages")
+}
+
+model Programme {
+  id          String             @id @default(cuid())
+  slug        String             @unique @db.VarChar(120)
+  status      ContentStatus      @default(DRAFT)
+  placeholder Boolean            @default(false)
+  version     Int                @default(1)
+  sortOrder   Int                @default(0) @map("sort_order")
+  title       String
+  summary     String
+  intro       String
+  imageId     String             @map("image_id")
+  image       MediaAsset         @relation("ProgrammeImage", fields: [imageId], references: [id], onDelete: Restrict)
+  projects    ProjectProgramme[]
+  publishedAt DateTime?          @map("published_at")
+  createdById String?            @map("created_by_id")
+  updatedById String?            @map("updated_by_id")
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+
+  @@index([status, sortOrder])
+  @@map("programmes")
+}
+
+model Project {
+  id          String             @id @default(cuid())
+  slug        String             @unique @db.VarChar(120)
+  status      ContentStatus      @default(DRAFT)
+  placeholder Boolean            @default(false)
+  version     Int                @default(1)
+  sortOrder   Int                @default(0) @map("sort_order")
+  title       String
+  summary     String
+  ecosystem   String
+  location    String?
+  period      String?
+  imageId     String             @map("image_id")
+  image       MediaAsset         @relation("ProjectImage", fields: [imageId], references: [id], onDelete: Restrict)
+  /// { heading, body: string[] }
+  landscape   Json
+  /// [{ heading, body: string[] }]
+  story       Json               @default("[]")
+  programmes  ProjectProgramme[]
+  partners    ProjectPartner[]
+  gallery     ProjectGallery[]
+  publishedAt DateTime?          @map("published_at")
+  createdById String?            @map("created_by_id")
+  updatedById String?            @map("updated_by_id")
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+
+  @@index([status, sortOrder])
+  @@map("projects")
+}
+
+model ProjectProgramme {
+  projectId   String    @map("project_id")
+  programmeId String    @map("programme_id")
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  programme   Programme @relation(fields: [programmeId], references: [id], onDelete: Restrict)
+
+  @@id([projectId, programmeId])
+  @@index([programmeId])
+  @@map("project_programmes")
+}
+
+model ProjectPartner {
+  projectId String  @map("project_id")
+  partnerId String  @map("partner_id")
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  partner   Partner @relation(fields: [partnerId], references: [id], onDelete: Restrict)
+
+  @@id([projectId, partnerId])
+  @@index([partnerId])
+  @@map("project_partners")
+}
+
+model ProjectGallery {
+  projectId String     @map("project_id")
+  mediaId   String     @map("media_id")
+  position  Int
+  project   Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  media     MediaAsset @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@id([projectId, mediaId])
+  @@unique([projectId, position])
+  @@index([mediaId])
+  @@map("project_gallery")
+}
+
+enum ArticleType {
+  PUBLICATION
+  GUIDE
+  STORY
+
+  @@map("article_type")
+}
+
+/// Written content read on the site: publications, guides and stories (/resources/[slug]).
+model Article {
+  id          String        @id @default(cuid())
+  slug        String        @unique @db.VarChar(120)
+  status      ContentStatus @default(DRAFT)
+  placeholder Boolean       @default(false)
+  version     Int           @default(1)
+  type        ArticleType
+  title       String
+  summary     String
+  /// Publication date shown to readers (date only); null until confirmed.
+  publishedOn DateTime?     @map("published_on") @db.Date
+  authors     String[]      @default([])
+  /// Paragraphs.
+  body        String[]      @default([])
+  imageId     String?       @map("image_id")
+  image       MediaAsset?   @relation("ArticleImage", fields: [imageId], references: [id], onDelete: Restrict)
+  /// Optional downloadable file (for example the full publication as PDF).
+  documentId  String?       @map("document_id")
+  document    MediaAsset?   @relation("ArticleDocument", fields: [documentId], references: [id], onDelete: Restrict)
+  publishedAt DateTime?     @map("published_at")
+  createdById String?       @map("created_by_id")
+  updatedById String?       @map("updated_by_id")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  @@index([status, publishedOn])
+  @@map("articles")
+}
+
+/// Standalone downloadable documents listed on /resources (toolkits, reports, data).
+model Resource {
+  id          String        @id @default(cuid())
+  slug        String        @unique @db.VarChar(120)
+  status      ContentStatus @default(DRAFT)
+  placeholder Boolean       @default(false)
+  version     Int           @default(1)
+  title       String
+  summary     String
+  publishedOn DateTime?     @map("published_on") @db.Date
+  documentId  String        @map("document_id")
+  document    MediaAsset    @relation("ResourceDocument", fields: [documentId], references: [id], onDelete: Restrict)
+  publishedAt DateTime?     @map("published_at")
+  createdById String?       @map("created_by_id")
+  updatedById String?       @map("updated_by_id")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  @@index([status, publishedOn])
+  @@map("resources")
+}
+
+model Partner {
+  id           String           @id @default(cuid())
+  slug         String           @unique @db.VarChar(120)
+  status       ContentStatus    @default(DRAFT)
+  placeholder  Boolean          @default(false)
+  version      Int              @default(1)
+  sortOrder    Int              @default(0) @map("sort_order")
+  name         String
+  /// Partners are always independent of EACH (AGENTS.md §1).
+  relationship String           @default("independent-partner")
+  description  String
+  /// Partner page on this site, e.g. "/bitwiire-herbarium-cafe".
+  href         String?
+  websiteUrl   String?          @map("website_url")
+  projects     ProjectPartner[]
+  publishedAt  DateTime?        @map("published_at")
+  createdById  String?          @map("created_by_id")
+  updatedById  String?          @map("updated_by_id")
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @updatedAt @map("updated_at")
+
+  @@index([status, sortOrder])
+  @@map("partners")
+}
+
+enum TeamGroup {
+  LEADERSHIP
+  BOARD
+  ADVISER
+
+  @@map("team_group")
+}
+
+model TeamMember {
+  id               String        @id @default(cuid())
+  slug             String        @unique @db.VarChar(120)
+  status           ContentStatus @default(DRAFT)
+  placeholder      Boolean       @default(false)
+  version          Int           @default(1)
+  sortOrder        Int           @default(0) @map("sort_order")
+  group            TeamGroup     @default(LEADERSHIP)
+  name             String
+  roleTitle        String        @map("role_title")
+  /// Paragraphs.
+  bio              String[]      @default([])
+  photoId          String?       @map("photo_id")
+  photo            MediaAsset?   @relation("TeamPhoto", fields: [photoId], references: [id], onDelete: Restrict)
+  /// The person has agreed to appear on the site. Required before publication.
+  consentConfirmed Boolean       @default(false) @map("consent_confirmed")
+  publishedAt      DateTime?     @map("published_at")
+  createdById      String?       @map("created_by_id")
+  updatedById      String?       @map("updated_by_id")
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+
+  @@index([status, group, sortOrder])
+  @@map("team_members")
+}
+
+// ---------------------------------------------------------------------------
+// Inquiries (written by the public forms in M05) and audit trail
+// ---------------------------------------------------------------------------
+
+enum InquiryStatus {
+  NEW
+  IN_PROGRESS
+  CLOSED
+
+  @@map("inquiry_status")
+}
+
+model Inquiry {
+  id           String        @id @default(cuid())
+  status       InquiryStatus @default(NEW)
+  topic        String
+  name         String
+  email        String
+  organisation String?
+  message      String
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  @@index([status, createdAt])
+  @@map("inquiries")
+}
+
+/// Append-only record of security-relevant and editorial actions. UPDATE and
+/// DELETE are blocked by a trigger (migration SQL).
+model AuditEvent {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now()) @map("created_at")
+  actorId    String?  @map("actor_id")
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  /// Email at the time of the action, kept if the account changes later.
+  actorEmail String?  @map("actor_email")
+  /// e.g. "project.update", "project.approve", "media.upload", "auth.sign-in".
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String?  @map("entity_id")
+  summary    String
+  metadata   Json?
+
+  @@index([createdAt])
+  @@index([entityType, entityId, createdAt])
+  @@index([actorId, createdAt])
+  @@map("audit_events")
+}

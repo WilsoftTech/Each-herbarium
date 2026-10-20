@@ -3,8 +3,8 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { media } from "@/config/media";
 import { pendingContent } from "@/content/pending";
-import { programmes } from "@/content/programmes";
 import { listPartners } from "@/features/partners";
+import { listProgrammes } from "@/features/programmes";
 import { listProjects, projectSchema } from "@/features/projects";
 import { listResources, resourceSchema } from "@/features/resources";
 import { mediaAssetSchema } from "@/validation/content";
@@ -66,7 +66,14 @@ describe("content contracts", () => {
     expect(bitwiire?.description).toMatch(/neither owns the other/);
   });
 
-  it("gives every programme a page under /our-work", () => {
+  it("gives every programme a page under /our-work", async () => {
+    const programmes = await listProgrammes();
+    expect(programmes.map((programme) => programme.slug)).toEqual([
+      "plant-conservation",
+      "environmental-conservation",
+      "medicinal-plants",
+      "indigenous-knowledge",
+    ]);
     for (const programme of programmes) {
       expect(programme.href).toBe(`/our-work/${programme.slug}`);
     }

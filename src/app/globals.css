@@ -30,6 +30,9 @@
   --muted-foreground: #4a524e;
   --border: #d9ddd3;
   --ring: var(--brand-blue);
+  /* Errors and irreversible actions (admin forms). 6.1:1 on ivory, 6.6:1 on white. */
+  --destructive: #b42318;
+  --destructive-foreground: #ffffff;
   /* Page dimming behind open menus. */
   --scrim: rgb(21 26 24 / 0.5);
 
@@ -55,6 +58,8 @@
   --muted-foreground: #b7beb9;
   --border: #2c3330;
   --ring: var(--brand-blue-light);
+  --destructive: #f97066;
+  --destructive-foreground: var(--brand-charcoal);
 }
 
 /*
@@ -91,6 +96,8 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-scrim: var(--scrim);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-fraunces), ui-serif, Georgia, serif;

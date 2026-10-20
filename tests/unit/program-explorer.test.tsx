@@ -3,8 +3,14 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { ProgramExplorer } from "@/components/sections/program-explorer";
 import { PendingContent } from "@/components/ui/pending-content";
-import { herbariumProgramme, programmes } from "@/content/programmes";
+import { herbariumProgramme } from "@/content/programmes";
+import { seedProgrammes } from "../../prisma/seed/programmes";
 
+// The seeded programmes are the content the homepage explorer shows.
+const programmes = seedProgrammes.map((programme) => ({
+  ...programme,
+  href: `/our-work/${programme.slug}`,
+}));
 const items = [...programmes, herbariumProgramme];
 
 function activeLink() {

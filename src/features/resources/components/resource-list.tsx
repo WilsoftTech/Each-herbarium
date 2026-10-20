@@ -15,6 +15,12 @@ export function formatResourceDate(published: string | null): string {
   }).format(new Date(`${published}T00:00:00Z`));
 }
 
+/** "1.4 MB", "820 KB". */
+export function formatFileSize(bytes: number): string {
+  if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+}
+
 type ResourceListProps = {
   resources: readonly Resource[];
   headingLevel?: "h2" | "h3";

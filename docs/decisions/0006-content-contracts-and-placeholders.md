@@ -1,6 +1,6 @@
 # 0006. Content contracts, static sources and visible placeholders
 
-- **Status:** Accepted
+- **Status:** Accepted. The static sources were replaced by the CMS in M04 ([ADR 0007](0007-cms-editorial-workflow.md)); the contracts and placeholder rules still apply.
 - **Date:** 2026-10-19
 - **Milestone:** M03
 

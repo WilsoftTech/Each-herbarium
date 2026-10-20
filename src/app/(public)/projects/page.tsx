@@ -20,6 +20,7 @@ export const metadata = pageMetadata({
 
 export default async function ProjectsPage() {
   const projects = await listProjects();
+  const showsPlaceholders = projects.some((project) => project.status === "placeholder");
 
   return (
     <>
@@ -30,11 +31,13 @@ export default async function ProjectsPage() {
         lead={
           <p>
             Each project will be told as a case study: the landscape, the plants, the people
-            involved and what changed. The case studies below are placeholders that show the format;
-            they do not describe EACH projects.
+            involved and what changed.
+            {showsPlaceholders
+              ? " The case studies below are placeholders that show the format; they do not describe EACH projects."
+              : null}
           </p>
         }
-        aside={<PendingContent item="projects" />}
+        aside={showsPlaceholders || !projects.length ? <PendingContent item="projects" /> : null}
       />
 
       {projects.map((project, index) => (

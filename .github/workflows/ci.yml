@@ -15,7 +15,27 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
+
+    # Disposable database for the build, unit/integration tests and e2e.
+    # Never a Neon or production database.
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: each
+          POSTGRES_PASSWORD: each
+          POSTGRES_DB: each
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U each" --health-interval 5s --health-timeout 5s --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://each:each@localhost:5432/each
+      DATABASE_URL_UNPOOLED: postgresql://each:each@localhost:5432/each
+      NEON_AUTH_COOKIE_SECRET: ci-only-secret-not-used-anywhere-else-0123456789
+      NEON_AUTH_BASE_URL: https://auth.invalid/neondb/auth
+
     steps:
       - uses: actions/checkout@v5
 
@@ -26,11 +46,17 @@ jobs:
 
       - run: npm ci
       - run: npm run format:check
+      - run: npm run db:check-migrations
       - run: npm run typecheck
       - run: npm run lint
+      - run: npm run db:migrate
+      - run: npm run db:seed
       - run: npm test
       - run: npm run build
 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e
+      - name: Public browser checks (live Neon admin checks run separately)
+        run: npm run test:e2e
+        env:
+          E2E_PUBLIC_ONLY: "1"

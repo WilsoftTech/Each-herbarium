@@ -15,6 +15,23 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   cacheComponents: true,
   partialPrefetching: true,
+  experimental: {
+    serverActions: {
+      // Media uploads: 4 MB files (MAX_UPLOAD_BYTES) plus multipart overhead,
+      // within Vercel's 4.5 MB request limit.
+      bodySizeLimit: "4.5mb",
+    },
+  },
+  images: {
+    // Only optimise files that are meant to be images, never with a query string.
+    localPatterns: [
+      { pathname: "/images/**", search: "" },
+      { pathname: "/brand/**", search: "" },
+      { pathname: "/media/**", search: "" },
+      // Statically imported images (the logo).
+      { pathname: "/_next/static/media/**", search: "" },
+    ],
+  },
   turbopack: {
     rules: {
       "*.css": {

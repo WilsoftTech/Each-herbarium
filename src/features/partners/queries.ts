@@ -1,10 +1,29 @@
 import "server-only";
-import { partnerEntries } from "./data";
+import { cacheLife, cacheTag } from "next/cache";
+import { contentTags } from "@/lib/cache-tags";
+import { getDb } from "@/services/db";
 import { partnerSchema, type Partner } from "./schema";
 
-const partners: readonly Partner[] = partnerSchema.array().parse(partnerEntries);
+/** Published partners, in display order. */
+export async function listPartners(): Promise<Partner[]> {
+  "use cache";
+  cacheLife("max");
+  cacheTag(contentTags.partners);
 
-/** Confirmed partners, in display order. */
-export async function listPartners(): Promise<readonly Partner[]> {
-  return partners;
+  const rows = await getDb().partner.findMany({
+    where: { status: "PUBLISHED" },
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    take: 100,
+  });
+  return rows.map((row) =>
+    partnerSchema.parse({
+      slug: row.slug,
+      status: row.placeholder ? "placeholder" : "published",
+      name: row.name,
+      relationship: row.relationship,
+      description: row.description,
+      href: row.href,
+      websiteUrl: row.websiteUrl,
+    }),
+  );
 }

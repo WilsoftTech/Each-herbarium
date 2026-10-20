@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { Reveal } from "@/components/motion/reveal";
 import { NumberedList } from "@/components/sections/numbered-list";
 import { PageHeader } from "@/components/sections/page-header";
@@ -8,18 +9,28 @@ import { Container } from "@/components/ui/container";
 import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { nextProgramme, programmeBySlug } from "@/content/programmes";
+import { getProgramme, nextProgramme } from "@/features/programmes";
 import { pageMetadata } from "@/lib/metadata";
 
-const programme = programmeBySlug("indigenous-knowledge");
+const slug = "indigenous-knowledge";
 
-export const metadata = pageMetadata({
-  title: "Indigenous knowledge",
-  description:
-    "Recording East African communities' knowledge of plants with consent, credit and community control.",
-  path: programme.href,
-  image: programme.image,
-});
+/** The programme's CMS record (title, summary, intro, image). The rest of the page is designed copy. */
+async function loadProgramme() {
+  const programme = await getProgramme(slug);
+  if (!programme) notFound();
+  return programme;
+}
+
+export async function generateMetadata() {
+  const programme = await loadProgramme();
+  return pageMetadata({
+    title: programme.title,
+    description:
+      "Recording East African communities' knowledge of plants with consent, credit and community control.",
+    path: programme.href,
+    image: programme.image,
+  });
+}
 
 // Draft principles for EACH and its community partners to agree (pending: `communityProtocols`).
 const principles = [
@@ -41,8 +52,9 @@ const principles = [
   },
 ] as const;
 
-export default function IndigenousKnowledgePage() {
-  const next = nextProgramme(programme.slug);
+export default async function IndigenousKnowledgePage() {
+  const programme = await loadProgramme();
+  const next = (await nextProgramme(programme.slug)) ?? programme;
 
   return (
     <>

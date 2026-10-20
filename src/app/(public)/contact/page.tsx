@@ -10,6 +10,7 @@ import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { media } from "@/config/media";
+import { getSiteSettings } from "@/features/settings";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
@@ -18,8 +19,12 @@ export const metadata = pageMetadata({
   path: "/contact",
 });
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const settings = await getSiteSettings();
   const pending = <PendingContent item="contactDetails" variant="badge" />;
+  const complete = Boolean(
+    settings.contactEmail && settings.phone && settings.postalAddress && settings.officeHours,
+  );
 
   return (
     <>
@@ -49,13 +54,32 @@ export default function ContactPage() {
             <div data-reveal className="space-y-10 lg:col-span-8">
               <KeyFacts
                 facts={[
-                  { term: "Email", value: pending },
-                  { term: "Telephone", value: pending },
-                  { term: "Address", value: pending },
-                  { term: "Office hours", value: pending },
+                  {
+                    term: "Email",
+                    value: settings.contactEmail ? (
+                      <a
+                        href={`mailto:${settings.contactEmail}`}
+                        className="rounded-sm text-primary underline underline-offset-4"
+                      >
+                        {settings.contactEmail}
+                      </a>
+                    ) : (
+                      pending
+                    ),
+                  },
+                  { term: "Telephone", value: settings.phone ?? pending },
+                  {
+                    term: "Address",
+                    value: settings.postalAddress ? (
+                      <span className="whitespace-pre-line">{settings.postalAddress}</span>
+                    ) : (
+                      pending
+                    ),
+                  },
+                  { term: "Office hours", value: settings.officeHours ?? pending },
                 ]}
               />
-              <PendingContent item="contactDetails" />
+              {complete ? null : <PendingContent item="contactDetails" />}
             </div>
           </Container>
         </Reveal>

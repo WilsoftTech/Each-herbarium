@@ -9,7 +9,7 @@ import { PendingContent } from "@/components/ui/pending-content";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { media } from "@/config/media";
-import { programmes } from "@/content/programmes";
+import { listProgrammes } from "@/features/programmes";
 import { listProjects, ProjectCards } from "@/features/projects";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -22,7 +22,7 @@ export const metadata = pageMetadata({
 });
 
 export default async function OurWorkPage() {
-  const projects = await listProjects();
+  const [programmes, projects] = await Promise.all([listProgrammes(), listProjects()]);
 
   return (
     <>
