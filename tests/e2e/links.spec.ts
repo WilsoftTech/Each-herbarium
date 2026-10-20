@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { publicRoutes } from "../routes";
+import { dynamicRoutes, publicRoutes, staticRoutes } from "../routes";
 import { desktop } from "./helpers";
 
 test.use({ viewport: desktop });
@@ -54,7 +54,7 @@ test("external links are well-formed https URLs", async ({ page }) => {
   expect(bad, bad.join("\n")).toEqual([]);
 });
 
-test("every public route is reachable by following links from the homepage", async ({ page }) => {
+test("public navigation reaches every landing page and omits sample records", async ({ page }) => {
   test.setTimeout(180_000);
   const seen = new Set<string>(["/"]);
   const queue = ["/"];
@@ -68,7 +68,10 @@ test("every public route is reachable by following links from the homepage", asy
       }
     }
   }
-  for (const route of publicRoutes) expect([...seen], route).toContain(route);
+  for (const route of staticRoutes) expect([...seen], route).toContain(route);
+  // Samples remain directly accessible for review, but must not be promoted
+  // as projects or publications. Route tests still verify their labels/noindex.
+  for (const route of dynamicRoutes) expect([...seen], route).not.toContain(route);
   // The design system preview is internal and never linked.
   expect(seen.has("/design-system")).toBe(false);
 });

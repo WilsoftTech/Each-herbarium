@@ -110,6 +110,8 @@ The brief's target routes are capabilities; existing coherent conventions were k
 
 ## Kept in code by rule (ADR 0013)
 
+M04 content remediation: public project/resource list components omit sample records and show controlled explanatory notices when no eligible record is available; sample detail routes and their indexing safeguards remain unchanged. Review field patches live in `docs/content/cms-review-proposals.json`, with readable copy in [client review](../content/CLIENT-CONTENT-REVIEW.md). The explicit dev-only `scripts/prepare-content-review.ts` creates DRAFT `content_revisions` from current editor fields, skips existing revisions and never writes a live content row. It is not run by the normal seed; submit/approve and publication validation remain the existing CMS workflow. It creates no named people, new partners, projects, publications or contact settings.
+
 | What                                                                             | Where                                                                    | Why                                                             |
 | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------- |
 | Organisation name, short name, logo                                              | `src/config/site.ts`, `BrandMark`                                        | Protected brand (AGENTS.md §4)                                  |

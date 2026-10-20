@@ -111,4 +111,6 @@ Run on 2026-10-21 (Windows 11, Node 24.13.0, npm 11.6.2) against the Neon `dev` 
 
 ## Risks
 
+Content remediation remains within M04: [report](../content/CONTENT-REMEDIATION-REPORT.md), [client wording](../content/CLIENT-CONTENT-REVIEW.md). All 22 original requirements remain tracked (10 prepared for review; 12 factual blockers). Sample records are omitted from listings without deletion or publication changes. The dev-only preparation script stages proposed words as pending DRAFT revisions and preserves existing pending edits. Production migration/seed approval, expert/legal review, factual evidence and client sign-off remain open; this work does not complete the milestone.
+
 Data loss; authorisation gaps; vendor lock-in; cost. Managed Auth and CMS writes are not atomic. Production auth email configuration remains pending; self-hosted identities and R2 objects need an explicit migration if present. The dev branch expires after seven days (2026-10-26). Remaining risks are listed in the verification report and `ROADMAP.md`.

@@ -17,6 +17,15 @@ export function loadLocalEnv(): void {
   }
 }
 
+/** Content preparation is explicitly restricted to the local development target. */
+export function assertContentReviewDevelopment(): void {
+  loadLocalEnv();
+  z.literal("dev").parse(process.env.NEON_BRANCH);
+  if (process.env.VERCEL_ENV === "production" || process.env.NODE_ENV === "production") {
+    throw new Error("Content review preparation refuses a production environment.");
+  }
+}
+
 /** Managed CLI operations must target the same branch as the loaded app env. */
 export function managedScriptEnv() {
   loadLocalEnv();

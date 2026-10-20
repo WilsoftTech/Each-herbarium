@@ -43,8 +43,8 @@ test.describe("motion allowed", () => {
   test.use({ viewport: desktop, reducedMotion: "no-preference" });
 
   test("cards reveal as they scroll into view", async ({ page }) => {
-    await page.goto("/");
-    const firstCard = page.locator("section[aria-labelledby=projects-title] article").first();
+    await page.goto("/our-work");
+    const firstCard = page.locator("#programmes article").first();
     await firstCard.scrollIntoViewIfNeeded();
     await expect.poll(() => firstCard.evaluate((el) => getComputedStyle(el).opacity)).toBe("1");
   });
@@ -60,8 +60,14 @@ test.describe("without JavaScript", () => {
     ).toBeVisible();
     await expect(page.getByRole("link", { name: "Explore the herbarium" })).toBeVisible();
 
-    const cards = page.locator("section[aria-labelledby=projects-title] article");
-    await expect(cards).toHaveCount(3);
+    const projects = page.locator("section[aria-labelledby=projects-title]");
+    await expect(projects.locator("article")).toHaveCount(0);
+    await expect(projects.locator('[data-pending="projects"]')).toBeVisible();
+
+    // Exercise real programme cards, rather than requiring sample projects.
+    await page.goto("/our-work");
+    const cards = page.locator("#programmes article");
+    await expect(cards).toHaveCount(4);
     for (const opacity of await cards.evaluateAll((els) =>
       els.map((el) => getComputedStyle(el).opacity),
     )) {

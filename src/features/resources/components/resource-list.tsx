@@ -36,9 +36,22 @@ export function ResourceList({
   headingLevel: Heading = "h3",
   className,
 }: ResourceListProps) {
+  const verified = resources.filter((resource) => resource.status === "published");
+  if (!verified.length) {
+    return (
+      <div className={cn("space-y-5", className)}>
+        <p className="max-w-3xl leading-7 text-muted-foreground">
+          Publications and guides need identifiable authors, a date and a source that readers can
+          consult. Sample entries are omitted from this listing and are not EACH publications. For
+          general botanical reference, explore the herbarium and research pages.
+        </p>
+        <PendingContent item="resources" />
+      </div>
+    );
+  }
   return (
     <ol className={cn("border-b border-border", className)}>
-      {resources.map((resource) => (
+      {verified.map((resource) => (
         <li key={resource.slug} data-reveal className="border-t border-border">
           <article className="group/row relative grid gap-4 py-8 md:grid-cols-12 md:gap-8">
             <div className="flex flex-wrap items-center gap-3 text-sm md:col-span-3 md:flex-col md:items-start">

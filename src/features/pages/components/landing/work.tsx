@@ -441,6 +441,7 @@ export function ProjectsView({
 }: { landing: LandingPage<"projects"> } & Awaited<ReturnType<typeof projectsData>>) {
   const { page, content } = landing;
   const showsPlaceholders = projects.some((project) => project.status === "placeholder");
+  const verifiedProjects = projects.filter((project) => project.status === "published");
 
   return (
     <>
@@ -452,14 +453,30 @@ export function ProjectsView({
           <p>
             {page.lead}
             {showsPlaceholders
-              ? " The case studies below are placeholders that show the format; they do not describe EACH projects."
+              ? " Sample records are omitted from this listing; they do not describe EACH projects."
               : null}
           </p>
         }
         aside={showsPlaceholders || !projects.length ? <PendingContent item="projects" /> : null}
       />
 
-      {projects.map((project, index) => (
+      {!verifiedProjects.length ? (
+        <Section aria-label="About conservation projects" spacing="compact">
+          <Container>
+            <p className="max-w-3xl text-lead text-pretty text-muted-foreground">
+              Plant conservation connects botanical documentation, habitat care and community
+              participation. Explore these fields on the{" "}
+              <Link href="/our-work" className="text-primary underline underline-offset-4">
+                our work page
+              </Link>
+              . A published case study will distinguish its objectives, activities and verified
+              results, with sources and dates.
+            </p>
+          </Container>
+        </Section>
+      ) : null}
+
+      {verifiedProjects.map((project, index) => (
         <Section
           key={project.slug}
           surface={index % 2 ? "muted" : "light"}
@@ -522,7 +539,7 @@ export function ResourcesView({
           <p>
             {page.lead}
             {showsPlaceholders
-              ? " The entries below are placeholders that show how resources will be presented."
+              ? " Sample entries are omitted from this listing; they are not EACH publications."
               : null}
           </p>
         }
@@ -537,7 +554,7 @@ export function ResourcesView({
         </Reveal>
       </Section>
 
-      {downloads.length ? (
+      {downloads.some((download) => download.status === "published") ? (
         <Section surface="muted" aria-labelledby="downloads-title">
           <Reveal>
             <Container>
@@ -546,7 +563,10 @@ export function ResourcesView({
                 eyebrow={content.downloads.eyebrow}
                 title={content.downloads.title}
               />
-              <DownloadList downloads={downloads} className="mt-12" />
+              <DownloadList
+                downloads={downloads.filter((download) => download.status === "published")}
+                className="mt-12"
+              />
             </Container>
           </Reveal>
         </Section>

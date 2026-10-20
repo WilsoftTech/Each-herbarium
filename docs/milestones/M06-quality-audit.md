@@ -15,6 +15,8 @@ Prove the site is fast, discoverable, accessible and secure before release.
 
 ## Acceptance criteria
 
+M04 content-review follow-ups: retain the manual screen-reader audit; verify actual host/tracking/cookie behaviour and accessibility statements before any conformance claim. Draft policies do not establish compliance. Expert botanical review and legal/controller approval remain EACH content responsibilities. See [content remediation](../content/CONTENT-REMEDIATION-REPORT.md). Verification also observed existing image quality 70 configuration warnings and Node/pg deprecations; assess these in the quality audit. No M06 implementation was started by that workstream.
+
 - [ ] Lighthouse or equivalent results recorded for key routes and meeting budgets.
 - [ ] No critical or serious accessibility violations; manual audit recorded.
 - [ ] Security headers verified on a production build.

@@ -43,9 +43,13 @@ type HomePageViewProps = {
 };
 
 /** Featured items, or the first `count` when none are marked featured. */
-export function pickFeatured<T extends { featured: boolean }>(items: readonly T[], count = 3): T[] {
-  const featured = items.filter((item) => item.featured);
-  return (featured.length ? featured : items).slice(0, count);
+export function pickFeatured<T extends { featured: boolean; status?: string }>(
+  items: readonly T[],
+  count = 3,
+): T[] {
+  const eligible = items.filter((item) => item.status !== "placeholder");
+  const featured = eligible.filter((item) => item.featured);
+  return (featured.length ? featured : eligible).slice(0, count);
 }
 
 /**

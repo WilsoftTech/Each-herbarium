@@ -172,6 +172,21 @@ describe("content integrity", () => {
       expect(html, route).toMatch(/data-pending="(projects|resources)"/);
     }
   });
+
+  it("omits sample links from every public collection listing", async () => {
+    for (const route of [
+      "/",
+      "/our-work",
+      "/projects",
+      "/research",
+      "/resources",
+      "/our-work/plant-conservation",
+      "/our-work/environmental-conservation",
+    ]) {
+      const { html } = await renderRoute(route);
+      expect(html, route).not.toMatch(/href="\/(projects|resources)\/placeholder-/);
+    }
+  });
 });
 
 /**

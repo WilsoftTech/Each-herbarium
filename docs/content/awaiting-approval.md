@@ -8,6 +8,12 @@ Since [ADR 0013](../decisions/0013-designed-sections-in-the-cms.md) staff resolv
 
 ## Missing content
 
+### M04 content remediation — 2026-10-21
+
+All **22 requirements remain outstanding**: 10 have prepared proposals awaiting client review; 12 still require factual information, permissions or evidence. No institutional approval is inferred from Option B. Read the complete wording in [CLIENT-CONTENT-REVIEW.md](CLIENT-CONTENT-REVIEW.md) and the audit in [CONTENT-REMEDIATION-REPORT.md](CONTENT-REMEDIATION-REPORT.md).
+
+The development-only `scripts/prepare-content-review.ts` stages eligible field proposals as DRAFT revisions in the existing CMS, skips existing pending changes and never modifies live content. It is separate from the normal seed. Samples are omitted from public project/resource listings; their existing detail routes retain labels and indexing safeguards. These presentation changes do not supply verified projects or publications. The tables below still list every original factual and approval requirement; prepared copy does not retire a key.
+
 | Key                    | What is needed                                                                                               | Shown on                                                                 |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
 | `organisation`         | Legal status, registration number, registered address, and who is responsible for the website                | `/about`                                                                 |

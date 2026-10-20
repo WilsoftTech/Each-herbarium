@@ -25,13 +25,26 @@ type ProjectCardsProps = {
 };
 
 /**
- * Image-led project cards in a staggered editorial row. Placeholder projects
- * carry a visible label on the photograph.
+ * Image-led published project cards in a staggered editorial row. Samples
+ * are omitted; an empty collection retains its informative pending state.
  */
 export function ProjectCards({ projects, headingLevel = "h3", className }: ProjectCardsProps) {
+  const verified = projects.filter((project) => project.status === "published");
+  if (!verified.length) {
+    return (
+      <div className={cn("space-y-5", className)}>
+        <p className="max-w-3xl leading-7 text-muted-foreground">
+          A conservation case study needs a documented purpose, location, period and evidence of
+          results. Sample records are omitted from this listing; they are not evidence of
+          EACH&apos;s activities.
+        </p>
+        <PendingContent item="projects" />
+      </div>
+    );
+  }
   return (
     <div className={cn("grid gap-x-8 gap-y-14 md:grid-cols-2 lg:grid-cols-3", className)}>
-      {projects.map((project, index) => (
+      {verified.map((project, index) => (
         <MediaCard
           key={project.slug}
           href={`/projects/${project.slug}`}

@@ -27,4 +27,6 @@ Reliable, secure ways for the public to contact EACH, volunteer and propose part
 
 ## Risks
 
+Content prerequisites from the M04 remediation: verify official contact channels; approve actual volunteer roles, supervision and safeguarding arrangements; agree partnership responsibilities; confirm the data controller and notice for each collection flow before public forms are enabled. Proposed wording is in [client content review](../content/CLIENT-CONTENT-REVIEW.md). Forms and delivery remain M05 work; none was implemented by that workstream.
+
 Spam; email deliverability (SPF, DKIM and DMARC); personal-data handling.

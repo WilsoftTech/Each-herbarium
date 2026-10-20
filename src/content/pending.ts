@@ -3,6 +3,8 @@
  * names one of these keys, so the list below is the complete register of what
  * is outstanding. docs/content/awaiting-approval.md mirrors it (a unit test
  * keeps the two in step).
+ * Review-ready alternatives are in docs/content/CLIENT-CONTENT-REVIEW.md;
+ * preparation alone does not fulfil a factual or approval requirement.
  *
  * `missing`: the information does not exist on the site yet.
  * `draft`: the site shows proposed wording that EACH must confirm or replace.
@@ -67,7 +69,7 @@ export const pendingContent = {
     kind: "missing",
     title: "Conservation projects",
     needed:
-      "Real projects: names, locations, dates, partners, objectives, photography and verified outcomes. Placeholder case studies show the layout only.",
+      "Real projects: names, locations, dates, partners, objectives, photography and verified outcomes. Sample records are omitted from public listings; their detail pages remain labelled.",
   },
   regionalPresence: {
     kind: "missing",
@@ -91,7 +93,7 @@ export const pendingContent = {
     kind: "missing",
     title: "Publications, guides and stories",
     needed:
-      "Real EACH resources: titles, authors, dates, summaries and files or full text. Placeholder entries show the layout only.",
+      "Real EACH resources: titles, authors, dates, summaries and files or full text. Sample entries are omitted from public listings; their detail pages remain labelled.",
   },
   impactFigures: {
     kind: "missing",
