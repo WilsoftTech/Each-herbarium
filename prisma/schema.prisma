@@ -12,6 +12,8 @@
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
+  // Fetch related CMS rows in SQL instead of repeated network round trips.
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {

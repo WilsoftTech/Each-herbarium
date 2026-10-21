@@ -1,7 +1,7 @@
 import { expect, type Page } from "@playwright/test";
 
 /**
- * Collects console errors, uncaught exceptions and failed responses. Every
+ * Collects console warnings/errors, uncaught exceptions and failed responses. Every
  * route linked from the site exists since M03, so any 4xx or 5xx response
  * is reported. Pass `allow` for responses a test expects (such as a 404 it
  * requests on purpose).
@@ -14,7 +14,7 @@ export function trackErrors(
 
   page.on("pageerror", (error) => errors.push(`pageerror: ${error.message}`));
   page.on("console", (message) => {
-    if (message.type() !== "error") return;
+    if (message.type() !== "error" && message.type() !== "warning") return;
     const url = message.location().url;
     if (message.text().startsWith("Failed to load resource") && url && allow(url, 404)) return;
     errors.push(`console: ${message.text()} (${url})`);

@@ -45,3 +45,4 @@ Trade-offs, follow-ups, what becomes easier or harder.
 | [0011](0011-content-revisions.md)                  | Pending revisions keep published content live until approval   | Accepted                                            |
 | [0012](0012-cms-page-registry-seo-and-settings.md) | Page registry, homepage sections, SEO fields and site settings | Accepted (code-owned sections superseded by 0013)   |
 | [0013](0013-designed-sections-in-the-cms.md)       | Designed page sections are managed in the CMS                  | Accepted                                            |
+| [0014](0014-cms-relation-loading.md)               | CMS relation loading and request waterfalls                    | Accepted                                            |

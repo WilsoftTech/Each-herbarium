@@ -4,6 +4,16 @@ import { desktop, trackErrors } from "./helpers";
 
 test.use({ viewport: desktop });
 
+test("hero and default image qualities are supported by the optimiser", async ({ request }) => {
+  for (const quality of [70, 75]) {
+    const response = await request.get(
+      `/_next/image?url=%2Fimages%2Fpapyrus-swamp-fog.jpg&w=640&q=${quality}`,
+    );
+    expect(response.status()).toBe(200);
+    expect(response.headers()["content-type"]).toMatch(/^image\//);
+  }
+});
+
 test.describe("every public route", () => {
   for (const route of publicRoutes) {
     test(`${route} renders with metadata, one h1 and no errors`, async ({ page }) => {

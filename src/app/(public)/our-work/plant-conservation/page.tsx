@@ -33,9 +33,13 @@ export async function generateMetadata() {
 }
 
 export default async function PlantConservationPage() {
-  const { programme, content, images } = await loadProgramme();
-  const projects = await listProjectsForProgramme(programme.slug);
-  const next = (await nextProgramme(programme.slug)) ?? programme;
+  const [designed, projects, following] = await Promise.all([
+    loadProgramme(),
+    listProjectsForProgramme(slug),
+    nextProgramme(slug),
+  ]);
+  const { programme, content, images } = designed;
+  const next = following ?? programme;
   const photograph = images[content.photograph.imageId];
 
   return (

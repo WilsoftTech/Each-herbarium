@@ -5,6 +5,36 @@ import { testSchemaUrl } from "../test-database";
 import { createUser } from "./helpers";
 import { seedProgrammes } from "../../prisma/seed/programmes";
 import { seedPages } from "../../prisma/seed/pages";
+import { projectInclude, toProject } from "@/features/projects/queries";
+import { articleInclude, toResource } from "@/features/resources/queries";
+
+describe("CMS relation loading", () => {
+  it("SQL joins preserve project relations and the public content contract", async () => {
+    const read = async (relationLoadStrategy: "join" | "query") =>
+      (
+        await getDb().project.findMany({
+          relationLoadStrategy,
+          where: { status: "PUBLISHED", image: { status: "READY" } },
+          orderBy: { slug: "asc" },
+          include: projectInclude,
+        })
+      ).map(toProject);
+    expect(await read("join")).toEqual(await read("query"));
+  });
+
+  it("SQL joins preserve article images, documents and attributed content", async () => {
+    const read = async (relationLoadStrategy: "join" | "query") =>
+      (
+        await getDb().article.findMany({
+          relationLoadStrategy,
+          where: { status: "PUBLISHED" },
+          orderBy: { slug: "asc" },
+          include: articleInclude,
+        })
+      ).map(toResource);
+    expect(await read("join")).toEqual(await read("query"));
+  });
+});
 
 /** Runs raw SQL and returns the database error message, or null on success. */
 async function sqlError(sql: string): Promise<string | null> {

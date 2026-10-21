@@ -31,8 +31,9 @@ export async function generateMetadata() {
 }
 
 export default async function IndigenousKnowledgePage() {
-  const { programme, content } = await loadProgramme();
-  const next = (await nextProgramme(programme.slug)) ?? programme;
+  const [designed, following] = await Promise.all([loadProgramme(), nextProgramme(slug)]);
+  const { programme, content } = designed;
+  const next = following ?? programme;
 
   return (
     <>

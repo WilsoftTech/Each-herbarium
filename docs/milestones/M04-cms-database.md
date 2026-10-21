@@ -118,3 +118,7 @@ Data loss; authorisation gaps; vendor lock-in; cost. Managed Auth and CMS writes
 ## Client-approved content follow-up
 
 The owner reports client approval and authorises implementation and starter-project selection. Current content state: [implementation report](../content/CONTENT-APPROVAL-IMPLEMENTATION.md). The original 22 requirements remain auditable: 18 approved editorial resolutions and four outstanding contact/location notices. Three planned starter projects and three educational guides use existing CMS models. Owner-authorised dev publication uses existing save and publishing validators with audited system transitions; unrelated edits and production are protected. M04 status remains PASS WITH CONDITIONS because production migration/seeding and its existing exit gate are not completed. M05–M07 remain NOT STARTED.
+
+## CMS read-latency follow-up
+
+Existing CMS reads now use Prisma database joins; metadata reuses page reads and independent programme reads start together. The image optimiser explicitly allows the hero quality. No production changes or new milestone work. [ADR 0014](../decisions/0014-cms-relation-loading.md), [verification](../audits/M04-request-latency.md).

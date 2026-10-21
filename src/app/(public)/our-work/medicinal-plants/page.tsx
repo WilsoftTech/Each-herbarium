@@ -37,8 +37,9 @@ export async function generateMetadata() {
 const voucher = referenceSpecimens[0];
 
 export default async function MedicinalPlantsPage() {
-  const { programme, content } = await loadProgramme();
-  const next = (await nextProgramme(programme.slug)) ?? programme;
+  const [designed, following] = await Promise.all([loadProgramme(), nextProgramme(slug)]);
+  const { programme, content } = designed;
+  const next = following ?? programme;
 
   return (
     <>

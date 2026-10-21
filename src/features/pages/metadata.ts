@@ -4,14 +4,21 @@ import { notFound } from "next/navigation";
 import type { MediaAsset } from "@/config/media";
 import { getSiteSettings } from "@/features/settings";
 import { pageMetadata } from "@/lib/metadata";
-import type { LandingSlug } from "./landing-content";
-import { getLandingPage, getPage } from "./queries";
+import { isLandingSlug, type LandingSlug } from "./landing-content";
+import { getHomePage, getLandingPage, getPage } from "./queries";
 import { pageRegistry, type ManagedPageSlug } from "./registry";
 import type { LandingPage, Page } from "./schema";
 
 /** The published page for a fixed route, or a 404 when it is not published. */
 export async function loadManagedPage(slug: ManagedPageSlug): Promise<Page> {
-  const page = await getPage(slug);
+  // Reuse the render's cached read rather than independently fetching the
+  // same page and hero image again just for metadata.
+  const page =
+    slug === "home"
+      ? (await getHomePage())?.page
+      : isLandingSlug(slug)
+        ? (await getLandingPage(slug))?.page
+        : await getPage(slug);
   if (!page) notFound();
   return page;
 }

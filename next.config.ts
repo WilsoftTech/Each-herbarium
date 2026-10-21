@@ -23,6 +23,7 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
+    qualities: [70, 75],
     // Only optimise files that are meant to be images, never with a query string.
     localPatterns: [
       { pathname: "/images/**", search: "" },

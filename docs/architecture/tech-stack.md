@@ -72,3 +72,5 @@ M03 added no dependencies. Measured in Chromium against `next start`: every scri
 | Further shadcn/ui components | M03+      | Added with the CLI only when a page uses them                    |
 | Resend                       | M05       | Transactional email                                              |
 | Vercel                       | M07       | Hosting ([ADR 0004](../decisions/0004-platform-and-ui-stack.md)) |
+
+Prisma relation reads use the `relationJoins` generator preview feature to avoid repeated network round trips (no model/migration change). See [ADR 0014](../decisions/0014-cms-relation-loading.md); keep this preview setting under review during ORM upgrades.
