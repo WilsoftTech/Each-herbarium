@@ -5,3 +5,7 @@ playwright-report/
 test-results/
 public/
 src/generated/
+
+# Vendored Neon agent skills (managed by `neon skills`; keep upstream content intact)
+.claude/skills/
+skills-lock.json
