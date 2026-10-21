@@ -4,6 +4,7 @@ export {
   BrandingSettingsForm,
   ContactSettingsForm,
   FooterSettingsForm,
+  FormsSettingsForm,
   NavigationSettingsForm,
   SeoSettingsForm,
 } from "./admin/settings-forms";

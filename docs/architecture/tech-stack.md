@@ -65,12 +65,15 @@ M03 added no dependencies. Measured in Chromium against `next start`: every scri
 - `npm install` warns that `jsdom`'s dependencies want Node ≥ 24.15 (local Node is 24.13). It does not block installation; upgrade Node when convenient.
 - Not installed: `@aws-sdk/client-s3` (aws4fetch covers the four S3 calls used), `sharp` (no server-side re-encoding yet), `dotenv` (Node's `util.parseEnv`), `@prisma/adapter-neon` (TCP pooling suits Vercel functions).
 
+## M05 notes
+
+- **No dependency added.** Email goes to Resend's HTTP API with native `fetch` (`src/services/email.ts`); the `resend` SDK is not installed. Configure `RESEND_API_KEY`, `EMAIL_FROM` and `ENQUIRY_NOTIFICATION_EMAIL` to send; without them enquiries are stored and marked "Email not configured" ([ADR 0015](../decisions/0015-public-enquiries.md)).
+
 ## Planned (not installed)
 
 | Technology                   | Milestone | Purpose                                                          |
 | ---------------------------- | --------- | ---------------------------------------------------------------- |
 | Further shadcn/ui components | M03+      | Added with the CLI only when a page uses them                    |
-| Resend                       | M05       | Transactional email                                              |
 | Vercel                       | M07       | Hosting ([ADR 0004](../decisions/0004-platform-and-ui-stack.md)) |
 
 Prisma relation reads use the `relationJoins` generator preview feature to avoid repeated network round trips (no model/migration change). See [ADR 0014](../decisions/0014-cms-relation-loading.md); keep this preview setting under review during ORM upgrades.

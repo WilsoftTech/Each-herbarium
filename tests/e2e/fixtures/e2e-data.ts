@@ -86,6 +86,10 @@ async function teardown() {
     where: { collection: "projects", entityId: { in: projects.map((project) => project.id) } },
   });
   await db.project.deleteMany({ where: { slug: { startsWith: "e2e-" } } });
+  // Enquiries sent by the public forms flow (personal data in real use).
+  await db.inquiry.deleteMany({
+    where: { email: { startsWith: "e2e-", endsWith: "@example.org" } },
+  });
   // Keep audit references, but revoke application access for test identities.
   await db.user.updateMany({
     where: { email: { endsWith: "@each.test" } },

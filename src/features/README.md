@@ -1,6 +1,6 @@
 # Features
 
-Each folder here is one module of the modular monolith, for example `conservation-projects`, `inquiries` or `volunteering`. No feature exists yet. The first ones arrive in M03–M05.
+Each folder here is one module of the modular monolith, for example `projects`, `settings` or `enquiries` (the public forms, M05).
 
 ## Module layout
 

@@ -19,6 +19,7 @@ const expected: Record<Role, Permission[]> = {
     "media:upload",
     "media:edit",
     "media:delete",
+    "enquiries:manage",
   ],
   editor: ["admin:access", "content:edit-draft", "content:submit", "media:upload"],
 };
@@ -38,6 +39,13 @@ describe("role permissions", () => {
     ] as const) {
       expect(roleSchema.options.filter((role) => can(role, permission))).toEqual(["admin"]);
     }
+  });
+
+  it("editors cannot read public enquiries (personal data)", () => {
+    expect(roleSchema.options.filter((role) => can(role, "enquiries:manage"))).toEqual([
+      "admin",
+      "reviewer",
+    ]);
   });
 
   it("editors cannot publish, or change content waiting for review", () => {

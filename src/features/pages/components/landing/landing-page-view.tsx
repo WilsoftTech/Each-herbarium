@@ -13,6 +13,7 @@ import {
   BitwiireView,
   ContactView,
   contactData,
+  formsData,
   GetInvolvedView,
   PartnershipsView,
   VolunteerView,
@@ -58,11 +59,11 @@ export async function renderLandingPage(landing: AnyLandingPage): Promise<ReactE
     case "resources":
       return <ResourcesView landing={landing} {...await resourcesData()} />;
     case "get-involved":
-      return <GetInvolvedView landing={landing} />;
+      return <GetInvolvedView landing={landing} {...await formsData()} />;
     case "volunteer":
-      return <VolunteerView landing={landing} />;
+      return <VolunteerView landing={landing} {...await formsData()} />;
     case "partnerships":
-      return <PartnershipsView landing={landing} />;
+      return <PartnershipsView landing={landing} {...await formsData()} />;
     case "bitwiire-herbarium-cafe":
       return <BitwiireView landing={landing} />;
     case "contact":

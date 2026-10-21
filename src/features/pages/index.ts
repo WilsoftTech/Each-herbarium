@@ -16,6 +16,7 @@ export {
   BitwiireView,
   ContactView,
   contactData,
+  formsData,
   GetInvolvedView,
   PartnershipsView,
   VolunteerView,

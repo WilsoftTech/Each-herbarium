@@ -13,7 +13,7 @@ function SettingsSection({
   label,
   children,
 }: {
-  section: "contact" | "branding" | "footer" | "seo" | "navigation";
+  section: "contact" | "branding" | "footer" | "seo" | "navigation" | "forms";
   label: string;
   children: ReactNode;
 }) {
@@ -116,6 +116,24 @@ export function FooterSettingsForm({ settings }: { settings: SiteSettings }) {
           maxLength={160}
           defaultValue={settings.copyrightText}
           hint="Optional. Leave empty to hide. Use the wording EACH has approved."
+        />
+      </AdminPanel>
+    </SettingsSection>
+  );
+}
+
+export function FormsSettingsForm({ settings }: { settings: SiteSettings }) {
+  return (
+    <SettingsSection section="forms" label="Public forms">
+      <AdminPanel
+        title="Public forms"
+        description="The contact, volunteer-interest and partnership forms. Submissions are stored in the website database and listed under Enquiries."
+      >
+        <CheckboxField
+          name="acceptEnquiries"
+          label="Show the forms on the website"
+          defaultChecked={settings.acceptEnquiries}
+          hint="Before turning this on, update the privacy page to describe the forms: what is collected, why, who can read it and how long it is kept. While off, each page says the form is not available yet."
         />
       </AdminPanel>
     </SettingsSection>

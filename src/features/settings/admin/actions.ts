@@ -52,6 +52,8 @@ const footerSchema = z.object({
 
 const seoSchema = z.object({ socialImageId: z.string().min(1).nullable() });
 
+const formsSchema = z.object({ acceptEnquiries: z.boolean() });
+
 /** Reads the navigation editor: fields named nav.item.<id>.<field> and nav.link.<href>.<field>. */
 function readNavigation(form: FormData): NavigationOverrides {
   const overrides: NavigationOverrides = { items: {}, links: {} };
@@ -104,7 +106,7 @@ function parseNavigation(input: NavigationOverrides): NavigationOverrides {
   throw new ActionError("Check the highlighted fields.", errors);
 }
 
-type Section = "contact" | "branding" | "footer" | "seo" | "navigation";
+type Section = "contact" | "branding" | "footer" | "seo" | "navigation" | "forms";
 
 const sectionLabel: Record<Section, string> = {
   contact: "contact details",
@@ -112,6 +114,7 @@ const sectionLabel: Record<Section, string> = {
   footer: "footer",
   seo: "search defaults",
   navigation: "navigation",
+  forms: "public forms",
 };
 
 async function readSection(
@@ -148,6 +151,8 @@ async function readSection(
     }
     case "navigation":
       return { navigation: parseNavigation(readNavigation(form)) };
+    case "forms":
+      return parseInput(formsSchema, { acceptEnquiries: checkbox(form, "acceptEnquiries") });
   }
 }
 

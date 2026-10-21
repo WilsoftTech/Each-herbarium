@@ -37,6 +37,8 @@ const permissions = {
   "media:delete": ["admin", "reviewer"],
   /** Site settings, navigation, footer, SEO defaults and branding text. */
   "settings:edit": ["admin"],
+  /** Read public form submissions (personal data) and change their status. */
+  "enquiries:manage": ["admin", "reviewer"],
   "users:manage": ["admin"],
   "audit:view": ["admin"],
 } as const satisfies Record<string, readonly Role[]>;

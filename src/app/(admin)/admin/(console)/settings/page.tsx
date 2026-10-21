@@ -29,6 +29,11 @@ const sections = [
     description: "Closing statement, small print and copyright line.",
   },
   {
+    href: "/admin/settings/forms",
+    title: "Public forms",
+    description: "Show or hide the contact, volunteer-interest and partnership forms.",
+  },
+  {
     href: "/admin/settings/seo",
     title: "Search defaults",
     description: "The default sharing image. Each page's own search settings are on the page.",

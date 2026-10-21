@@ -47,6 +47,7 @@ export function toSiteSettings(row: SettingsRow): SiteSettings {
     copyrightText: row.copyrightText,
     socialImage: usableImage(row.socialImage),
     navigation: navigation.success ? navigation.data : noNavigationOverrides,
+    acceptEnquiries: row.acceptEnquiries,
   });
 }
 

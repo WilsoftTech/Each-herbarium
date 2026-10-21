@@ -1,9 +1,10 @@
-import { VolunteerView, loadLandingPage, metadataForPage } from "@/features/pages";
+import { VolunteerView, formsData, loadLandingPage, metadataForPage } from "@/features/pages";
 
 export async function generateMetadata() {
   return metadataForPage("volunteer");
 }
 
 export default async function VolunteerPage() {
-  return <VolunteerView landing={await loadLandingPage("volunteer")} />;
+  const [landing, forms] = await Promise.all([loadLandingPage("volunteer"), formsData()]);
+  return <VolunteerView landing={landing} {...forms} />;
 }

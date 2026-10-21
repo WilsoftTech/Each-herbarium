@@ -32,6 +32,8 @@ export const siteSettingsSchema = z.object({
   /** Default sharing image; null uses the built-in default. */
   socialImage: mediaAssetSchema.nullable(),
   navigation: navigationOverridesSchema,
+  /** Public contact, volunteer and partnership forms are shown (M05). */
+  acceptEnquiries: z.boolean(),
 });
 
 export type SiteSettings = z.infer<typeof siteSettingsSchema>;
@@ -51,6 +53,7 @@ export const emptySiteSettings: SiteSettings = {
   copyrightText: "",
   socialImage: null,
   navigation: noNavigationOverrides,
+  acceptEnquiries: false,
 };
 
 export type { NavigationOverrides };

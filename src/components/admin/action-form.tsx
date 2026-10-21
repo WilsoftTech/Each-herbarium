@@ -33,6 +33,8 @@ type ActionFormProps = {
   className?: string;
   /** Accessible name for the form, when the page has several. */
   label?: string;
+  /** Clear the fields after a successful submission (public forms). */
+  resetOnSuccess?: boolean;
 };
 
 /**
@@ -41,14 +43,22 @@ type ActionFormProps = {
  * so React does not reset the fields (an editor keeps their input when
  * validation fails). Without JavaScript the native `action` still works.
  */
-export function ActionForm({ action, children, className, label }: ActionFormProps) {
+export function ActionForm({
+  action,
+  children,
+  className,
+  label,
+  resetOnSuccess,
+}: ActionFormProps) {
   const [state, formAction, pending] = useActionState(action, { ok: true });
   const messageRef = useRef<HTMLParagraphElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   // Move focus to the result so screen reader and keyboard users hear it.
   useEffect(() => {
+    if (state.ok && state.message && resetOnSuccess) formRef.current?.reset();
     if (state.message) messageRef.current?.focus();
-  }, [state]);
+  }, [state, resetOnSuccess]);
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -59,7 +69,13 @@ export function ActionForm({ action, children, className, label }: ActionFormPro
 
   return (
     <FormContext value={{ state, pending }}>
-      <form action={formAction} onSubmit={onSubmit} aria-label={label} className={className}>
+      <form
+        ref={formRef}
+        action={formAction}
+        onSubmit={onSubmit}
+        aria-label={label}
+        className={className}
+      >
         {state.message ? (
           <p
             ref={messageRef}

@@ -211,6 +211,9 @@ model SiteSettings {
   /// Label, description, order and visibility overrides for the approved
   /// navigation (src/config/navigation.ts). Destinations are not editable.
   navigation      Json        @default("{}")
+  /// Shows the public contact, volunteer and partnership forms. Off until the
+  /// owner approves the privacy notice for them.
+  acceptEnquiries Boolean     @default(false) @map("accept_enquiries")
   updatedById     String?     @map("updated_by_id")
   updatedAt       DateTime    @updatedAt @map("updated_at")
 
@@ -543,18 +546,52 @@ enum InquiryStatus {
   @@map("inquiry_status")
 }
 
+/// Which public form sent the enquiry.
+enum InquiryKind {
+  CONTACT
+  VOLUNTEER
+  PARTNERSHIP
+
+  @@map("inquiry_kind")
+}
+
+/// Outcome of one email about an enquiry. The enquiry is stored first, so an
+/// email that fails or is not configured never loses it.
+enum DeliveryStatus {
+  PENDING
+  SENT
+  FAILED
+  /// Email settings are not configured in this environment.
+  NOT_CONFIGURED
+
+  @@map("delivery_status")
+}
+
+/// A submission from a public form (M05). Personal data: visible only to
+/// staff with the enquiries permission.
 model Inquiry {
-  id           String        @id @default(cuid())
-  status       InquiryStatus @default(NEW)
-  topic        String
-  name         String
-  email        String
-  organisation String?
-  message      String
-  createdAt    DateTime      @default(now()) @map("created_at")
-  updatedAt    DateTime      @updatedAt @map("updated_at")
+  id                    String         @id @default(cuid())
+  kind                  InquiryKind    @default(CONTACT)
+  status                InquiryStatus  @default(NEW)
+  topic                 String
+  name                  String
+  email                 String
+  organisation          String?
+  message               String
+  /// Form-specific answers, e.g. volunteer interest areas and availability.
+  details               Json           @default("{}")
+  /// Staff notification email.
+  notificationStatus    DeliveryStatus @default(PENDING) @map("notification_status")
+  /// Acknowledgement email to the submitter.
+  acknowledgementStatus DeliveryStatus @default(PENDING) @map("acknowledgement_status")
+  /// Last delivery error, for staff; never shown to the submitter.
+  deliveryError         String?        @map("delivery_error")
+  deliveryAttempts      Int            @default(0) @map("delivery_attempts")
+  createdAt             DateTime       @default(now()) @map("created_at")
+  updatedAt             DateTime       @updatedAt @map("updated_at")
 
   @@index([status, createdAt])
+  @@index([kind, createdAt])
   @@map("inquiries")
 }
 

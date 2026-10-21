@@ -16,6 +16,7 @@ export const adminNavigation: readonly AdminNavGroup[] = [
     items: [
       { label: "Dashboard", href: "/admin", permission: "admin:access" },
       { label: "Review queue", href: "/admin/reviews", permission: "admin:access" },
+      { label: "Enquiries", href: "/admin/enquiries", permission: "enquiries:manage" },
     ],
   },
   {

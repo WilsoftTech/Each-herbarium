@@ -45,9 +45,9 @@ This describes the repository **as it is now**. Planned folders are listed separ
 │   │   │   ├── layout.tsx       noindex, instant = false (per-request rendering)
 │   │   │   ├── sign-in/         Sign-in page (outside the console)
 │   │   │   ├── (console)/       AdminShell layout with loading, error and not-found states; dashboard,
-│   │   │   │                    reviews, account, pages, programmes, projects, articles, resources,
-│   │   │   │                    partners, team, media, settings (+ contact, branding, navigation,
-│   │   │   │                    footer, seo), users, audit
+│   │   │   │                    reviews, enquiries, account, pages, programmes, projects, articles,
+│   │   │   │                    resources, partners, team, media, settings (+ contact, branding,
+│   │   │   │                    navigation, footer, forms, seo), users, audit
 │   │   │   └── preview/         Draft and pending-change previews (projects, articles, pages)
 │   │   ├── media/[...key]/route.ts  Streams uploaded files from the private Neon Object Storage bucket
 │   │   ├── sitemap.ts           Published, indexable content only (cached, tag-invalidated)
@@ -90,11 +90,14 @@ This describes the repository **as it is now**. Planned folders are listed separ
 │   │   │                        home-content.ts (homepage sections), landing-content.ts and
 │   │   │                        components/landing/ (landing sections and views), metadata.ts.
 │   │   │                        programmes/ also: designed-content.ts (founding programme pages)
+│   │   ├── enquiries/           Public forms (M05, ADR 0015): schema.ts, submit.ts (public Server
+│   │   │                        Action), delivery.ts (Resend emails), components/enquiry-form.tsx,
+│   │   │                        admin/ (queries, status and retry actions, panels), index.ts
 │   ├── hooks/                   useScrolled, useBodyScrollLock
 │   ├── lib/                     utils.ts (cn), motion.ts, metadata.ts (pageMetadata), structured-data.ts
 │   ├── generated/prisma/        Prisma client (generated, git-ignored)
 │   ├── services/                db (Prisma), auth (Neon Managed Auth), admin-auth (requireAdmin), permissions
-│   │                            (role matrix), audit, rate-limit, storage (Neon S3)
+│   │                            (role matrix), audit, rate-limit, storage (Neon S3), email (Resend)
 │   └── validation/              env.ts (env schema), content.ts (media, status, slug contracts)
 ├── tests/
 │   ├── routes.ts                The approved public route list, shared by unit and e2e tests
@@ -125,9 +128,9 @@ This describes the repository **as it is now**. Planned folders are listed separ
 
 ## Planned
 
-| Folder                           | Purpose                         | Expected |
-| -------------------------------- | ------------------------------- | -------- |
-| `src/features/<feature>/` (more) | Inquiries (forms), volunteering | M05      |
+| Folder                           | Purpose                       | Expected |
+| -------------------------------- | ----------------------------- | -------- |
+| `src/features/<feature>/` (more) | As later milestones need them | M06+     |
 
 ## Docs
 

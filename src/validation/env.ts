@@ -123,6 +123,31 @@ export function parseStorageEnv(source: EnvSource): StorageEnv {
   };
 }
 
+export const emailEnvSchema = z.object({
+  /** Resend API key (server only). */
+  RESEND_API_KEY: optional(z.string().min(1)),
+  /** Sender on a domain verified in Resend, e.g. "EACH <enquiries@example.org>". */
+  EMAIL_FROM: optional(z.string().min(3)),
+  /** Staff inbox that receives new enquiries. */
+  ENQUIRY_NOTIFICATION_EMAIL: optional(z.email()),
+});
+
+export type EmailEnv = { apiKey: string; from: string; notificationEmail: string };
+
+/**
+ * Email delivery settings, or null when any is missing. Email is optional:
+ * without it enquiries are still stored and marked "not configured" for staff.
+ */
+export function parseEmailEnv(source: EnvSource): EmailEnv | null {
+  const env = parse(emailEnvSchema, source);
+  if (!env.RESEND_API_KEY || !env.EMAIL_FROM || !env.ENQUIRY_NOTIFICATION_EMAIL) return null;
+  return {
+    apiKey: env.RESEND_API_KEY,
+    from: env.EMAIL_FROM,
+    notificationEmail: env.ENQUIRY_NOTIFICATION_EMAIL,
+  };
+}
+
 export function parseFunctionEnv(source: EnvSource): { url: string } {
   const env = parse(
     z.object({ NEON_FUNCTION_HELLO_BASE_URL: z.url({ protocol: /^https$/ }) }),

@@ -471,3 +471,82 @@ test.describe.serial("managed page header", () => {
     await expectAccessible(page);
   });
 });
+
+test.describe.serial("public forms", () => {
+  const email = `e2e-${Date.now()}@example.org`;
+
+  async function setForms(page: Page, on: boolean) {
+    await page.goto("/admin/settings/forms");
+    await page.getByLabel("Show the forms on the website").setChecked(on);
+    await page.getByRole("button", { name: "Save public forms" }).click();
+    await expect(page.getByRole("status")).toContainText("Settings saved.");
+  }
+
+  test("an administrator switches the forms on and the contact page shows the form", async ({
+    browser,
+  }) => {
+    const admin = await session(browser, "admin");
+    await setForms(admin, true);
+    const visitor = await browser.newPage();
+    await visitor.goto("/contact");
+    await expect(visitor.getByRole("form", { name: "Contact form" })).toBeVisible();
+    await expect(visitor.getByText("The contact form is not available yet")).toHaveCount(0);
+    await expectAccessible(visitor);
+    await visitor.close();
+  });
+
+  test("invalid input is reported beside each field and nothing is stored", async ({ page }) => {
+    await page.goto("/contact");
+    const contactForm = page.getByRole("form", { name: "Contact form" });
+    await contactForm.getByLabel("Your name").fill("E2E visitor");
+    // Bypass browser validation so the server's own checks are exercised.
+    await contactForm.evaluate((element) => element.setAttribute("novalidate", ""));
+    await contactForm.getByLabel("Email address").fill("not-an-email");
+    await contactForm.getByRole("button", { name: "Send message" }).click();
+    await expect(contactForm.getByRole("alert")).toContainText("Check the highlighted fields.");
+    await expect(contactForm.getByText("Enter an email address in the format")).toBeVisible();
+    await expect(contactForm.getByText("Choose a topic.")).toBeVisible();
+    await expect(contactForm.getByLabel("Your name")).toHaveValue("E2E visitor");
+  });
+
+  test("a valid message is received and listed for staff with its email status", async ({
+    page,
+    browser,
+  }) => {
+    await page.goto("/contact");
+    const contactForm = page.getByRole("form", { name: "Contact form" });
+    await contactForm.getByLabel("Your name").fill("E2E visitor");
+    await contactForm.getByLabel("Email address").fill(email);
+    await contactForm.getByLabel("Topic").selectOption("general");
+    await contactForm.getByLabel("Message").fill("A question sent by the end-to-end tests.");
+    await contactForm.getByLabel(/may store these details/).check();
+    await contactForm.getByRole("button", { name: "Send message" }).click();
+    await expect(contactForm.getByRole("status")).toContainText("Your message has been received");
+    await expect(contactForm.getByLabel("Your name")).toHaveValue("");
+
+    const admin = await session(browser, "admin");
+    await admin.goto("/admin/enquiries");
+    await admin.getByRole("link", { name: "E2E visitor" }).first().click();
+    await expect(admin.getByText(email)).toBeVisible();
+    await expect(admin.getByText("A question sent by the end-to-end tests.")).toBeVisible();
+    await expectAccessible(admin);
+  });
+
+  test("editors cannot open the enquiries", async ({ browser }) => {
+    const editor = await session(browser, "editor");
+    await expect(editor.getByRole("link", { name: "Enquiries" })).toHaveCount(0);
+    await editor.goto("/admin/enquiries");
+    // Next.js returns HTTP 200 when notFound() resolves after streaming starts.
+    await expect(editor.getByRole("heading", { level: 1, name: "Page not found" })).toBeVisible();
+  });
+
+  test("switching the forms off restores the notices", async ({ browser }) => {
+    const admin = await session(browser, "admin");
+    await setForms(admin, false);
+    const visitor = await browser.newPage();
+    await visitor.goto("/volunteer");
+    await expect(visitor.getByText("The volunteer form is not available yet")).toBeVisible();
+    await expect(visitor.getByRole("form", { name: "Volunteer interest form" })).toHaveCount(0);
+    await visitor.close();
+  });
+});

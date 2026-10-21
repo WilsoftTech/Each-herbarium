@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { ActionPanels } from "@/components/sections/action-panels";
 import { NumberedList } from "@/components/sections/numbered-list";
@@ -14,6 +15,7 @@ import { PendingContent } from "@/components/ui/pending-content";
 import { RichParagraphs } from "@/components/ui/rich-text";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { EnquiryForm } from "@/features/enquiries";
 import { getSiteSettings } from "@/features/settings";
 import type { LandingPage } from "../../schema";
 import { MarkedHeading, NextLink, withImages } from "./parts";
@@ -23,7 +25,25 @@ const markerClass = "self-start md:self-end";
 const textClass = "space-y-5 text-lead text-pretty text-muted-foreground";
 const linkClass = "text-primary underline underline-offset-4";
 
-export function GetInvolvedView({ landing }: { landing: LandingPage<"get-involved"> }) {
+/** Whether the public forms are switched on (site settings), for the involvement pages. */
+export async function formsData() {
+  return { acceptEnquiries: (await getSiteSettings()).acceptEnquiries };
+}
+
+type FormsProps = Awaited<ReturnType<typeof formsData>>;
+
+function FormHeading({ id, children }: { id: string; children: ReactNode }) {
+  return (
+    <h3 id={id} className="font-display text-2xl text-balance">
+      {children}
+    </h3>
+  );
+}
+
+export function GetInvolvedView({
+  landing,
+  acceptEnquiries,
+}: { landing: LandingPage<"get-involved"> } & FormsProps) {
   const { page, content, images } = landing;
   return (
     <>
@@ -34,10 +54,14 @@ export function GetInvolvedView({ landing }: { landing: LandingPage<"get-involve
         title={page.title}
         lead={<p>{page.lead}</p>}
         aside={
-          // Describes website forms that arrive with the code (M05).
-          <Notice title="Online forms are not available yet">
-            <p>Sign-up and enquiry forms will be added soon. Each page explains what to expect.</p>
-          </Notice>
+          // Describes website forms while they are switched off (site settings).
+          acceptEnquiries ? undefined : (
+            <Notice title="Online forms are not available yet">
+              <p>
+                Sign-up and enquiry forms will be added soon. Each page explains what to expect.
+              </p>
+            </Notice>
+          )
         }
       />
 
@@ -52,7 +76,10 @@ export function GetInvolvedView({ landing }: { landing: LandingPage<"get-involve
   );
 }
 
-export function VolunteerView({ landing }: { landing: LandingPage<"volunteer"> }) {
+export function VolunteerView({
+  landing,
+  acceptEnquiries,
+}: { landing: LandingPage<"volunteer"> } & FormsProps) {
   const { page, content } = landing;
   return (
     <>
@@ -95,20 +122,28 @@ export function VolunteerView({ landing }: { landing: LandingPage<"volunteer"> }
             />
           </div>
           <div className="space-y-6 lg:col-span-7">
-            <Notice title="The volunteer form is not available yet">
-              <p>
-                An online form will be added soon. Until then, see the{" "}
-                <Link href="/contact" className={linkClass}>
-                  contact page
-                </Link>
-                .
-              </p>
-            </Notice>
+            {acceptEnquiries ? null : (
+              <Notice title="The volunteer form is not available yet">
+                <p>
+                  An online form will be added soon. Until then, see the{" "}
+                  <Link href="/contact" className={linkClass}>
+                    contact page
+                  </Link>
+                  .
+                </p>
+              </Notice>
+            )}
             {content.steps.text ? (
               <RichParagraphs source={content.steps.text} className={textClass} />
             ) : (
               <PendingContent item="volunteerRoles" />
             )}
+            {acceptEnquiries ? (
+              <section aria-labelledby="volunteer-form-title" className="space-y-6 pt-4">
+                <FormHeading id="volunteer-form-title">Register your interest</FormHeading>
+                <EnquiryForm kind="VOLUNTEER" />
+              </section>
+            ) : null}
           </div>
         </Container>
       </Section>
@@ -118,7 +153,10 @@ export function VolunteerView({ landing }: { landing: LandingPage<"volunteer"> }
   );
 }
 
-export function PartnershipsView({ landing }: { landing: LandingPage<"partnerships"> }) {
+export function PartnershipsView({
+  landing,
+  acceptEnquiries,
+}: { landing: LandingPage<"partnerships"> } & FormsProps) {
   const { page, content } = landing;
   return (
     <>
@@ -164,24 +202,32 @@ export function PartnershipsView({ landing }: { landing: LandingPage<"partnershi
             />
           </div>
           <div className="space-y-6 lg:col-span-7">
-            <Notice title="The partnership enquiry form is not available yet">
-              <p>
-                An online form will be added soon. Until then, see the{" "}
-                <Link href="/contact" className={linkClass}>
-                  contact page
-                </Link>
-                , or read about our{" "}
-                <Link href="/about/partners" className={linkClass}>
-                  current partners
-                </Link>
-                .
-              </p>
-            </Notice>
+            {acceptEnquiries ? null : (
+              <Notice title="The partnership enquiry form is not available yet">
+                <p>
+                  An online form will be added soon. Until then, see the{" "}
+                  <Link href="/contact" className={linkClass}>
+                    contact page
+                  </Link>
+                  , or read about our{" "}
+                  <Link href="/about/partners" className={linkClass}>
+                    current partners
+                  </Link>
+                  .
+                </p>
+              </Notice>
+            )}
             {content.steps.text ? (
               <RichParagraphs source={content.steps.text} className={textClass} />
             ) : (
               <PendingContent item="partnershipModel" />
             )}
+            {acceptEnquiries ? (
+              <section aria-labelledby="partnership-form-title" className="space-y-6 pt-4">
+                <FormHeading id="partnership-form-title">Propose a partnership</FormHeading>
+                <EnquiryForm kind="PARTNERSHIP" />
+              </section>
+            ) : null}
           </div>
         </Container>
       </Section>
@@ -320,10 +366,12 @@ export function ContactView({
         title={page.title}
         lead={<p>{page.lead}</p>}
         aside={
-          // Describes the website form that arrives with the code (M05).
-          <Notice title="The contact form is not available yet">
-            <p>An online contact form will be added soon.</p>
-          </Notice>
+          // Describes the website form while it is switched off (site settings).
+          settings.acceptEnquiries ? undefined : (
+            <Notice title="The contact form is not available yet">
+              <p>An online contact form will be added soon.</p>
+            </Notice>
+          )
         }
       />
 
@@ -373,6 +421,19 @@ export function ContactView({
           </Container>
         </Reveal>
       </Section>
+
+      {settings.acceptEnquiries ? (
+        <Section aria-labelledby="message-title" spacing="compact" className="pt-0">
+          <Container className="grid gap-12 lg:grid-cols-12">
+            <div className="lg:col-span-4">
+              <SectionHeading id="message-title" eyebrow="Online form" title="Send a message" />
+            </div>
+            <div className="lg:col-span-8">
+              <EnquiryForm kind="CONTACT" />
+            </div>
+          </Container>
+        </Section>
+      ) : null}
 
       <Section surface="muted" aria-labelledby="looking-title">
         <Reveal>

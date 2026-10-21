@@ -46,11 +46,15 @@ export async function checkRateLimit(
   };
 }
 
-/** Limits used by the admin area. Generous for real use, tight enough to stop guessing. */
+/** Limits used by the admin area and the public forms. Generous for real use, tight enough to stop guessing and flooding. */
 export const rateLimits = {
   signInByIp: { name: "sign-in:ip", limit: 20, windowSeconds: 15 * 60 },
   signInByEmail: { name: "sign-in:email", limit: 5, windowSeconds: 15 * 60 },
   upload: { name: "media:upload", limit: 30, windowSeconds: 10 * 60 },
   passwordChange: { name: "password:change", limit: 5, windowSeconds: 15 * 60 },
   userManagement: { name: "users:manage", limit: 30, windowSeconds: 10 * 60 },
+  /** Public forms, per client address (hashed). */
+  enquiryByIp: { name: "enquiry:ip", limit: 5, windowSeconds: 15 * 60 },
+  /** Public forms, per submitted email address: limits acknowledgements sent to one inbox. */
+  enquiryByEmail: { name: "enquiry:email", limit: 3, windowSeconds: 60 * 60 },
 } as const satisfies Record<string, RateLimitRule>;

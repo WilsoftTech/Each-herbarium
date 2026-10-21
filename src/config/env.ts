@@ -3,10 +3,12 @@ import {
   parseAuthEnv,
   parseFunctionEnv,
   parseDatabaseEnv,
+  parseEmailEnv,
   parseServerEnv,
   parseStorageEnv,
   type AuthEnv,
   type DatabaseEnv,
+  type EmailEnv,
   type StorageEnv,
 } from "@/validation/env";
 
@@ -26,5 +28,8 @@ export const getAuthEnv: () => AuthEnv = once(() => parseAuthEnv(process.env));
 
 /** Neon S3 credentials, validated on first use. Never exposed to the browser. */
 export const getStorageEnv: () => StorageEnv = once(() => parseStorageEnv(process.env));
+
+/** Resend settings, or null when email is not configured. Validated on first use. */
+export const getEmailEnv: () => EmailEnv | null = () => parseEmailEnv(process.env);
 
 export const getFunctionEnv = once(() => parseFunctionEnv(process.env));
