@@ -17,6 +17,12 @@ export type SeedProgramme = {
 };
 
 export type SeedProject = {
+  operationalStatus?: "PLANNED";
+  objectives?: readonly string[];
+  activities?: readonly string[];
+  outcomes?: readonly string[];
+  references?: readonly string[];
+  featured?: boolean;
   slug: string;
   placeholder: boolean;
   title: string;
@@ -35,6 +41,7 @@ export type SeedProject = {
 };
 
 export type SeedArticle = {
+  references?: readonly string[];
   slug: string;
   placeholder: boolean;
   type: "PUBLICATION" | "GUIDE" | "STORY";

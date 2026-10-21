@@ -1,4 +1,6 @@
-# Content remediation report — M04
+# Content remediation report — M04 (historical preparation)
+
+This report records the pre-approval work at `8feefd7`. It is superseded for current approval status by [the approved implementation](CONTENT-APPROVAL-IMPLEMENTATION.md) and [the current ledger](awaiting-approval.md). The owner has since reported client approval except contacts and locations.
 
 ## Scope and inspected state
 

@@ -8,6 +8,7 @@ import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Container } from "@/components/ui/container";
 import { KeyFacts } from "@/components/ui/key-facts";
 import { PendingContent } from "@/components/ui/pending-content";
+import { Notice } from "@/components/ui/notice";
 import { RichText } from "@/components/ui/rich-text";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -40,7 +41,10 @@ function periodOf(project: Project): string | null {
 function ProjectLists({ project }: { project: Project }) {
   const lists = [
     { title: "Objectives", items: project.objectives },
-    { title: "Activities", items: project.activities },
+    {
+      title: project.operationalStatus === "planned" ? "Planned activities" : "Activities",
+      items: project.activities,
+    },
     { title: "Verified outcomes", items: project.outcomes },
   ].filter((list) => list.items.length);
   if (!lists.length && !project.references.length) return null;
@@ -50,7 +54,15 @@ function ProjectLists({ project }: { project: Project }) {
       <Reveal>
         <Container className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-4">
-            <SectionHeading id="details-title" eyebrow="The project" title="Aims and results" />
+            <SectionHeading
+              id="details-title"
+              eyebrow="The project"
+              title={
+                project.operationalStatus === "planned"
+                  ? "Objectives and next steps"
+                  : "Aims and results"
+              }
+            />
           </div>
           <div data-reveal className="space-y-10 lg:col-span-7 lg:col-start-6">
             {lists.map((list) => (
@@ -82,7 +94,8 @@ function ProjectLists({ project }: { project: Project }) {
 /** The case-study page body. Rendered by the public route and by the admin preview. */
 export function ProjectDetail({ project, next }: ProjectDetailProps) {
   const [landscapeImage, interludeImage] = project.gallery;
-  const pending = <PendingContent item="projects" variant="badge" />;
+  const planned = project.operationalStatus === "planned";
+  const pending = <PendingContent item="regionalPresence" variant="badge" />;
 
   return (
     <>
@@ -105,9 +118,15 @@ export function ProjectDetail({ project, next }: ProjectDetailProps) {
         <Reveal>
           <Container className="grid gap-12 lg:grid-cols-12">
             <div className="lg:col-span-4">
-              <SectionHeading id="overview-title" eyebrow="Case study" title="At a glance" />
+              <SectionHeading
+                id="overview-title"
+                eyebrow={planned ? "Project plan" : "Case study"}
+                title="At a glance"
+              />
               {project.status === "placeholder" ? (
-                <PendingContent item="projects" className="mt-10" />
+                <Notice title="Design reference only" className="mt-10">
+                  <p>This sample describes a layout, not an EACH project or achievement.</p>
+                </Notice>
               ) : null}
             </div>
             <div data-reveal className="lg:col-span-7 lg:col-start-6">
@@ -120,9 +139,9 @@ export function ProjectDetail({ project, next }: ProjectDetailProps) {
                     term: "Status",
                     value: project.operationalStatus
                       ? projectStatusLabel[project.operationalStatus]
-                      : pending,
+                      : "Not specified",
                   },
-                  { term: "Period", value: periodOf(project) ?? pending },
+                  { term: "Period", value: periodOf(project) ?? "Schedule not announced" },
                   {
                     term: "Programmes",
                     value: project.programmes.length ? (
@@ -139,20 +158,22 @@ export function ProjectDetail({ project, next }: ProjectDetailProps) {
                         ))}
                       </ul>
                     ) : (
-                      pending
+                      "Not assigned"
                     ),
                   },
                   {
                     term: "Partners",
-                    value: project.partners.length ? project.partners.join(", ") : pending,
+                    value: project.partners.length
+                      ? project.partners.join(", ")
+                      : "No project partners announced",
                   },
                   {
                     term: "Outcomes",
-                    value: project.outcomes.length ? (
-                      "Listed under Aims and results"
-                    ) : (
-                      <PendingContent item="impactFigures" variant="badge" />
-                    ),
+                    value: project.outcomes.length
+                      ? "Listed under Aims and results"
+                      : planned
+                        ? "No results: this project is planned"
+                        : "No verified results published",
                   },
                 ]}
               />
@@ -183,7 +204,11 @@ export function ProjectDetail({ project, next }: ProjectDetailProps) {
         <Reveal>
           <Container className="grid gap-12 lg:grid-cols-12">
             <div className="lg:col-span-4">
-              <SectionHeading id="story-title" eyebrow="The project" title="What happened" />
+              <SectionHeading
+                id="story-title"
+                eyebrow="The project"
+                title={planned ? "Planned approach" : "What happened"}
+              />
             </div>
             <div data-reveal className="space-y-12 lg:col-span-7 lg:col-start-6">
               {project.story.length ? (
@@ -198,7 +223,9 @@ export function ProjectDetail({ project, next }: ProjectDetailProps) {
                   </div>
                 ))
               ) : (
-                <PendingContent item="projects" />
+                <p className="leading-8 text-muted-foreground">
+                  No project activity report is presented here.
+                </p>
               )}
             </div>
           </Container>
@@ -209,7 +236,7 @@ export function ProjectDetail({ project, next }: ProjectDetailProps) {
 
       {next ? (
         <SequenceNav
-          label="Next case study"
+          label="Next project"
           title={next.title}
           href={`/projects/${next.slug}`}
           description={next.summary}

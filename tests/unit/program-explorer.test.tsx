@@ -63,17 +63,17 @@ describe("ProgramExplorer", () => {
 
 describe("PendingContent", () => {
   it("labels missing content and names what is needed", () => {
-    render(<PendingContent item="leadership" />);
+    render(<PendingContent item="contactDetails" />);
     const note = screen.getByRole("note");
-    expect(note.dataset.pending).toBe("leadership");
+    expect(note.dataset.pending).toBe("contactDetails");
     expect(note.textContent).toContain("Awaiting content from EACH");
-    expect(note.textContent).toContain("Leadership and governance");
+    expect(note.textContent).toContain("Contact details");
   });
 
-  it("distinguishes drafts from missing content, including for screen readers", () => {
-    render(<PendingContent item="values" variant="badge" />);
-    const badge = document.querySelector("[data-pending='values']");
-    expect(badge?.textContent).toContain("Draft");
-    expect(badge?.textContent).toContain("Values and principles (Draft for EACH review)");
+  it("names an outstanding location requirement for screen readers in compact badges", () => {
+    render(<PendingContent item="regionalPresence" variant="badge" />);
+    const badge = document.querySelector("[data-pending='regionalPresence']");
+    expect(badge?.textContent).toContain("Placeholder");
+    expect(badge?.textContent).toContain("Locations (Awaiting content from EACH)");
   });
 });

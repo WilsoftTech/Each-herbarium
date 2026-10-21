@@ -41,7 +41,8 @@ export type WorkflowRow = {
 export type StatusChange = {
   status: ContentStatus;
   publishedAt?: Date | null;
-  updatedById: string;
+  /** Null only for an explicitly authorised system seed/CLI operation. */
+  updatedById: string | null;
 };
 
 /**
@@ -79,7 +80,7 @@ export type SaveOperations<T> = {
   create(
     db: Prisma.TransactionClient,
     input: T,
-    userId: string,
+    userId: string | null,
   ): Promise<{ id: string; label: string }>;
   /**
    * Updates the row only if `version` matches (and increments it), then
@@ -90,7 +91,7 @@ export type SaveOperations<T> = {
     id: string,
     version: number,
     input: T,
-    userId: string,
+    userId: string | null,
   ): Promise<number>;
   editPath(id: string): string;
 };

@@ -1,5 +1,6 @@
 import { media } from "@/config/media";
 import type { SeedProject } from "./types";
+import { starterProjects } from "./starter-projects";
 
 /**
  * Initial projects, migrated from the M03 static source.
@@ -10,6 +11,7 @@ import type { SeedProject } from "./types";
  * photograph, never a project.
  */
 export const seedProjects: readonly SeedProject[] = [
+  ...starterProjects,
   {
     slug: "placeholder-montane-forest",
     placeholder: true,

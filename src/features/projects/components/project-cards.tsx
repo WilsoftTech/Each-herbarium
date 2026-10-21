@@ -54,11 +54,13 @@ export function ProjectCards({ projects, headingLevel = "h3", className }: Proje
           headingLevel={headingLevel}
           meta={<ProjectLocation project={project} />}
           badge={
-            project.status === "placeholder" ? (
+            project.operationalStatus === "planned" ? (
+              "Planned"
+            ) : project.status === "placeholder" ? (
               <PendingContent item="projects" variant="badge" className="border-foreground/60" />
             ) : undefined
           }
-          cta="View case study"
+          cta={project.operationalStatus === "planned" ? "Explore project plan" : "View case study"}
           className={cn(index % 3 === 1 && "lg:mt-16", index % 3 === 2 && "lg:mt-32")}
         />
       ))}

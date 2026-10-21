@@ -64,16 +64,10 @@ export function AboutView({ landing }: { landing: LandingPage<"about"> }) {
                   { term: "Where we begin", value: facts.start },
                   { term: "Region", value: facts.region },
                   { term: "Independent partner", value: facts.partner },
-                  {
-                    term: "Legal status",
-                    value: facts.legalStatus || (
-                      <PendingContent item="organisation" variant="badge" />
-                    ),
-                  },
-                  {
-                    term: "Founded",
-                    value: facts.founded || <PendingContent item="history" variant="badge" />,
-                  },
+                  ...(facts.legalStatus
+                    ? [{ term: "Legal status", value: facts.legalStatus }]
+                    : []),
+                  ...(facts.founded ? [{ term: "Founded", value: facts.founded }] : []),
                   {
                     term: "Photography",
                     value: facts.photographyMarker ? (
@@ -235,9 +229,6 @@ export function LeadershipView({
                     </li>
                   ))}
                 </ul>
-              </div>
-              <div data-reveal className="lg:col-span-6 lg:col-start-7">
-                <PendingContent item="leadership" />
               </div>
             </Container>
           </Reveal>

@@ -82,6 +82,9 @@ describe("content contracts", () => {
 
 describe("pending content register", () => {
   const keys = Object.keys(pendingContent);
+  const outstanding = Object.entries(pendingContent)
+    .filter(([, item]) => item.kind !== "approved")
+    .map(([key]) => key);
   const doc = readFileSync("docs/content/awaiting-approval.md", "utf8");
 
   it("is documented in docs/content/awaiting-approval.md", () => {
@@ -89,6 +92,6 @@ describe("pending content register", () => {
   });
 
   it("has no unused entries: every key is shown somewhere on the site", () => {
-    for (const key of keys) expect(source, key).toMatch(new RegExp(`item="${key}"`));
+    for (const key of outstanding) expect(source, key).toMatch(new RegExp(`item="${key}"`));
   });
 });

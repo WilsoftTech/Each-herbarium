@@ -1,5 +1,6 @@
 import { media } from "@/config/media";
 import type { SeedArticle } from "./types";
+import { learningGuides } from "./learning-guides";
 
 /**
  * Initial articles (publications, guides, stories), migrated from the M03
@@ -8,6 +9,7 @@ import type { SeedArticle } from "./types";
  * indexed and have no authors, dates or text.
  */
 export const seedArticles: readonly SeedArticle[] = [
+  ...learningGuides,
   {
     slug: "placeholder-publication",
     placeholder: true,

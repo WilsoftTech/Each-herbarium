@@ -383,7 +383,7 @@ test.describe.serial("designed page sections", () => {
     ).toBeVisible();
     await expect(editor.getByRole("heading", { level: 2, name: changed })).toBeVisible();
     await expect(
-      editor.getByRole("heading", { level: 2, name: "Collection status" }),
+      editor.getByRole("heading", { level: 2, name: "Developing the herbarium foundation" }),
     ).toBeVisible();
 
     await openHerbarium(editor);

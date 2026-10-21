@@ -222,7 +222,12 @@ export function BitwiireView({ landing }: { landing: LandingPage<"bitwiire-herba
             columns={1}
             facts={[
               { term: "Relationship to EACH", value: "Independent partner" },
-              { term: "Location", value: content.facts.location || pending },
+              {
+                term: "Location",
+                value: content.facts.location || (
+                  <PendingContent item="regionalPresence" variant="badge" />
+                ),
+              },
               { term: "Opening hours", value: content.facts.hours || pending },
             ]}
           />

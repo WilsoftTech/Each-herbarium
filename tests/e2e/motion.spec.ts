@@ -61,8 +61,8 @@ test.describe("without JavaScript", () => {
     await expect(page.getByRole("link", { name: "Explore the herbarium" })).toBeVisible();
 
     const projects = page.locator("section[aria-labelledby=projects-title]");
-    await expect(projects.locator("article")).toHaveCount(0);
-    await expect(projects.locator('[data-pending="projects"]')).toBeVisible();
+    await expect(projects.locator("article")).toHaveCount(3);
+    await expect(projects.getByText("Planned", { exact: true })).toHaveCount(3);
 
     // Exercise real programme cards, rather than requiring sample projects.
     await page.goto("/our-work");

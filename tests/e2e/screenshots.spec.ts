@@ -26,7 +26,7 @@ const pages = [
   ["medicinal-plants", "/our-work/medicinal-plants"],
   ["herbarium", "/herbarium"],
   ["research", "/research"],
-  ["project", "/projects/placeholder-montane-forest"],
+  ["project", "/projects/botanical-documentation-foundations"],
   ["impact", "/impact"],
   ["bitwiire", "/bitwiire-herbarium-cafe"],
 ] as const;

@@ -1,3 +1,4 @@
+import { approvedSections } from "./approved-content";
 import { media, type MediaAsset } from "@/config/media";
 import type {
   DesignedProgrammeContent,
@@ -13,7 +14,7 @@ export function seedProgrammeContent(imageId: (asset: MediaAsset) => string): {
   [S in DesignedProgrammeSlug]: DesignedProgrammeContent<S>;
 } {
   const related = { eyebrow: "Projects", title: "Related projects" };
-  return {
+  const content: { [S in DesignedProgrammeSlug]: DesignedProgrammeContent<S> } = {
     // How plant conservation works in general; not a description of EACH's activities.
     "plant-conservation": {
       why: {
@@ -172,4 +173,10 @@ export function seedProgrammeContent(imageId: (asset: MediaAsset) => string): {
       },
     },
   };
+  return Object.fromEntries(
+    Object.entries(content).map(([slug, value]) => [
+      slug,
+      approvedSections("programmes", slug, value),
+    ]),
+  ) as typeof content;
 }

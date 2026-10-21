@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { approvedFooterNote } from "../../prisma/seed/approved-content";
 import { updateTag } from "next/cache";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import sitemap from "@/app/sitemap";
@@ -308,8 +309,7 @@ describe("site settings", () => {
       form({
         section: "footer",
         footerStatement: "Preserving East Africa's Plant Heritage.",
-        footerNote:
-          "Photography is credited alongside each image. Some content is awaiting approval and is marked on the page.",
+        footerNote: approvedFooterNote,
       }),
     );
   });

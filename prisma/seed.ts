@@ -6,6 +6,7 @@ import { media, type MediaAsset } from "@/config/media";
 import type { Prisma } from "@/generated/prisma/client";
 import { createScriptClient, databaseHost } from "../scripts/script-env";
 import { seedArticles } from "./seed/articles";
+import { approvedFooterNote } from "./seed/approved-content";
 import { fillMissing } from "./seed/fill-content";
 import { seedLandingContent } from "./seed/landing-content";
 import { seedHomeContent, seedLandingPages } from "./seed/landing-pages";
@@ -192,6 +193,12 @@ async function main() {
         imageId: mediaId(mediaIds, project.image),
         landscape: project.landscape,
         story: [...project.story],
+        operationalStatus: project.operationalStatus ?? null,
+        objectives: [...(project.objectives ?? [])],
+        activities: [...(project.activities ?? [])],
+        outcomes: [...(project.outcomes ?? [])],
+        references: [...(project.references ?? [])],
+        featured: project.featured ?? false,
         programmes: {
           create: project.programmes.map((slug) => ({ programme: { connect: { slug } } })),
         },
@@ -222,6 +229,7 @@ async function main() {
         publishedOn: article.publishedOn ? new Date(article.publishedOn) : null,
         authors: [...article.authors],
         body: [...article.body],
+        references: [...(article.references ?? [])],
         imageId: article.image ? mediaId(mediaIds, article.image) : null,
       },
     });
@@ -242,7 +250,11 @@ async function main() {
     ),
   );
 
-  await db.siteSettings.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } });
+  await db.siteSettings.upsert({
+    where: { id: 1 },
+    update: {},
+    create: { id: 1, footerNote: approvedFooterNote },
+  });
 
   const filled = await fillDesignedContent(pageContent, programmeContent);
   if (filled.length) {

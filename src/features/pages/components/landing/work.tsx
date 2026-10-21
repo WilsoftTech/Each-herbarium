@@ -490,9 +490,20 @@ export function ProjectsView({
             image={project.image}
             aspect="landscape"
             reverse={index % 2 === 1}
-            action={{ label: "View case study", href: `/projects/${project.slug}` }}
+            action={{
+              label:
+                project.operationalStatus === "planned"
+                  ? "Explore project plan"
+                  : "View case study",
+              href: `/projects/${project.slug}`,
+            }}
           >
             <p>{project.summary}</p>
+            {project.operationalStatus === "planned" ? (
+              <p className="text-eyebrow font-medium text-primary uppercase">
+                Planned — no completed activities or outcomes claimed
+              </p>
+            ) : null}
             {project.status === "placeholder" ? (
               <PendingContent item="projects" variant="badge" />
             ) : null}

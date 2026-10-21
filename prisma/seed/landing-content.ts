@@ -1,3 +1,4 @@
+import { approvedSections } from "./approved-content";
 import { media, type MediaAsset } from "@/config/media";
 import type { LandingContent, LandingSlug } from "@/features/pages/landing-content";
 
@@ -18,7 +19,7 @@ export function seedLandingContent(imageId: (asset: MediaAsset) => string): {
     href: string,
   ) => ({ eyebrow, title, description, href, imageId: imageId(asset) });
 
-  return {
+  const content: { [S in LandingSlug]: LandingContent<S> } = {
     about: {
       purpose: {
         eyebrow: "Our purpose",
@@ -469,4 +470,7 @@ export function seedLandingContent(imageId: (asset: MediaAsset) => string): {
       },
     },
   };
+  return Object.fromEntries(
+    Object.entries(content).map(([slug, value]) => [slug, approvedSections("pages", slug, value)]),
+  ) as typeof content;
 }

@@ -122,3 +122,9 @@ M04 content remediation: public project/resource list components omit sample rec
 | Placeholder register and marker wording; placeholder-records notices             | `src/content/pending.ts`, `PendingContent`, projects and resources views | Mirrors `docs/content/awaiting-approval.md` (tested)            |
 | Reference specimens and their licence metadata                                   | `src/content/specimens.ts`                                               | Licensed reference records until the Digital Herbarium          |
 | Interface labels: breadcrumbs, "Our work" eyebrows, numbering, "View case study" | Views                                                                    | Navigation and interface, not editorial content                 |
+
+## Approved content implementation
+
+The owner reports client approval except contact and location information. `docs/content/approved-content.json` supplies approved seed defaults; existing records are updated only by the explicit dev-only `scripts/apply-approved-content.ts`, using the same editor parsers, save adapters and publishing checks as the CMS. The script records review/publication audit events with a system actor and the external authority; it refuses unrelated pending revisions. Public cache refresh requires rebuilding/restarting after this CLI operation. Normal staff publication still uses the existing cache invalidation and server authorisation.
+
+Three starter project records have operational status PLANNED, no locations/dates, no assigned partners and no outcomes. Three educational GUIDE articles are new website copy, not historical research papers. The normal seed remains create-only for existing values. `PendingContent` renders nothing for approved ledger keys; only contact and location keys retain visible notices. Missing legal/history facts are omitted from About, rather than shown as empty facts. No schema, authentication integration or public form was added.

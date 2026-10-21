@@ -169,7 +169,7 @@ describe("content integrity", () => {
       "/resources/placeholder-publication",
     ]) {
       const { html } = await renderRoute(route);
-      expect(html, route).toMatch(/data-pending="(projects|resources)"/);
+      expect(text(html), route).toContain("Design reference only");
     }
   });
 
@@ -185,6 +185,19 @@ describe("content integrity", () => {
     ]) {
       const { html } = await renderRoute(route);
       expect(html, route).not.toMatch(/href="\/(projects|resources)\/placeholder-/);
+    }
+  });
+
+  it("shows no remaining review notices outside contact and location information", async () => {
+    for (const route of publicRoutes) {
+      const { html } = await renderRoute(route);
+      expect(text(html), route).not.toMatch(/Draft for EACH review|awaiting legal review/i);
+      const pending = [...html.matchAll(/data-pending="([^"]+)"/g)].map((match) => match[1]);
+      for (const key of pending)
+        expect(
+          ["contactDetails", "accessibilityContact", "bitwiireProfile", "regionalPresence"],
+          route,
+        ).toContain(key);
     }
   });
 });

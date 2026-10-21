@@ -1,11 +1,12 @@
+import { approvedRecord } from "./approved-content";
 import type { SeedPage } from "./types";
 
 /**
  * Policy pages, migrated word for word from the M03 page components into the
- * CMS rich-text format (src/lib/rich-text.ts). Privacy and terms are drafts
- * awaiting legal review (`legalPolicies`); the routes keep that notice.
+ * CMS rich-text format (src/lib/rich-text.ts). Historical defaults below are
+ * overlaid with client-approved wording before new records are seeded.
  */
-export const seedPages: readonly SeedPage[] = [
+const originalPages: readonly SeedPage[] = [
   {
     slug: "privacy",
     title: "Privacy",
@@ -81,3 +82,5 @@ Every page is checked automatically with the axe accessibility engine during dev
 If something on this website does not work for you, we would like to know. A contact for accessibility feedback will be published here.`,
   },
 ];
+
+export const seedPages = originalPages.map((page) => approvedRecord("pages", page.slug, page));

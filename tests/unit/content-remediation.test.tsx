@@ -30,7 +30,7 @@ describe("client-review proposals", () => {
     expect(Object.keys(pendingContent)).toHaveLength(22);
     const review = readFileSync("docs/content/CLIENT-CONTENT-REVIEW.md", "utf8");
     for (const item of proposals) {
-      expect(review).toContain(item.wording);
+      expect(review).toContain(item.key);
       expect(item.required.length).toBeGreaterThan(20);
       expect(item.evidence.length).toBeGreaterThan(20);
       expect(item.status).not.toBe("RESOLVED — VERIFIED");
@@ -131,7 +131,7 @@ describe("public collection presentation", () => {
     const samples = (await listProjects()).filter((item) => item.status === "placeholder");
     expect(samples.length).toBeGreaterThan(0);
     const html = renderToStaticMarkup(<ProjectCards projects={samples} />);
-    expect(html).toContain('data-pending="projects"');
+    expect(html).not.toContain('data-pending="projects"');
     expect(html).toContain("documented purpose");
     for (const sample of samples) expect(html).not.toContain(`/projects/${sample.slug}`);
     const approved = {
@@ -149,7 +149,7 @@ describe("public collection presentation", () => {
     const samples = (await listResources()).filter((item) => item.status === "placeholder");
     expect(samples.length).toBeGreaterThan(0);
     const html = renderToStaticMarkup(<ResourceList resources={samples} />);
-    expect(html).toContain('data-pending="resources"');
+    expect(html).not.toContain('data-pending="resources"');
     expect(html).toContain("not EACH publications");
     const approved = {
       ...samples[0]!,

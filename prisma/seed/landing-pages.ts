@@ -1,3 +1,4 @@
+import { approvedRecord, approvedSections } from "./approved-content";
 import { media, type MediaAsset } from "@/config/media";
 import type { HomeContent } from "@/features/pages/home-content";
 import type { SeedPage } from "./types";
@@ -9,7 +10,7 @@ import type { SeedPage } from "./types";
  * `seoTitle` keeps the existing browser/search title where it differs from
  * the headline.
  */
-export const seedLandingPages: readonly SeedPage[] = [
+const originalPages: readonly SeedPage[] = [
   {
     slug: "home",
     title: "Preserving East Africa's Plant Heritage.",
@@ -187,9 +188,13 @@ export const seedLandingPages: readonly SeedPage[] = [
   },
 ];
 
+export const seedLandingPages = originalPages.map((page) =>
+  approvedRecord("pages", page.slug, page),
+);
+
 /** The homepage sections as they were in the M03 composition. */
 export function seedHomeContent(imageId: (asset: MediaAsset) => string): HomeContent {
-  return {
+  return approvedSections("pages", "home", {
     hero: {
       primaryAction: { label: "Explore the herbarium", href: "/herbarium" },
       secondaryAction: { label: "Get involved", href: "/get-involved" },
@@ -332,5 +337,5 @@ export function seedHomeContent(imageId: (asset: MediaAsset) => string): HomeCon
       ],
       hidden: [],
     },
-  };
+  });
 }

@@ -30,8 +30,10 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
   const [project, all] = await Promise.all([getProject(slug), listProjects()]);
   if (!project) notFound();
 
-  const index = all.findIndex((item) => item.slug === project.slug);
-  const next = all.length > 1 ? all[(index + 1) % all.length] : undefined;
+  const published = all.filter((item) => item.status === "published");
+  const index = published.findIndex((item) => item.slug === project.slug);
+  const next =
+    index >= 0 && published.length > 1 ? published[(index + 1) % published.length] : undefined;
 
   return <ProjectDetail project={project} next={next} />;
 }

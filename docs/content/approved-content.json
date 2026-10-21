@@ -1,0 +1,430 @@
+[
+  {
+    "collection": "pages",
+    "slug": "about",
+    "changes": {
+      "content": {
+        "facts": {
+          "history": "As a new organisation, EACH is building a foundation for plant conservation, herbarium development and botanical knowledge. Its starting priorities are to establish careful documentation, prepare accessible learning resources and develop respectful ways of working with knowledge holders. These priorities describe the work ahead, without claiming a history of completed projects.",
+          "title": "Plants, knowledge and a new beginning",
+          "description": "EACH is a new organisation with an East African focus, beginning in Uganda. Its first priorities connect botanical documentation, conservation learning and responsible community participation.",
+          "photography": "Licensed reference photography; not documentation of EACH activities",
+          "photographyMarker": false
+        }
+      }
+    }
+  },
+  {
+    "collection": "pages",
+    "slug": "about-mission",
+    "changes": {
+      "lead": "Mission: To support the conservation of East Africa's plant diversity through botanical documentation, herbarium development, education and respectful collaboration with knowledge holders. Vision: An East Africa where plant diversity and the knowledge associated with it are valued, responsibly documented and safeguarded for future generations.",
+      "content": {
+        "statement": {
+          "marker": false
+        },
+        "principles": {
+          "title": "Values and strategic objectives",
+          "description": "These principles guide EACH's botanical documentation, learning resources and approach to collaboration.",
+          "marker": false,
+          "items": [
+            {
+              "title": "Scientific care",
+              "body": "Build botanical records that can be checked, with sources, identification notes and clear limits."
+            },
+            {
+              "title": "Conservation responsibility",
+              "body": "Use botanical evidence to inform the care of plants and habitats; distinguish intentions from demonstrated results."
+            },
+            {
+              "title": "Respect for knowledge holders",
+              "body": "Seek informed consent, agree attribution and access, and respect community decisions about sensitive knowledge."
+            },
+            {
+              "title": "Learning and participation",
+              "body": "Develop educational material and opportunities for people to contribute with appropriate guidance."
+            },
+            {
+              "title": "Responsible access",
+              "body": "Share useful knowledge while protecting privacy, restricted community knowledge and sensitive species information."
+            },
+            {
+              "title": "Accountable collaboration",
+              "body": "Define responsibilities between independent organisations and report activities with evidence."
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "collection": "pages",
+    "slug": "about-leadership",
+    "changes": {
+      "content": {
+        "upcoming": {
+          "eyebrow": "Governance",
+          "title": "Responsibilities behind the work",
+          "items": [
+            "Set priorities and assess progress against evidence",
+            "Support accurate identification and traceable botanical documentation",
+            "Protect consent, attribution and appropriate access to knowledge",
+            "Define independent partner responsibilities and accountable reporting"
+          ]
+        },
+        "next": {
+          "description": "Independent organisations working alongside EACH."
+        }
+      },
+      "title": "Leadership and accountability",
+      "lead": "Scientific care, responsible stewardship and clear responsibilities guide the development of EACH. Governance is described here through its responsibilities; no unverified personal profiles or board appointments are presented."
+    }
+  },
+  {
+    "collection": "pages",
+    "slug": "about-partners",
+    "changes": {
+      "content": {
+        "invitation": {
+          "description": "Collaboration connects botanical expertise, community priorities and opportunities for learning. Each relationship should have a clear purpose, agreed responsibilities and respect for organisational independence."
+        },
+        "partners": {
+          "marker": false
+        }
+      }
+    }
+  },
+  {
+    "collection": "pages",
+    "slug": "partnerships",
+    "changes": {
+      "content": {
+        "types": {
+          "eyebrow": "Collaboration",
+          "title": "Ways independent organisations can work together",
+          "marker": false
+        },
+        "steps": {
+          "text": "Collaboration begins with a shared purpose and a clear scope. Independent organisations agree responsibilities, permissions, resources, reporting and arrangements for knowledge and data before work starts. Research, conservation, community and education partnerships are part of this framework; no additional signed partnerships are claimed. Official contact and location details are being confirmed."
+        }
+      }
+    }
+  },
+  {
+    "collection": "pages",
+    "slug": "bitwiire-herbarium-cafe",
+    "changes": {
+      "content": {
+        "profile": {
+          "eyebrow": "Independent collaboration",
+          "description": "Bitwiire Herbarium Cafe and EACH retain their own identities and responsibilities.",
+          "text": "Bitwiire Herbarium Cafe is an independent partner of East African Community Herbariums (EACH). The organisations are separate: neither owns or runs the other. This profile describes that relationship without making claims about services, staff, qualifications or activities. Official visiting and contact details are being confirmed."
+        }
+      }
+    }
+  },
+  {
+    "collection": "pages",
+    "slug": "our-work",
+    "changes": {
+      "content": {
+        "programmes": {
+          "title": "Four connected areas of focus",
+          "description": "Plant conservation, environmental conservation, medicinal plant knowledge and indigenous knowledge shape EACH's starter plans. These fields connect documentation, habitat awareness, responsible research and education.",
+          "marker": false
+        },
+        "projects": {
+          "eyebrow": "Getting started",
+          "description": "Three planned projects establish documentation, learning and community dialogue. Their objectives describe intended work, not completed activities or verified results.",
+          "title": "Our starter projects"
+        }
+      }
+    }
+  },
+  {
+    "collection": "pages",
+    "slug": "projects",
+    "changes": {
+      "description": "Three planned EACH starter projects: botanical documentation foundations, plant learning resources and community knowledge dialogue.",
+      "lead": "Our first projects focus on building sound foundations. Each is planned: objectives describe intended work, and no field sites, delivery dates or achieved results are asserted.",
+      "title": "Our starter projects",
+      "content": {
+        "closing": {
+          "text": "Project plans will develop as practical arrangements are established. Verified results will be reported on the [impact page](/impact), with their sources and reporting periods."
+        }
+      }
+    }
+  },
+  {
+    "collection": "pages",
+    "slug": "home",
+    "changes": {
+      "content": {
+        "presence": {
+          "text": "EACH begins in Uganda with an East African focus. Specific offices, field sites and project locations are being confirmed. No operations elsewhere are implied.",
+          "wider": "East African focus; no additional country operations claimed"
+        },
+        "projects": {
+          "description": "Planned work in botanical documentation, plant learning and community knowledge dialogue. No completed fieldwork or outcomes are claimed.",
+          "eyebrow": "Getting started",
+          "title": "Our starter projects"
+        },
+        "stories": {
+          "title": "Plant learning resources"
+        },
+        "research": {
+          "body": [
+            "Botanical records connect a plant identification with its source and context. Careful documentation makes information easier to check and use.",
+            "Explore introductory website guides and research directions. These materials support learning; they are not reports of completed EACH research."
+          ]
+        }
+      }
+    }
+  },
+  {
+    "collection": "pages",
+    "slug": "herbarium",
+    "changes": {
+      "content": {
+        "status": {
+          "title": "Developing the herbarium foundation",
+          "text": "Herbarium development is one of EACH's founding priorities. Its starter documentation project focuses on record standards, identification evidence and the requirements for responsible curation. The reference sheets shown here illustrate herbarium methods; they do not establish that EACH owns or manages a physical collection. No EACH specimen inventory is presented on this website."
+        }
+      }
+    }
+  },
+  {
+    "collection": "pages",
+    "slug": "research",
+    "changes": {
+      "content": {
+        "themes": {
+          "eyebrow": "Research directions",
+          "title": "Questions that can guide future study",
+          "marker": false,
+          "items": [
+            {
+              "title": "Botanical documentation",
+              "body": "Investigate plant identity and distribution using traceable observations and, where authorised, voucher specimens."
+            },
+            {
+              "title": "Conservation questions",
+              "body": "Examine evidence of pressures on plants and habitats without claiming an assessment has already been completed."
+            },
+            {
+              "title": "Ethnobotany",
+              "body": "Develop questions with knowledge holders, with agreed consent, attribution, access and benefit-sharing arrangements."
+            },
+            {
+              "title": "Environmental change",
+              "body": "Explore how plant records could support study of habitat and land-use change."
+            }
+          ]
+        },
+        "publications": {
+          "description": "Research publications will be listed with their authors, dates and sources when available. In the meantime, the resource library provides introductory website guides."
+        },
+        "collaborate": {
+          "text": "These directions provide a starting point for future studies. Each study needs an agreed question, suitable expertise, appropriate permissions and a plan for handling data and knowledge responsibly. No funded studies or additional institutional affiliations are claimed."
+        },
+        "facts": {
+          "partners": "Independent research collaboration; no additional affiliations claimed",
+          "publications": "Introductory website guides; no completed research outputs claimed"
+        }
+      }
+    }
+  },
+  {
+    "collection": "pages",
+    "slug": "resources",
+    "changes": {
+      "lead": "Introductory website guides to botanical documentation, plant learning and responsible knowledge sharing. These are educational resources, not reports of completed field research.",
+      "description": "Educational website guides from EACH, with references to their original botanical and conservation sources.",
+      "title": "Resources"
+    }
+  },
+  {
+    "collection": "programmes",
+    "slug": "medicinal-plants",
+    "changes": {
+      "content": {
+        "approach": {
+          "eyebrow": "Documentation principles",
+          "marker": false,
+          "items": [
+            {
+              "title": "Botanical identity",
+              "body": "Record a scientific identification and the evidence supporting it; local names alone may be ambiguous."
+            },
+            {
+              "title": "Cultural context",
+              "body": "Attribute a reported use to its source and setting, with permission. A reported traditional use is not proof of safety or effectiveness."
+            },
+            {
+              "title": "Permission and access",
+              "body": "Agree what may be recorded, retained and shared before collecting knowledge; respect restrictions and intellectual property rights."
+            },
+            {
+              "title": "Conservation care",
+              "body": "Consider whether proposed research or collection could put wild plants or sensitive knowledge at risk."
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "collection": "programmes",
+    "slug": "indigenous-knowledge",
+    "changes": {
+      "content": {
+        "principles": {
+          "eyebrow": "Principles",
+          "title": "A starting point for agreement with knowledge holders",
+          "marker": false,
+          "items": [
+            {
+              "title": "Informed agreement",
+              "body": "Explain the proposed purpose, recording methods, access and intended uses in an accessible language before seeking consent."
+            },
+            {
+              "title": "Custodian-led attribution",
+              "body": "Agree whether and how individuals and communities wish to be acknowledged; do not publish identities by default."
+            },
+            {
+              "title": "Control over sharing",
+              "body": "Agree restrictions, storage, reuse and a workable process for changing or withdrawing permission, including limits after publication."
+            },
+            {
+              "title": "Fair arrangements",
+              "body": "Discuss benefits, responsibilities and applicable access requirements before work starts; document mutually agreed terms where required."
+            }
+          ],
+          "details": "The community knowledge dialogue project starts with listening and agreement about purpose, attribution, access and benefit-sharing. No community consent is presumed, and no restricted knowledge will be collected or published before the relevant permissions and terms are agreed."
+        }
+      }
+    }
+  },
+  {
+    "collection": "pages",
+    "slug": "volunteer",
+    "changes": {
+      "lead": "Contribute skills to EACH's planned work in botanical documentation, education and responsible knowledge sharing. The role areas below describe opportunities to develop, not open vacancies.",
+      "content": {
+        "areas": {
+          "eyebrow": "Planned contributions",
+          "title": "Skills for the work ahead",
+          "description": "Roles will be introduced with clear tasks, suitable supervision and practical arrangements before recruitment.",
+          "marker": false,
+          "items": [
+            {
+              "title": "Botanical documentation",
+              "body": "Support observation notes and authorised field documentation under qualified guidance."
+            },
+            {
+              "title": "Herbarium support",
+              "body": "Assist with preparation, imaging and record checking once collection arrangements and training are confirmed."
+            },
+            {
+              "title": "Education",
+              "body": "Help prepare accessible plant-learning materials and supervised activities."
+            },
+            {
+              "title": "Digital and editorial support",
+              "body": "Check transcriptions, image credits and educational copy against their sources."
+            }
+          ]
+        },
+        "steps": {
+          "title": "Preparing opportunities",
+          "text": "Botanical documentation, herbarium support, education and editorial assistance form the starting role areas. Any advertised opportunity will state its responsibilities, supervision, time commitments and safeguarding arrangements before applications are accepted. Official contact and location details are being confirmed."
+        }
+      }
+    }
+  },
+  {
+    "collection": "pages",
+    "slug": "impact",
+    "changes": {
+      "content": {
+        "measures": {
+          "eyebrow": "Measurement framework",
+          "title": "Define the measure before reporting",
+          "marker": false,
+          "items": [
+            "Plant records checked for identification and duplicates",
+            "Specimens verified against accession records",
+            "Conservation projects with agreed status definitions",
+            "Educational activities supported by dated logs",
+            "Community participation recorded with consent",
+            "Resources published after editorial approval"
+          ]
+        },
+        "reporting": {
+          "items": [
+            {
+              "title": "Define the measure",
+              "body": "Specify what is counted, the reporting period and any baseline. An activity count is not evidence of an ecological outcome."
+            },
+            {
+              "title": "Check the evidence",
+              "body": "Record the source, collection method, limitations and reviewer before publishing a result."
+            },
+            {
+              "title": "Protect people and knowledge",
+              "body": "Agree consent and attribution, and report participation without exposing personal or restricted community information."
+            }
+          ],
+          "text": "The starter projects begin with planning and preparation. No verified project results are reported here. Future figures will identify the measure, reporting period, source, method, limitations and reviewer; activity counts will be distinguished from ecological or community outcomes."
+        }
+      },
+      "lead": "EACH is establishing its reporting foundation as a new organisation. This framework explains what will be measured; no completed-project results or numerical achievements are claimed."
+    }
+  },
+  {
+    "collection": "pages",
+    "slug": "privacy",
+    "changes": {
+      "body": "## About this notice\nThis notice describes the website's current functions. EACH is responsible for its editorial content; Wilsoft Technologies provides development services. Official privacy contact details and locations are being confirmed. This notice does not claim regulatory certification or establish a verified retention schedule.\n\n## Public pages\nThe public website provides informational pages. Public enquiry, volunteer and partnership forms, newsletter registration and public user accounts are not currently provided.\n\n## Restricted staff access\nAuthorised staff use a restricted CMS. Neon Managed Auth provides staff authentication and session cookies. CMS records include staff membership and roles, editorial changes and audit events used to operate restricted access and the editorial workflow.\n\n## Infrastructure and technical information\nThe implementation uses Neon for its database, managed authentication and private object storage. Services delivering the website may process connection and request information. This notice makes no unverified promise about provider retention periods, processing locations or deletion procedures. Those arrangements must be reflected in the notice as the service changes.\n\n## Published content and external links\nPersonal information is published only through the applicable editorial and permission controls. Reference photographs, specimen records and educational sources link to external services with their own privacy notices. No advertising or analytics integration was identified in this repository; that is not a guarantee about every external service.\n\n## Contact and future features\nOfficial privacy and accessibility channels will appear on the [contact page](/contact) when confirmed. Do not treat that page as an operational enquiry form. Before public collection forms or tracking are introduced, this notice must describe the actual fields, purposes, recipients, access and retention arrangements.",
+      "title": "Privacy",
+      "description": "How the EACH website handles public content, restricted staff access and technical information."
+    }
+  },
+  {
+    "collection": "pages",
+    "slug": "terms",
+    "changes": {
+      "body": "## About the website\nThis website presents information about East African Community Herbariums (EACH), plant conservation and botanical knowledge. EACH is a new organisation. Its starter projects are plans, not completed case studies or evidence of achieved results.\n\n## Educational information\nPlant information is for education and conservation. It is not medical advice and does not establish that a plant or traditional preparation is safe or effective. Consult a qualified health professional about health concerns.\n\n## Material and permissions\nThird-party photographs and specimen images retain their stated credits and licences. Reuse must follow the applicable licence. No blanket licence is granted over all text, community knowledge, personal information or brand assets. Use of EACH and Bitwiire names and logos requires the relevant rights holder's permission.\n\n## Independent organisations and external references\nEACH and Bitwiire Herbarium Cafe are independent: neither owns or runs the other. External botanical and conservation sources are attributed to their original institutions; a reference link does not establish an EACH partnership or endorsement.\n\n## Services and project plans\nThis website does not currently provide public enquiry or application forms, a searchable EACH specimen catalogue, medical services or research-access agreements. Project plans describe intended work subject to practical arrangements, permissions and responsible participation.\n\n## Contact and changes\nOfficial contact and location details are being confirmed on the [contact page](/contact). These terms may be updated as the website's functions change. No regulatory compliance or unverified legal registration claim is made here.",
+      "description": "Terms for using EACH website information, reference material and educational guides."
+    }
+  },
+  {
+    "collection": "programmes",
+    "slug": "plant-conservation",
+    "changes": {
+      "content": {
+        "approach": {
+          "details": "EACH's botanical documentation foundations project will establish record templates, identification checks and documentation standards before any collecting activity. It is planned work, not a claim of completed surveys or specimen holdings."
+        }
+      }
+    }
+  },
+  {
+    "collection": "programmes",
+    "slug": "environmental-conservation",
+    "changes": {
+      "content": {
+        "mosaics": {
+          "details": "The plant learning resources project will prepare introductory material connecting plants with habitats, water, soil and responsible environmental observation. Educational work will be distinguished from habitat restoration or measured conservation outcomes."
+        }
+      }
+    }
+  },
+  {
+    "collection": "pages",
+    "slug": "accessibility",
+    "changes": {
+      "body": "## How the website is built\nPages use headings, landmarks and lists. Keyboard focus and a skip link support navigation. Images have text alternatives or are decorative. Reduced-motion preferences are respected, and content is available without JavaScript.\n\n## Testing and limits\nDevelopment checks include axe scans, keyboard use, responsive layouts, reduced motion and pages without JavaScript. Automated checks do not establish universal usability or certify conformance. A manual screen-reader audit remains part of the future quality milestone.\n\n## Feedback\nAn official accessibility contact and response target are being confirmed. Once available, feedback can identify the page and task that was difficult, without including sensitive personal information."
+    }
+  }
+]

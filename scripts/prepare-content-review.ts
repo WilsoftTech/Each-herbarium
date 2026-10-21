@@ -1,3 +1,4 @@
+import { pendingContent } from "../src/content/pending";
 import proposals from "../docs/content/cms-review-proposals.json";
 import type { Prisma } from "../src/generated/prisma/client";
 import { mergeReviewChanges } from "../prisma/seed/review-content";
@@ -10,6 +11,12 @@ import { assertContentReviewDevelopment, createScriptClient } from "./script-env
  * Run: npx tsx scripts/prepare-content-review.ts (dev branch only).
  */
 async function main() {
+  if (pendingContent.missionStatement.kind === "approved") {
+    console.log(
+      "This review cycle is approved. Use scripts/apply-approved-content.ts; historical drafts will not be restaged.",
+    );
+    return;
+  }
   assertContentReviewDevelopment();
   const db = createScriptClient();
   const groups = new Map<

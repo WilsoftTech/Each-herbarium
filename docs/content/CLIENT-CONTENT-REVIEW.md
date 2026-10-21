@@ -1,159 +1,75 @@
-# Client content review — M04
+# Client content review — approved implementation
 
-Prepared by Wilsoft Technologies for East African Community Herbariums (EACH), 2026-10-21, under Option B. **No client approval is recorded by this document.** Proposed copy is not evidence of operational programmes, legal status or results.
+The project owner reported that the client reviewed and approved the content, and instructed Wilsoft Technologies to implement it and select starter projects for the new organisation. This instruction supersedes the previous review-required status. Approval is recorded from the conversation on 2026-10-21; no client identity, professional qualification or signature is invented.
 
-The companion `cms-review-proposals.json` contains the same proposals and field patches for the existing CMS. Empty patches deliberately preserve fact-dependent notices. A missing fact remains outstanding even where a useful introduction has been prepared. The legal requirement has separate privacy and terms entries; there are 22 distinct requirements.
+**Only contact information (including partner contacts and visiting hours) and locations remain pending.** Approval of copy does not establish missing institutional facts: unsupported identities, registration particulars, historical achievements, holdings and results are omitted. The starter projects are plans, not claims that fieldwork has started.
 
-Category A: verified institutional baseline. Category B: general educational information. Category C: proposed organisational content requiring adoption. Category D: unavailable or unverified institutional facts. An entry can contain a safe alternative alongside a factual blocker.
+## Reconciliation of the original 22 requirements
 
-## Review and publication
+| Key                    | Current disposition                                                                                                                               |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `organisation`         | IMPLEMENTED APPROVED COPY: Approved organisational introduction; registration particulars omitted.                                                |
+| `history`              | IMPLEMENTED APPROVED COPY: Approved new-organisation introduction; no invented founding date or timeline.                                         |
+| `missionStatement`     | IMPLEMENTED APPROVED COPY: Mission and vision adopted as editorial copy.                                                                          |
+| `values`               | IMPLEMENTED APPROVED COPY: Values and strategic objectives adopted.                                                                               |
+| `leadership`           | IMPLEMENTED APPROVED COPY: Governance responsibilities adopted; unverified named profiles omitted.                                                |
+| `partners`             | IMPLEMENTED APPROVED COPY: Independent partner statement approved; no additional named partners invented.                                         |
+| `partnershipModel`     | IMPLEMENTED APPROVED COPY: Collaboration framework approved; no signed agreements claimed.                                                        |
+| `bitwiireProfile`      | PENDING CONTACT / LOCATION: Bitwiire contact information, location and visiting hours; profile wording is approved.                               |
+| `programmeDetails`     | IMPLEMENTED APPROVED COPY: Focus areas and starter directions approved; operational work distinguished from plans.                                |
+| `projects`             | IMPLEMENTED APPROVED COPY: Three selected starter plans published with operational status PLANNED.                                                |
+| `regionalPresence`     | PENDING CONTACT / LOCATION: EACH and partner addresses, field sites and project locations.                                                        |
+| `herbariumStatus`      | IMPLEMENTED APPROVED COPY: Development and reference-specimen explanation approved; no holdings invented.                                         |
+| `researchThemes`       | IMPLEMENTED APPROVED COPY: Research directions approved; no active study, funding or affiliation invented.                                        |
+| `resources`            | IMPLEMENTED APPROVED COPY: Three original educational website guides provided with attributed sources.                                            |
+| `medicinalReview`      | IMPLEMENTED APPROVED COPY: Conservative educational wording approved; medical disclaimer retained; no specialist review is falsely claimed.       |
+| `communityProtocols`   | IMPLEMENTED APPROVED COPY: Responsible preparation principles approved; no community participation or consent presumed.                           |
+| `volunteerRoles`       | IMPLEMENTED APPROVED COPY: Planned contribution areas approved; no open vacancies or recruitment process claimed.                                 |
+| `impactFigures`        | IMPLEMENTED APPROVED COPY: Measurement framework approved; no numeric results or zero baseline invented.                                          |
+| `contactDetails`       | PENDING CONTACT / LOCATION: Official EACH contact channels, address and opening hours.                                                            |
+| `accessibilityContact` | PENDING CONTACT / LOCATION: Authorised accessibility contact and response target.                                                                 |
+| `photography`          | IMPLEMENTED APPROVED COPY: Existing licensed reference imagery accepted; original brands and credits preserved.                                   |
+| `legalPolicies`        | IMPLEMENTED APPROVED COPY: Implementation-based privacy and terms copy approved; no compliance certification or unverified registration asserted. |
 
-Review wording and facts separately. Confirm the responsible approver and record approval in the existing CMS. Published pages accept changes as pending revisions: save, preview, submit for review, then approve only after the required evidence and permissions are present. Do not untick draft markers merely because copy has been prepared. No named team, additional partner, project, publication or contact record is created by these proposals.
+## Approved page and programme wording
 
-The development-only preparation script stages nonempty field patches as DRAFT revisions, preserving existing pending work and every live record. It is separate from the normal seed. Records with no safe field patch remain in this document for review. Legal policies require legal review and controller confirmation before adoption. Staff must reconcile existing pending revisions manually rather than overwrite them.
+The source of the following field wording is `docs/content/approved-content.json`. Fresh databases receive it through the normal create-only seed. Existing dev records are updated through `scripts/apply-approved-content.ts`, which uses the existing save and publishing validators, records review/publication audit events, preserves unrelated pending changes and refuses production. Normal staff actions retain their existing authorisation checks.
 
-## References
+### pages/about
 
-- Institutional baseline: `AGENTS.md` section 1 and the approved homepage line in `prisma/seed/landing-pages.ts`.
-- Botanical reference: [Royal Botanic Gardens, Kew — Access the Herbarium](https://www.kew.org/science/engage/accessing-our-science/access-our-collections/herbarium). Used only for the general role of specimens and documented collections; no Kew affiliation is claimed.
-- Traditional knowledge: [CBD Nagoya Protocol Article 7](https://www.cbd.int/abs/text/articles?sec=abs-07) and [Article 12](https://www.cbd.int/abs/text/articles?sec=abs-12). Proposed consent principles require community agreement and applicable legal review; this document does not determine legal obligations.
-- Photographs: `public/images/README.md`, `src/config/media.ts`, `src/content/specimens.ts` and ADR 0005. Existing licence evidence is retained; no new images or licences are introduced.
-
-## /about — `organisation`
-
-**Categories:** A / D.
-
-**Approval status:** BLOCKED — FACTUAL INFORMATION REQUIRED. Unapproved; no sign-off inferred.
-
-**Existing wording or state**
-
-Organisation details are awaited; confirmed focus, starting country and independent partner appear at a glance.
-
-**Proposed wording**
-
-East African Community Herbariums (EACH) is an independent initiative focused on plant conservation, herbarium development and botanical knowledge in East Africa, beginning in Uganda. Its focus brings together plants, people, science and indigenous knowledge in support of environmental stewardship.
-
-**Evidence/source**
-
-AGENTS.md §1; approved homepage supporting line in prisma/seed/landing-pages.ts.
-
-**Outstanding facts and approval**
-
-Legal identity, registration status and number where applicable, registered address and responsible website owner. This introduction cannot substitute for legal particulars.
-
-**CMS record and source**
-
-Existing `pages` record, slug `about`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-No field patch is staged: the current factual notice or live settings remain unchanged pending evidence. The wording above is ready for client review.
-
-## /about — `history`
-
-**Categories:** A / C / D.
-
-**Approval status:** PREPARED — CLIENT REVIEW REQUIRED. Unapproved; no sign-off inferred.
-
-**Existing wording or state**
-
-The Our story section is empty and shows the history notice; the founding date is also empty.
-
-**Proposed wording**
-
-EACH's focus connects three related needs: conserving plants, developing a herbarium and sharing botanical knowledge. Beginning in Uganda, the initiative looks to East Africa as the setting for this work. This introduction describes its purpose; a documented account of its founding and development will follow once the relevant facts are confirmed.
-
-**Evidence/source**
-
-AGENTS.md §1; no founding evidence supplied.
-
-**Outstanding facts and approval**
-
-Approve this introduction. Supply founder identities, founding date and evidenced milestones separately; the Founded fact must remain empty until verified.
-
-**CMS record and source**
-
-Existing `pages` record, slug `about`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-**Exact proposed CMS field wording**
+Status: approved for implementation. Contact and location fields are unchanged.
 
 **content.facts.history**
 
-EACH's focus connects three related needs: conserving plants, developing a herbarium and sharing botanical knowledge. Beginning in Uganda, the initiative looks to East Africa as the setting for this work. This introduction describes its purpose; a documented account of its founding and development will follow once the relevant facts are confirmed.
+As a new organisation, EACH is building a foundation for plant conservation, herbarium development and botanical knowledge. Its starting priorities are to establish careful documentation, prepare accessible learning resources and develop respectful ways of working with knowledge holders. These priorities describe the work ahead, without claiming a history of completed projects.
 
-## /about/mission — `missionStatement`
+**content.facts.title**
 
-**Categories:** C.
+Plants, knowledge and a new beginning
 
-**Approval status:** PREPARED — CLIENT REVIEW REQUIRED. Unapproved; no sign-off inferred.
+**content.facts.description**
 
-**Existing wording or state**
+EACH is a new organisation with an East African focus, beginning in Uganda. Its first priorities connect botanical documentation, conservation learning and responsible community participation.
 
-To protect biodiversity for future generations. The headline uses the approved homepage supporting line.
+**content.facts.photography**
 
-**Proposed wording**
+Licensed reference photography; not documentation of EACH activities
 
-Proposed mission: To support the conservation of East Africa's plant diversity through botanical documentation, herbarium development, education and respectful collaboration with knowledge holders. Proposed vision: An East Africa where plant diversity and the knowledge associated with it are valued, responsibly documented and safeguarded for future generations.
+### pages/about-mission
 
-**Evidence/source**
-
-Approved homepage line; AGENTS.md §1. Mission and vision are proposals, not adopted statements.
-
-**Outstanding facts and approval**
-
-EACH must adopt or amend both statements and the strategic objectives under values. Keep the mission draft marker until approval.
-
-**CMS record and source**
-
-Existing `pages` record, slug `about-mission`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-**Exact proposed CMS field wording**
+Status: approved for implementation. Contact and location fields are unchanged.
 
 **lead**
 
-Proposed mission: To support the conservation of East Africa's plant diversity through botanical documentation, herbarium development, education and respectful collaboration with knowledge holders. Proposed vision: An East Africa where plant diversity and the knowledge associated with it are valued, responsibly documented and safeguarded for future generations.
-
-**content.statement.marker**
-
-true
-
-## /about/mission — `values`
-
-**Categories:** C.
-
-**Approval status:** PREPARED — CLIENT REVIEW REQUIRED. Unapproved; no sign-off inferred.
-
-**Existing wording or state**
-
-Six draft principles: scientific care; respect and consent; open by default; rooted in the region; careful with claims; independent partnerships.
-
-**Proposed wording**
-
-Proposed values and strategic objectives: Scientific care — Build botanical records that can be checked, with sources, identification notes and clear limits. Conservation responsibility — Use botanical evidence to inform the care of plants and habitats; distinguish intentions from demonstrated results. Respect for knowledge holders — Seek informed consent, agree attribution and access, and respect community decisions about sensitive knowledge. Learning and participation — Develop educational material and opportunities for people to contribute with appropriate guidance. Responsible access — Share useful knowledge while protecting privacy, restricted community knowledge and sensitive species information. Accountable collaboration — Define responsibilities between independent organisations and report activities with evidence.
-
-**Evidence/source**
-
-Existing draft principles; AGENTS.md content-integrity rules; CBD Nagoya Protocol Articles 7 and 12 for consent and community protocols.
-
-**Outstanding facts and approval**
-
-Approve values and objectives; confirm practical governance and knowledge-access arrangements. These are commitments proposed for adoption.
-
-**CMS record and source**
-
-Existing `pages` record, slug `about-mission`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-**Exact proposed CMS field wording**
+Mission: To support the conservation of East Africa's plant diversity through botanical documentation, herbarium development, education and respectful collaboration with knowledge holders. Vision: An East Africa where plant diversity and the knowledge associated with it are valued, responsibly documented and safeguarded for future generations.
 
 **content.principles.title**
 
-Proposed values and strategic objectives
+Values and strategic objectives
 
 **content.principles.description**
 
-These principles describe the standards and directions proposed for EACH; they await organisational approval.
-
-**content.principles.marker**
-
-true
+These principles guide EACH's botanical documentation, learning resources and approach to collaboration.
 
 **content.principles.items [1].title**
 
@@ -203,193 +119,89 @@ Accountable collaboration
 
 Define responsibilities between independent organisations and report activities with evidence.
 
-## /about/leadership — `leadership`
+### pages/about-leadership
 
-**Categories:** C / D.
-
-**Approval status:** BLOCKED — FACTUAL INFORMATION REQUIRED. Unapproved; no sign-off inferred.
-
-**Existing wording or state**
-
-No named profiles; a list describes what the page will show. The page is not indexed until profiles are published.
-
-**Proposed wording**
-
-Proposed governance responsibilities: Set organisational priorities and review evidence of progress; provide scientific guidance on identification and documentation; oversee consent, safeguarding and responsible knowledge sharing; define partner responsibilities and review public claims. These describe responsibilities to agree, not confirmed appointments or an existing board structure.
-
-**Evidence/source**
-
-AGENTS.md prohibits invented identities; team publication requires consent in prisma/schema.prisma.
-
-**Outstanding facts and approval**
-
-Confirm governance structure, names, roles, biographies, images and individual publication consent. Do not create fictional team records.
-
-**CMS record and source**
-
-Existing `pages` record, slug `about-leadership`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-**Exact proposed CMS field wording**
+Status: approved for implementation. Contact and location fields are unchanged.
 
 **content.upcoming.eyebrow**
 
-Proposed governance responsibilities
+Governance
 
 **content.upcoming.title**
 
-Responsibilities to agree before profiles are published
+Responsibilities behind the work
 
 **content.upcoming.items [1]**
 
-Set organisational priorities and review evidence of progress
+Set priorities and assess progress against evidence
 
 **content.upcoming.items [2]**
 
-Provide scientific guidance on identification and documentation
+Support accurate identification and traceable botanical documentation
 
 **content.upcoming.items [3]**
 
-Oversee consent, safeguarding and responsible knowledge sharing
+Protect consent, attribution and appropriate access to knowledge
 
 **content.upcoming.items [4]**
 
-Define partner responsibilities and review public claims
+Define independent partner responsibilities and accountable reporting
 
-**content.upcoming.items [5]**
+**content.next.description**
 
-These are proposed responsibilities, not confirmed appointments or an existing board structure
+Independent organisations working alongside EACH.
 
-## /about/partners — `partners`
+**title**
 
-**Categories:** A / C / D.
+Leadership and accountability
 
-**Approval status:** BLOCKED — FACTUAL INFORMATION REQUIRED. Unapproved; no sign-off inferred.
+**lead**
 
-**Existing wording or state**
+Scientific care, responsible stewardship and clear responsibilities guide the development of EACH. Governance is described here through its responsibilities; no unverified personal profiles or board appointments are presented.
 
-Bitwiire is the sole seeded independent partner; other partnerships are awaited.
+### pages/about-partners
 
-**Proposed wording**
-
-Collaboration can bring together botanical expertise, community priorities and opportunities for learning. Any additional partner profile should state the agreed purpose of the relationship and each organisation's responsibilities. Listing a partner does not imply ownership, endorsement of every activity or authority to speak on its behalf.
-
-**Evidence/source**
-
-AGENTS.md §1; prisma/seed/partners.ts. Collaboration wording is proposed.
-
-**Outstanding facts and approval**
-
-Verify additional relationships and obtain profile and logo permissions. Keep named partner records unpublished until confirmed.
-
-**CMS record and source**
-
-Existing `pages` record, slug `about-partners`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-**Exact proposed CMS field wording**
+Status: approved for implementation. Contact and location fields are unchanged.
 
 **content.invitation.description**
 
-Collaboration can bring together botanical expertise, community priorities and opportunities for learning. Explore proposed ways for independent organisations to work together.
+Collaboration connects botanical expertise, community priorities and opportunities for learning. Each relationship should have a clear purpose, agreed responsibilities and respect for organisational independence.
 
-## /partnerships — `partnershipModel`
+### pages/partnerships
 
-**Categories:** C.
-
-**Approval status:** PREPARED — CLIENT REVIEW REQUIRED. Unapproved; no sign-off inferred.
-
-**Existing wording or state**
-
-Four draft partnership types and an empty next-steps section.
-
-**Proposed wording**
-
-Proposed collaborations include research and academic work on botanical documentation; community-led discussion of knowledge, access and attribution; conservation collaboration around plant and habitat priorities; and education partnerships that help people learn about plants. Before any collaboration begins, the organisations should agree its purpose, scope, responsibilities, permissions, resources, reporting and arrangements for knowledge and data. These are proposed models, not announcements of signed agreements. EACH and every partner retain their independent identities.
-
-**Evidence/source**
-
-Existing partnership types; AGENTS.md brand separation; CBD Articles 7 and 12 where traditional knowledge is involved.
-
-**Outstanding facts and approval**
-
-Approve models and responsibilities; confirm an authorised approach channel. Online partnership forms belong to M05.
-
-**CMS record and source**
-
-Existing `pages` record, slug `partnerships`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-**Exact proposed CMS field wording**
+Status: approved for implementation. Contact and location fields are unchanged.
 
 **content.types.eyebrow**
 
-Proposed collaboration
+Collaboration
 
 **content.types.title**
 
-Ways independent organisations could work together
-
-**content.types.marker**
-
-true
+Ways independent organisations can work together
 
 **content.steps.text**
 
-Proposed for EACH review: Before any collaboration begins, the organisations should agree its purpose, scope, responsibilities, permissions, resources, reporting and arrangements for knowledge and data. These are proposed models, not announcements of signed agreements. EACH and every partner retain their independent identities. An authorised contact channel is still required.
+Collaboration begins with a shared purpose and a clear scope. Independent organisations agree responsibilities, permissions, resources, reporting and arrangements for knowledge and data before work starts. Research, conservation, community and education partnerships are part of this framework; no additional signed partnerships are claimed. Official contact and location details are being confirmed.
 
-## /bitwiire-herbarium-cafe — `bitwiireProfile`
+### pages/bitwiire-herbarium-cafe
 
-**Categories:** A / D.
+Status: approved for implementation. Contact and location fields are unchanged.
 
-**Approval status:** BLOCKED — FACTUAL INFORMATION REQUIRED. Unapproved; no sign-off inferred.
+**content.profile.eyebrow**
 
-**Existing wording or state**
+Independent collaboration
 
-Independent partner statement; location, hours and approved profile are empty. The homepage also names Bitwiire.
+**content.profile.description**
 
-**Proposed wording**
+Bitwiire Herbarium Cafe and EACH retain their own identities and responsibilities.
 
-Bitwiire Herbarium Cafe is an independent partner of East African Community Herbariums (EACH). The organisations are separate: neither owns or runs the other. A fuller profile and details of the collaboration will be shared after confirmation by Bitwiire and EACH. Visiting information is not yet confirmed on this website.
+**content.profile.text**
 
-**Evidence/source**
+Bitwiire Herbarium Cafe is an independent partner of East African Community Herbariums (EACH). The organisations are separate: neither owns or runs the other. This profile describes that relationship without making claims about services, staff, qualifications or activities. Official visiting and contact details are being confirmed.
 
-AGENTS.md §1; existing partner statement only.
+### pages/our-work
 
-**Outstanding facts and approval**
-
-Bitwiire-approved description, relationship details, location, opening hours and photography permissions. No service, clinical or staffing claims may be inferred.
-
-**CMS record and source**
-
-Existing `pages` record, slug `bitwiire-herbarium-cafe`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-No field patch is staged: the current factual notice or live settings remain unchanged pending evidence. The wording above is ready for client review.
-
-## /our-work; /our-work/plant-conservation; /our-work/environmental-conservation — `programmeDetails`
-
-**Categories:** B / C.
-
-**Approval status:** PREPARED — CLIENT REVIEW REQUIRED. Unapproved; no sign-off inferred.
-
-**Existing wording or state**
-
-General explanations of four programme fields; specific activities and objectives are absent.
-
-**Proposed wording**
-
-Proposed programme directions: Plant conservation — document plant diversity and identify questions that need conservation attention. Herbarium development — plan reliable specimen documentation, identification, curation and access before claiming a physical collection. Environmental conservation — connect plant knowledge with understanding habitats and environmental change. Medicinal plant knowledge — document cultural context and botanical identity without presenting traditional uses as proven treatments. Indigenous and community knowledge — develop consent and knowledge-sharing arrangements with custodians. Research and education — develop questions, learning materials and supervised participation around these fields. These are directions for review, not evidence of operating programmes or completed fieldwork.
-
-**Evidence/source**
-
-AGENTS.md focus; four existing programme records; Kew herbarium reference for botanical documentation. Proposed organisational directions require adoption.
-
-**Outstanding facts and approval**
-
-Approve directions and priorities; supply activities, capacity, locations, partners, permits and schedules before describing programmes as operational.
-
-**CMS record and source**
-
-Existing `pages` record, slug `our-work`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-**Exact proposed CMS field wording**
+Status: approved for implementation. Contact and location fields are unchanged.
 
 **content.programmes.title**
 
@@ -397,159 +209,99 @@ Four connected areas of focus
 
 **content.programmes.description**
 
-Plant conservation, environmental conservation, medicinal plant knowledge and indigenous knowledge provide a framework for proposed work. These areas of focus do not establish that field activities are operating.
-
-**content.programmes.marker**
-
-true
+Plant conservation, environmental conservation, medicinal plant knowledge and indigenous knowledge shape EACH's starter plans. These fields connect documentation, habitat awareness, responsible research and education.
 
 **content.projects.eyebrow**
 
-Documented work
+Getting started
 
 **content.projects.description**
 
-Case studies require confirmed locations, dates, responsibilities and evidence. Sample records are omitted from public listings.
+Three planned projects establish documentation, learning and community dialogue. Their objectives describe intended work, not completed activities or verified results.
 
-## /projects; /; programme pages; /projects/[slug] — `projects`
+**content.projects.title**
 
-**Categories:** B / C / D.
+Our starter projects
 
-**Approval status:** BLOCKED — FACTUAL INFORMATION REQUIRED. Unapproved; no sign-off inferred.
+### pages/projects
 
-**Existing wording or state**
-
-Three published placeholder projects: placeholder-montane-forest, placeholder-papyrus-wetland and placeholder-dryland-savanna. They illustrate landscapes only.
-
-**Proposed wording**
-
-Plant conservation can connect botanical documentation, habitat care, research and community participation. This page is reserved for documented EACH projects. Each approved case study should explain the purpose, location, period, participants and permissions, distinguish objectives from completed activities, and support outcomes with dated evidence. A landscape photograph alone is not evidence of an EACH project.
-
-**Evidence/source**
-
-prisma/seed/projects.ts; no verified project evidence supplied.
-
-**Outstanding facts and approval**
-
-Real project dossiers and permissions; preserve identifiers and relationships. No new fictional project records. Samples remain labelled and noindex on their detail routes.
-
-**CMS record and source**
-
-Existing `pages` record, slug `projects`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-**Exact proposed CMS field wording**
+Status: approved for implementation. Contact and location fields are unchanged.
 
 **description**
 
-How EACH project case studies will be documented and reviewed. Only verified project records are eligible for the public listing.
+Three planned EACH starter projects: botanical documentation foundations, plant learning resources and community knowledge dialogue.
 
 **lead**
 
-This page is reserved for documented EACH projects. Approved case studies should distinguish objectives, completed activities and verified results, with dates and sources.
+Our first projects focus on building sound foundations. Each is planned: objectives describe intended work, and no field sites, delivery dates or achieved results are asserted.
 
-## / — `regionalPresence`
+**title**
 
-**Categories:** A / D.
+Our starter projects
 
-**Approval status:** BLOCKED — FACTUAL INFORMATION REQUIRED. Unapproved; no sign-off inferred.
+**content.closing.text**
 
-**Existing wording or state**
+Project plans will develop as practical arrangements are established. Verified results will be reported on the [impact page](/impact), with their sources and reporting periods.
 
-Uganda and East Africa are confirmed; sites, districts and wider-region facts are empty.
+### pages/home
 
-**Proposed wording**
-
-EACH begins in Uganda, within an East African focus. This identifies its starting country and regional purpose; it does not establish offices, field sites or operations in other countries. Specific locations and any expansion plans will be described only after confirmation.
-
-**Evidence/source**
-
-AGENTS.md §1; no site or expansion evidence supplied.
-
-**Outstanding facts and approval**
-
-Confirmed operating sites, districts, country relationships and separately approved expansion plans. Leave presence.sites and presence.wider empty.
-
-**CMS record and source**
-
-Existing `pages` record, slug `home`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-**Exact proposed CMS field wording**
+Status: approved for implementation. Contact and location fields are unchanged.
 
 **content.presence.text**
 
-EACH begins in Uganda, within an East African focus. This identifies its starting country and regional purpose; it does not establish offices, field sites or operations in other countries. Specific locations and any expansion plans will be described only after confirmation.
+EACH begins in Uganda with an East African focus. Specific offices, field sites and project locations are being confirmed. No operations elsewhere are implied.
+
+**content.presence.wider**
+
+East African focus; no additional country operations claimed
 
 **content.projects.description**
 
-Case studies require confirmed locations, dates, responsibilities and evidence. Sample records are omitted from this listing.
+Planned work in botanical documentation, plant learning and community knowledge dialogue. No completed fieldwork or outcomes are claimed.
 
-## /herbarium — `herbariumStatus`
+**content.projects.eyebrow**
 
-**Categories:** B / D.
+Getting started
 
-**Approval status:** BLOCKED — FACTUAL INFORMATION REQUIRED. Unapproved; no sign-off inferred.
+**content.projects.title**
 
-**Existing wording or state**
+Our starter projects
 
-General specimen methodology, three attributed reference sheets and an empty collection-status section.
+**content.stories.title**
 
-**Proposed wording**
+Plant learning resources
 
-A herbarium preserves specimens and their associated collection information so that plant identifications can be revisited. The reference sheets on this website illustrate that method; they are not evidence of specimens owned or managed by EACH. EACH's holdings, housing arrangements and accession records have not been confirmed for publication. The website does not provide a searchable EACH specimen catalogue.
+**content.research.body [1]**
 
-**Evidence/source**
+Botanical records connect a plant identification with its source and context. Careful documentation makes information easier to check and use.
 
-src/content/specimens.ts; public/images/README.md; Kew herbarium reference. No evidence of EACH holdings supplied.
+**content.research.body [2]**
 
-**Outstanding facts and approval**
+Explore introductory website guides and research directions. These materials support learning; they are not reports of completed EACH research.
 
-Confirm holdings or absence of holdings, repository, curation standards, accession records and any repository relationship. Keep collection-status notice; a proposed introduction must not erase it.
+### pages/herbarium
 
-**CMS record and source**
+Status: approved for implementation. Contact and location fields are unchanged.
 
-Existing `pages` record, slug `herbarium`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
+**content.status.title**
 
-No field patch is staged: the current factual notice or live settings remain unchanged pending evidence. The wording above is ready for client review.
+Developing the herbarium foundation
 
-## /research — `researchThemes`
+**content.status.text**
 
-**Categories:** B / C.
+Herbarium development is one of EACH's founding priorities. Its starter documentation project focuses on record standards, identification evidence and the requirements for responsible curation. The reference sheets shown here illustrate herbarium methods; they do not establish that EACH owns or manages a physical collection. No EACH specimen inventory is presented on this website.
 
-**Approval status:** PREPARED — CLIENT REVIEW REQUIRED. Unapproved; no sign-off inferred.
+### pages/research
 
-**Existing wording or state**
-
-Four draft themes, empty affiliations and collaboration details; publication description claims EACH has not published research yet without an institutional bibliography.
-
-**Proposed wording**
-
-Proposed research directions: Botanical documentation — investigate plant identity and distribution using traceable observations and, where authorised, voucher specimens. Conservation questions — examine evidence of pressures on plants and habitats without claiming an assessment has already been completed. Ethnobotany — develop questions with knowledge holders, with agreed consent, attribution, access and benefit-sharing arrangements. Environmental change — explore how plant records could support study of habitat and land-use change. These are potential directions, not active studies, funded projects or confirmed institutional affiliations.
-
-**Evidence/source**
-
-Existing draft themes; Kew herbarium reference; CBD Articles 7 and 12.
-
-**Outstanding facts and approval**
-
-Approve scope; confirm researchers, affiliations, ethical review, permits and resources before announcing studies. Verify bibliography rather than inferring that no publications exist.
-
-**CMS record and source**
-
-Existing `pages` record, slug `research`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-**Exact proposed CMS field wording**
+Status: approved for implementation. Contact and location fields are unchanged.
 
 **content.themes.eyebrow**
 
-Proposed research directions
+Research directions
 
 **content.themes.title**
 
-Questions for future botanical study
-
-**content.themes.marker**
-
-true
+Questions that can guide future study
 
 **content.themes.items [1].title**
 
@@ -585,83 +337,43 @@ Explore how plant records could support study of habitat and land-use change.
 
 **content.publications.description**
 
-Approved publications will be listed with authors, dates and sources. Sample entries are omitted; an institutional bibliography still needs confirmation.
+Research publications will be listed with their authors, dates and sources when available. In the meantime, the resource library provides introductory website guides.
 
 **content.collaborate.text**
 
-Proposed for EACH review: These are potential research directions, not active studies, funded projects or confirmed institutional affiliations. Any study would require an agreed question, suitable expertise, permissions and a plan for responsible handling of data and knowledge.
+These directions provide a starting point for future studies. Each study needs an agreed question, suitable expertise, appropriate permissions and a plan for handling data and knowledge responsibly. No funded studies or additional institutional affiliations are claimed.
 
-## /resources; /research; /; /resources/[slug] — `resources`
+**content.facts.partners**
 
-**Categories:** B / D.
+Independent research collaboration; no additional affiliations claimed
 
-**Approval status:** BLOCKED — FACTUAL INFORMATION REQUIRED. Unapproved; no sign-off inferred.
+**content.facts.publications**
 
-**Existing wording or state**
+Introductory website guides; no completed research outputs claimed
 
-Three sample articles: placeholder-publication, placeholder-field-guide and placeholder-field-story, without authors, dates or bodies.
+### pages/resources
 
-**Proposed wording**
-
-This library is intended for approved publications, guides and stories with clear authorship and sources. Sample entries are not EACH publications. For external botanical reference, consult the Royal Botanic Gardens, Kew herbarium access information. For traditional knowledge and access arrangements, consult the Convention on Biological Diversity's Nagoya Protocol. These sources are produced by their respective institutions and do not imply an affiliation with EACH.
-
-**Evidence/source**
-
-prisma/seed/articles.ts; Kew and CBD references listed below. No EACH publication supplied.
-
-**Outstanding facts and approval**
-
-Bibliography, authors, publication dates, permissions and actual files or text. External references must retain original institutional attribution.
-
-**CMS record and source**
-
-Existing `pages` record, slug `resources`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-**Exact proposed CMS field wording**
+Status: approved for implementation. Contact and location fields are unchanged.
 
 **lead**
 
-A library for approved publications, guides and stories with clear authorship and sources. Sample entries are not EACH publications.
+Introductory website guides to botanical documentation, plant learning and responsible knowledge sharing. These are educational resources, not reports of completed field research.
 
 **description**
 
-EACH's resource library is awaiting verified publications, guides and stories. Sample entries are omitted from the listing.
+Educational website guides from EACH, with references to their original botanical and conservation sources.
 
-## /our-work/medicinal-plants — `medicinalReview`
+**title**
 
-**Categories:** B / C.
+Resources
 
-**Approval status:** PREPARED — CLIENT REVIEW REQUIRED. Unapproved; no sign-off inferred.
+### programmes/medicinal-plants
 
-**Existing wording or state**
-
-Draft approach, a Warburgia example, reference specimen and fixed not-medical-advice notice; expert review outstanding.
-
-**Proposed wording**
-
-Proposed documentation principles: Botanical identity — Record a scientific identification and the evidence supporting it; local names alone may be ambiguous. Cultural context — Attribute a reported use to its source and setting, with permission. A reported traditional use is not proof of safety or effectiveness. Permission and access — Agree what may be recorded, retained and shared before collecting knowledge; respect restrictions and intellectual property rights. Conservation care — Consider whether proposed research or collection could put wild plants or sensitive knowledge at risk. This material is for education and conservation, not treatment advice; qualified botanical or ethnobotanical review remains required.
-
-**Evidence/source**
-
-Existing medical disclaimer and pending expert-review requirement; CBD Articles 7 and 12 for permission principles. No efficacy claim or new plant-specific assertion is introduced.
-
-**Outstanding facts and approval**
-
-Qualified botanist or ethnobotanist review of the entire page, including existing species statements and reference identifications. Medical disclaimer must remain.
-
-**CMS record and source**
-
-Existing `programmes` record, slug `medicinal-plants`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-**Exact proposed CMS field wording**
+Status: approved for implementation. Contact and location fields are unchanged.
 
 **content.approach.eyebrow**
 
-Proposed documentation principles
-
-**content.approach.marker**
-
-true
+Documentation principles
 
 **content.approach.items [1].title**
 
@@ -695,45 +407,17 @@ Conservation care
 
 Consider whether proposed research or collection could put wild plants or sensitive knowledge at risk.
 
-## /our-work/indigenous-knowledge — `communityProtocols`
+### programmes/indigenous-knowledge
 
-**Categories:** B / C.
-
-**Approval status:** PREPARED — CLIENT REVIEW REQUIRED. Unapproved; no sign-off inferred.
-
-**Existing wording or state**
-
-Four draft principles; wording promises withdrawal without defining its practical limits; agreed protocols are absent.
-
-**Proposed wording**
-
-Proposed principles for discussion: Informed agreement — Explain the proposed purpose, recording methods, access and intended uses in an accessible language before seeking consent. Custodian-led attribution — Agree whether and how individuals and communities wish to be acknowledged; do not publish identities by default. Control over sharing — Agree restrictions, storage, reuse and a workable process for changing or withdrawing permission, including limits after publication. Fair arrangements — Discuss benefits, responsibilities and applicable access requirements before work starts; document mutually agreed terms where required. These principles are a starting point for agreement with knowledge holders, not evidence of consent already obtained or a complete legal protocol.
-
-**Evidence/source**
-
-CBD Nagoya Protocol Articles 7 and 12; existing draft community principles. No community relationship or consent is inferred.
-
-**Outstanding facts and approval**
-
-Community-led review, actual protocols, permissions, applicable legal advice, attribution choices, intellectual property and benefit-sharing terms. Do not publish sensitive knowledge or identities.
-
-**CMS record and source**
-
-Existing `programmes` record, slug `indigenous-knowledge`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-**Exact proposed CMS field wording**
+Status: approved for implementation. Contact and location fields are unchanged.
 
 **content.principles.eyebrow**
 
-Proposed principles
+Principles
 
 **content.principles.title**
 
 A starting point for agreement with knowledge holders
-
-**content.principles.marker**
-
-true
 
 **content.principles.items [1].title**
 
@@ -769,55 +453,27 @@ Discuss benefits, responsibilities and applicable access requirements before wor
 
 **content.principles.details**
 
-Proposed for EACH and community review: These principles are a starting point for agreement with knowledge holders, not evidence of consent already obtained or a complete legal protocol.
+The community knowledge dialogue project starts with listening and agreement about purpose, attribution, access and benefit-sharing. No community consent is presumed, and no restricted knowledge will be collected or published before the relevant permissions and terms are agreed.
 
-## /volunteer — `volunteerRoles`
+### pages/volunteer
 
-**Categories:** C.
-
-**Approval status:** PREPARED — CLIENT REVIEW REQUIRED. Unapproved; no sign-off inferred.
-
-**Existing wording or state**
-
-Four possible contribution areas; no confirmed roles, application channel or safeguarding arrangements.
-
-**Proposed wording**
-
-Proposed contributions, subject to approval and supervision: Botanical documentation — Support observation notes and authorised field documentation under qualified guidance. Herbarium support — Assist with preparation, imaging and record checking once collection arrangements and training are confirmed. Education — Help prepare accessible plant-learning materials and supervised activities. Digital and editorial support — Check transcriptions, image credits and educational copy against their sources. These are possible role areas, not open vacancies. Locations, eligibility, time commitments, supervision, expenses, safeguarding and an authorised contact channel must be agreed before recruitment.
-
-**Evidence/source**
-
-Existing volunteer areas; no operational recruitment evidence supplied.
-
-**Outstanding facts and approval**
-
-Approve actual roles and recruitment arrangements, requirements, locations, time, safeguarding and contact. Forms and delivery are M05.
-
-**CMS record and source**
-
-Existing `pages` record, slug `volunteer`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-**Exact proposed CMS field wording**
+Status: approved for implementation. Contact and location fields are unchanged.
 
 **lead**
 
-Explore proposed ways to contribute to plant documentation, education and conservation. These are possible role areas, not open vacancies.
+Contribute skills to EACH's planned work in botanical documentation, education and responsible knowledge sharing. The role areas below describe opportunities to develop, not open vacancies.
 
 **content.areas.eyebrow**
 
-Proposed contributions
+Planned contributions
 
 **content.areas.title**
 
-Skills that could support future work
+Skills for the work ahead
 
 **content.areas.description**
 
-All opportunities would require organisational approval, suitable supervision and confirmed practical arrangements before recruitment.
-
-**content.areas.marker**
-
-true
+Roles will be introduced with clear tasks, suitable supervision and practical arrangements before recruitment.
 
 **content.areas.items [1].title**
 
@@ -851,45 +507,25 @@ Digital and editorial support
 
 Check transcriptions, image credits and educational copy against their sources.
 
-## /impact; /projects/[slug] — `impactFigures`
+**content.steps.title**
 
-**Categories:** C / D.
+Preparing opportunities
 
-**Approval status:** BLOCKED — FACTUAL INFORMATION REQUIRED. Unapproved; no sign-off inferred.
+**content.steps.text**
 
-**Existing wording or state**
+Botanical documentation, herbarium support, education and editorial assistance form the starting role areas. Any advertised opportunity will state its responsibilities, supervision, time commitments and safeguarding arrangements before applications are accepted. Official contact and location details are being confirmed.
 
-Six proposed measures, no figures and an empty results section; three reporting principles.
+### pages/impact
 
-**Proposed wording**
-
-Proposed measurement framework: Count documented plant records after identification review and removal of duplicates; count accessioned specimens only after repository and accession verification; count conservation projects only against agreed project records and status definitions; count educational activities against dated activity logs; count community participation only with consent and an agreed privacy-preserving method; count published resources only after editorial approval. Every reported measure should specify its definition, period, source, method, limitations and reviewer. Activity counts do not by themselves demonstrate ecological improvement or community benefit. No results are asserted here.
-
-**Evidence/source**
-
-Existing impact design and integrity rule; proposed reporting methodology, not evidence of results.
-
-**Outstanding facts and approval**
-
-Approve definitions, baselines, data ownership, review method and reporting period; supply verified results separately. No numeric results or implied zero baseline.
-
-**CMS record and source**
-
-Existing `pages` record, slug `impact`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-**Exact proposed CMS field wording**
+Status: approved for implementation. Contact and location fields are unchanged.
 
 **content.measures.eyebrow**
 
-Proposed measurement framework
+Measurement framework
 
 **content.measures.title**
 
-Measures to define before reporting
-
-**content.measures.marker**
-
-true
+Define the measure before reporting
 
 **content.measures.items [1]**
 
@@ -939,216 +575,299 @@ Protect people and knowledge
 
 Agree consent and attribution, and report participation without exposing personal or restricted community information.
 
-## /contact — `contactDetails`
+**content.reporting.text**
 
-**Categories:** D.
+The starter projects begin with planning and preparation. No verified project results are reported here. Future figures will identify the measure, reporting period, source, method, limitations and reviewer; activity counts will be distinguished from ecological or community outcomes.
 
-**Approval status:** BLOCKED — FACTUAL INFORMATION REQUIRED. Unapproved; no sign-off inferred.
+**lead**
 
-**Existing wording or state**
+EACH is establishing its reporting foundation as a new organisation. This framework explains what will be measured; no completed-project results or numerical achievements are claimed.
 
-Contact settings are empty; the page shows a controlled notice. No public contact form is implemented.
+### pages/privacy
 
-**Proposed wording**
-
-Official contact details are awaiting confirmation. This website currently provides no public enquiry form. An email address, telephone number or other channel will be shown only after EACH confirms that it is authorised for public use. Please do not submit personal or sensitive information through unofficial channels.
-
-**Evidence/source**
-
-Contact view, site settings and M05 specification; no verified contact channel supplied.
-
-**Outstanding facts and approval**
-
-Owner-confirmed email, telephone, address, office hours and social links. Do not populate live-on-save site settings with proposals or dummy values.
-
-**CMS record and source**
-
-Existing `pages` record, slug `contact`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-No field patch is staged: the current factual notice or live settings remain unchanged pending evidence. The wording above is ready for client review.
-
-## /accessibility — `accessibilityContact`
-
-**Categories:** C / D.
-
-**Approval status:** BLOCKED — FACTUAL INFORMATION REQUIRED. Unapproved; no sign-off inferred.
-
-**Existing wording or state**
-
-Accessibility feedback contact is awaited; manual screen-reader review is outstanding.
-
-**Proposed wording**
-
-An authorised accessibility feedback channel is awaiting confirmation. Once it is available, feedback can describe the page, the task that was difficult and any assistive technology involved, without including sensitive personal information. A response target will be published only after the responsible team confirms it. Automated checks do not establish that every person can use the website; manual assistive-technology review remains outstanding.
-
-**Evidence/source**
-
-Existing accessibility policy, ROADMAP.md and M06 specification.
-
-**Outstanding facts and approval**
-
-Named responsible team or authorised address and agreed response target. Manual screen-reader audit stays in M06; no compliance certification is asserted.
-
-**CMS record and source**
-
-Existing `pages` record, slug `accessibility`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-No field patch is staged: the current factual notice or live settings remain unchanged pending evidence. The wording above is ready for client review.
-
-## /about; all photographic routes — `photography`
-
-**Categories:** A / D.
-
-**Approval status:** BLOCKED — FACTUAL INFORMATION REQUIRED. Unapproved; no sign-off inferred.
-
-**Existing wording or state**
-
-16 openly licensed reference photographs, including three reference specimen sheets; credits and sources are registered.
-
-**Proposed wording**
-
-The website uses attributed reference photographs of East African plants and landscapes. They illustrate botanical and environmental subjects; they do not document EACH projects, staff, premises or collections. Reference specimen sheets are labelled separately and are not EACH specimens. EACH photography will be added only with confirmed ownership or permission, appropriate consent, accurate captions and image credits.
-
-**Evidence/source**
-
-ADR 0005; src/config/media.ts; public/images/README.md; src/content/specimens.ts. Licence metadata recorded on 2026-10-19; not a new legal determination.
-
-**Outstanding facts and approval**
-
-EACH-owned or authorised images with provenance, rights, consent and captions; official vector or transparent logo master remains an owner action. Preserve existing logos and credits.
-
-**CMS record and source**
-
-Existing `pages` record, slug `about`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-No field patch is staged: the current factual notice or live settings remain unchanged pending evidence. The wording above is ready for client review.
-
-## /privacy; /terms — `legalPolicies`
-
-**Categories:** C / D.
-
-**Approval status:** PREPARED — CLIENT REVIEW REQUIRED. Unapproved; no sign-off inferred.
-
-**Existing wording or state**
-
-Existing privacy opening: "This website does not ask for any personal information. It has no forms, accounts or newsletter sign-up, and it does not use cookies, analytics or advertising trackers." This predates the M04 staff CMS.
-
-**Proposed wording**
-
-Draft privacy policy
-
-This notice describes the implemented website and awaits confirmation by the responsible organisation and legal review. It does not certify compliance.
-
-Public pages and enquiries
-The public website provides informational pages. Public contact, volunteer and partnership forms, newsletter registration and public user accounts are not implemented. No public enquiry collection or delivery process is described by this notice.
-
-Staff access
-Authorised staff use a restricted CMS. Staff authentication uses Neon Managed Auth and session cookies. CMS records include staff membership and roles, editorial changes and audit events. These functions process staff identity and activity information to operate restricted access and the editorial workflow.
-
-Service providers and technical records
-The implementation uses Neon for database, managed authentication and private object storage. Delivery and infrastructure services may process connection and request information. The responsible organisation must confirm the actual hosting arrangements, provider roles, processing locations, legal basis, retention periods and access procedures before adopting this notice. No verified retention schedule or deletion promise is available.
-
-Content and external links
-Published content may include approved personal information such as a consented staff biography. Photograph credits and reference records link to external services with their own privacy notices. No advertising or analytics integration was identified in the repository review; this is not a guarantee about future hosting or third-party services.
-
-Responsibility and requests
-The data controller's legal identity, authorised privacy contact and procedures for requests remain to be confirmed. The contact page must not be treated as an operational submission channel while its details are pending.
-
-Future features
-Before public forms or new tracking are introduced, the notice must be reviewed against the fields collected, purposes, recipients, consent or other basis, retention and request procedures actually implemented.
-
-Draft terms of use
-
-This website presents information about East African Community Herbariums (EACH), botanical subjects and conservation. Its responsible legal entity and contact details await confirmation. Drafts and reference material must be distinguished from approved institutional statements. Proposed activities are not evidence of projects already carried out.
-
-Plant information is for education and conservation. It is not medical advice and does not establish that a plant or traditional preparation is safe or effective. Consult a qualified health professional about health concerns.
-
-Third-party photographs and specimen images retain their stated credits and licences; reuse is governed by those licences. No blanket licence is granted for all text, community knowledge, personal information or brand assets. Use of the EACH and Bitwiire names and logos requires the relevant rights holder's permission. The organisations are independent; neither owns or runs the other.
-
-External links are provided as references and do not establish an EACH partnership or endorsement. Public enquiry forms, applications and a searchable EACH specimen catalogue are not currently provided. These terms do not create an application, research-access or partnership agreement.
-
-The responsible entity, applicable law, permissions process, contact route and any liability provisions require legal review before adoption. No contractual or compliance assurance is made by this draft.
-
-**Evidence/source**
-
-src/services/auth.ts; src/features/settings; prisma/schema.prisma; existing privacy/terms seeds; M04 scope. This is a proposed implementation description, not legal advice or an externally verified compliance assessment.
-
-**Outstanding facts and approval**
-
-Legal review; data controller identity and contact; actual host/provider arrangements, lawful basis, retention, request procedures, jurisdiction and rights policy. Keep legalPolicies notices. Terms body is supplied separately in the review document for the existing terms record.
-
-**CMS record and source**
-
-Existing `pages` record, slug `privacy`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-**Exact proposed CMS field wording**
+Status: approved for implementation. Contact and location fields are unchanged.
 
 **body**
 
-This notice describes the implemented website and awaits confirmation by the responsible organisation and legal review. It does not certify compliance.
+## About this notice
 
-Public pages and enquiries
-The public website provides informational pages. Public contact, volunteer and partnership forms, newsletter registration and public user accounts are not implemented. No public enquiry collection or delivery process is described by this notice.
+This notice describes the website's current functions. EACH is responsible for its editorial content; Wilsoft Technologies provides development services. Official privacy contact details and locations are being confirmed. This notice does not claim regulatory certification or establish a verified retention schedule.
 
-Staff access
-Authorised staff use a restricted CMS. Staff authentication uses Neon Managed Auth and session cookies. CMS records include staff membership and roles, editorial changes and audit events. These functions process staff identity and activity information to operate restricted access and the editorial workflow.
+## Public pages
 
-Service providers and technical records
-The implementation uses Neon for database, managed authentication and private object storage. Delivery and infrastructure services may process connection and request information. The responsible organisation must confirm the actual hosting arrangements, provider roles, processing locations, legal basis, retention periods and access procedures before adopting this notice. No verified retention schedule or deletion promise is available.
+The public website provides informational pages. Public enquiry, volunteer and partnership forms, newsletter registration and public user accounts are not currently provided.
 
-Content and external links
-Published content may include approved personal information such as a consented staff biography. Photograph credits and reference records link to external services with their own privacy notices. No advertising or analytics integration was identified in the repository review; this is not a guarantee about future hosting or third-party services.
+## Restricted staff access
 
-Responsibility and requests
-The data controller's legal identity, authorised privacy contact and procedures for requests remain to be confirmed. The contact page must not be treated as an operational submission channel while its details are pending.
+Authorised staff use a restricted CMS. Neon Managed Auth provides staff authentication and session cookies. CMS records include staff membership and roles, editorial changes and audit events used to operate restricted access and the editorial workflow.
 
-Future features
-Before public forms or new tracking are introduced, the notice must be reviewed against the fields collected, purposes, recipients, consent or other basis, retention and request procedures actually implemented.
+## Infrastructure and technical information
 
-## /terms — `legalPolicies`
+The implementation uses Neon for its database, managed authentication and private object storage. Services delivering the website may process connection and request information. This notice makes no unverified promise about provider retention periods, processing locations or deletion procedures. Those arrangements must be reflected in the notice as the service changes.
 
-**Categories:** C / D.
+## Published content and external links
 
-**Approval status:** PREPARED — CLIENT REVIEW REQUIRED. Unapproved; no sign-off inferred.
+Personal information is published only through the applicable editorial and permission controls. Reference photographs, specimen records and educational sources link to external services with their own privacy notices. No advertising or analytics integration was identified in this repository; that is not a guarantee about every external service.
 
-**Existing wording or state**
+## Contact and future features
 
-Existing terms opening: "This website is published by East African Community Herbariums (EACH). The organisation's legal details will be added here." Existing terms retain draft and medical notices.
+Official privacy and accessibility channels will appear on the [contact page](/contact) when confirmed. Do not treat that page as an operational enquiry form. Before public collection forms or tracking are introduced, this notice must describe the actual fields, purposes, recipients, access and retention arrangements.
 
-**Proposed wording**
+**title**
 
-This website presents information about East African Community Herbariums (EACH), botanical subjects and conservation. Its responsible legal entity and contact details await confirmation. Drafts and reference material must be distinguished from approved institutional statements. Proposed activities are not evidence of projects already carried out.
+Privacy
 
-Plant information is for education and conservation. It is not medical advice and does not establish that a plant or traditional preparation is safe or effective. Consult a qualified health professional about health concerns.
+**description**
 
-Third-party photographs and specimen images retain their stated credits and licences; reuse is governed by those licences. No blanket licence is granted for all text, community knowledge, personal information or brand assets. Use of the EACH and Bitwiire names and logos requires the relevant rights holder's permission. The organisations are independent; neither owns or runs the other.
+How the EACH website handles public content, restricted staff access and technical information.
 
-External links are provided as references and do not establish an EACH partnership or endorsement. Public enquiry forms, applications and a searchable EACH specimen catalogue are not currently provided. These terms do not create an application, research-access or partnership agreement.
+### pages/terms
 
-The responsible entity, applicable law, permissions process, contact route and any liability provisions require legal review before adoption. No contractual or compliance assurance is made by this draft.
-
-**Evidence/source**
-
-src/services/auth.ts; src/features/settings; prisma/schema.prisma; existing privacy/terms seeds; M04 scope. This is a proposed implementation description, not legal advice or an externally verified compliance assessment.
-
-**Outstanding facts and approval**
-
-Legal review; data controller identity and contact; actual host/provider arrangements, lawful basis, retention, request procedures, jurisdiction and rights policy. Keep legalPolicies notices. Terms body is supplied separately in the review document for the existing terms record.
-
-**CMS record and source**
-
-Existing `pages` record, slug `terms`. Field proposals: `docs/content/cms-review-proposals.json`. Baseline: `prisma/seed/landing-content.ts`, `prisma/seed/landing-pages.ts`, `prisma/seed/pages.ts` or `prisma/seed/programme-content.ts` as applicable; current database/editor values take precedence over seeds.
-
-**Exact proposed CMS field wording**
+Status: approved for implementation. Contact and location fields are unchanged.
 
 **body**
 
-This website presents information about East African Community Herbariums (EACH), botanical subjects and conservation. Its responsible legal entity and contact details await confirmation. Drafts and reference material must be distinguished from approved institutional statements. Proposed activities are not evidence of projects already carried out.
+## About the website
+
+This website presents information about East African Community Herbariums (EACH), plant conservation and botanical knowledge. EACH is a new organisation. Its starter projects are plans, not completed case studies or evidence of achieved results.
+
+## Educational information
 
 Plant information is for education and conservation. It is not medical advice and does not establish that a plant or traditional preparation is safe or effective. Consult a qualified health professional about health concerns.
 
-Third-party photographs and specimen images retain their stated credits and licences; reuse is governed by those licences. No blanket licence is granted for all text, community knowledge, personal information or brand assets. Use of the EACH and Bitwiire names and logos requires the relevant rights holder's permission. The organisations are independent; neither owns or runs the other.
+## Material and permissions
 
-External links are provided as references and do not establish an EACH partnership or endorsement. Public enquiry forms, applications and a searchable EACH specimen catalogue are not currently provided. These terms do not create an application, research-access or partnership agreement.
+Third-party photographs and specimen images retain their stated credits and licences. Reuse must follow the applicable licence. No blanket licence is granted over all text, community knowledge, personal information or brand assets. Use of EACH and Bitwiire names and logos requires the relevant rights holder's permission.
 
-The responsible entity, applicable law, permissions process, contact route and any liability provisions require legal review before adoption. No contractual or compliance assurance is made by this draft.
+## Independent organisations and external references
+
+EACH and Bitwiire Herbarium Cafe are independent: neither owns or runs the other. External botanical and conservation sources are attributed to their original institutions; a reference link does not establish an EACH partnership or endorsement.
+
+## Services and project plans
+
+This website does not currently provide public enquiry or application forms, a searchable EACH specimen catalogue, medical services or research-access agreements. Project plans describe intended work subject to practical arrangements, permissions and responsible participation.
+
+## Contact and changes
+
+Official contact and location details are being confirmed on the [contact page](/contact). These terms may be updated as the website's functions change. No regulatory compliance or unverified legal registration claim is made here.
+
+**description**
+
+Terms for using EACH website information, reference material and educational guides.
+
+### programmes/plant-conservation
+
+Status: approved for implementation. Contact and location fields are unchanged.
+
+**content.approach.details**
+
+EACH's botanical documentation foundations project will establish record templates, identification checks and documentation standards before any collecting activity. It is planned work, not a claim of completed surveys or specimen holdings.
+
+### programmes/environmental-conservation
+
+Status: approved for implementation. Contact and location fields are unchanged.
+
+**content.mosaics.details**
+
+The plant learning resources project will prepare introductory material connecting plants with habitats, water, soil and responsible environmental observation. Educational work will be distinguished from habitat restoration or measured conservation outcomes.
+
+### pages/accessibility
+
+Status: approved for implementation. Contact and location fields are unchanged.
+
+**body**
+
+## How the website is built
+
+Pages use headings, landmarks and lists. Keyboard focus and a skip link support navigation. Images have text alternatives or are decorative. Reduced-motion preferences are respected, and content is available without JavaScript.
+
+## Testing and limits
+
+Development checks include axe scans, keyboard use, responsive layouts, reduced motion and pages without JavaScript. Automated checks do not establish universal usability or certify conformance. A manual screen-reader audit remains part of the future quality milestone.
+
+## Feedback
+
+An official accessibility contact and response target are being confirmed. Once available, feedback can identify the page and task that was difficult, without including sensitive personal information.
+
+## Selected starter projects
+
+1. **Botanical documentation foundations** — establish traceable record fields, identification checks and the prerequisites for future herbarium work. Start with preparation and attributed reference records; no collecting or holdings are claimed.
+2. **Plant learning resources** — develop introductory material and supervised activity outlines. The website guides are educational starting material; no delivered workshops, schools or participant counts are claimed.
+3. **Community knowledge dialogue** — prepare for listening and agreement about purpose, consent, attribution, access and benefits. No named community, participation or consent is assumed.
+
+All three records have status **Planned**, unknown locations and dates, no assigned partners and no outcomes. Full approved objectives, planned activities and narrative are maintained in `prisma/seed/starter-projects.ts` and the corresponding CMS records.
+
+## Educational website guides
+
+- **Understanding a herbarium record** — `/resources/understanding-herbarium-records`.
+- **Responsible plant documentation** — `/resources/responsible-plant-documentation`.
+- **Knowledge, consent and attribution** — `/resources/knowledge-consent-and-attribution`.
+
+The guides were prepared for this website under the owner's authorisation, dated 2026-10-21. They are not historical research papers or reports of completed EACH projects. The full text and source references are in `prisma/seed/learning-guides.ts` and the CMS. Corporate authorship identifies EACH's approved website material; no fictional researcher is credited.
+
+## Evidence and references
+
+- Institutional baseline: `AGENTS.md`, the approved homepage supporting line, and the owner's confirmation that EACH is new.
+- [Royal Botanic Gardens, Kew — Access the Herbarium](https://www.kew.org/science/engage/accessing-our-science/access-our-collections/herbarium).
+- [GBIF — occurrence data quality requirements](https://www.gbif.org/data-quality-requirements-occurrences).
+- [CBD Nagoya Protocol Article 7](https://www.cbd.int/abs/text/articles?sec=abs-07) and [Article 12](https://www.cbd.int/abs/text/articles?sec=abs-12).
+- Reference images: `src/config/media.ts`, `src/content/specimens.ts` and `public/images/README.md`. They do not document EACH activities or ownership.
+
+No independent botanical, clinical, legal or regulatory certification is claimed by the owner's approval. Operational permissions and safeguards remain prerequisites for executing project activities; they are not outstanding website-copy approvals.
+
+## Complete starter-project copy
+
+### Botanical documentation foundations
+
+A planned project to establish traceable plant records, identification checks and the documentation standards needed for future herbarium development.
+
+Status: Planned. Locations, dates and partner assignments are not announced. No outcomes are claimed.
+
+Objectives:
+
+- Define the information needed for a reliable plant record
+- Prepare identification and source-checking procedures
+- Establish requirements for permitted collecting and responsible curation before specimens are gathered
+
+Planned activities:
+
+- Prepare record templates and a review checklist
+- Use attributed reference records to test documentation methods
+- Assess the expertise, permissions and repository arrangements needed for future work
+
+**Start with documentation**
+
+The first step is to define how a plant observation or specimen would be recorded and checked. Reference records can support preparation without claiming that EACH has collected specimens.
+
+**Prepare before fieldwork**
+
+Any later collecting will require suitable expertise, permissions and curation arrangements. This project plan does not announce fieldwork or establish ownership of a collection.
+
+References:
+
+- [GBIF — occurrence data quality requirements](https://www.gbif.org/data-quality-requirements-occurrences)
+- [Royal Botanic Gardens, Kew — Access the Herbarium](https://www.kew.org/science/engage/accessing-our-science/access-our-collections/herbarium)
+
+### Plant learning resources
+
+A planned project to develop accessible introductory material about plants, habitats and responsible botanical observation for learners and future volunteers.
+
+Status: Planned. Locations, dates and partner assignments are not announced. No outcomes are claimed.
+
+Objectives:
+
+- Make introductory botanical concepts easier to understand
+- Connect plant learning with habitat care and responsible observation
+- Keep educational statements traceable to their sources
+
+Planned activities:
+
+- Develop short learning outlines and source lists
+- Prepare activities that do not require unauthorised collecting
+- Check explanations, image credits and accessibility before wider use
+
+**Build from clear explanations**
+
+The project will develop learning material around plant records, habitats and careful observation. Website guides provide an introduction; they are not evidence that teaching sessions have already taken place.
+
+**Prepare for participation**
+
+Any future activity will specify its intended audience, supervision, location and practical arrangements before participants are invited. No schools, delivery sites or participant numbers are announced here.
+
+References:
+
+- [Royal Botanic Gardens, Kew — Access the Herbarium](https://www.kew.org/science/engage/accessing-our-science/access-our-collections/herbarium)
+
+### Community knowledge dialogue
+
+A planned listening and preparation project to establish respectful discussion of plant knowledge, consent, attribution and access before any knowledge is recorded.
+
+Status: Planned. Locations, dates and partner assignments are not announced. No outcomes are claimed.
+
+Objectives:
+
+- Begin with knowledge holders' priorities rather than assumed research needs
+- Define consent, attribution and access arrangements before documentation
+- Protect restricted knowledge and discuss fair benefit-sharing terms
+
+Planned activities:
+
+- Prepare accessible discussion materials about purpose and intended use
+- Identify the permissions and expertise needed before any engagement
+- Develop a process for recording agreements and respecting decisions not to share
+
+**Listen before documenting**
+
+The project begins with preparation for dialogue. No named community is enrolled, no consent is presumed and no traditional knowledge is presented as already collected.
+
+**Agree the terms first**
+
+Future participation must be based on an understandable purpose and agreed arrangements for access, attribution and use. Restricted knowledge and sensitive identities will not be published without the relevant permissions.
+
+References:
+
+- [Convention on Biological Diversity — Nagoya Protocol Article 7](https://www.cbd.int/abs/text/articles?sec=abs-07)
+- [Convention on Biological Diversity — Nagoya Protocol Article 12](https://www.cbd.int/abs/text/articles?sec=abs-12)
+
+## Complete educational guide copy
+
+### Understanding a herbarium record
+
+An introduction to specimens, labels and traceable botanical information. This website guide makes no claim about EACH specimen holdings.
+
+## A specimen and its context
+
+A herbarium record connects preserved plant material with information about its identity and collection. The material and label support later checking; a photograph alone cannot establish every identification or collection detail.
+
+## Reading carefully
+
+Look for the scientific identification, collector, collection date, locality and repository information. Names and identifications may change as records are reviewed. Keep the source and any uncertainty attached to the information.
+
+## Reference material on this website
+
+The attributed sheets shown here illustrate herbarium methods. They are not EACH specimens. This guide is introductory website material, not a research paper or a report of completed collecting.
+
+References:
+
+- [Royal Botanic Gardens, Kew — Access the Herbarium](https://www.kew.org/science/engage/accessing-our-science/access-our-collections/herbarium)
+
+### Responsible plant documentation
+
+Practical principles for keeping botanical information traceable, distinguishing observations from conclusions and respecting permissions.
+
+## Keep the evidence with the record
+
+Record where information came from and distinguish a direct observation from a copied record or an interpretation. Check the identification and preserve uncertainty rather than presenting a guess as a confirmed result.
+
+## Prepare before collecting
+
+Observation does not provide permission to collect. Any field activity needs appropriate expertise, access arrangements and any applicable permits. Sensitive locations should not be disclosed merely because a record can be shared.
+
+## Build useful records
+
+A clear record should identify the organism and the observation's context. Use consistent fields and review records for missing information, duplication and rights before sharing. No dataset publication or field survey by EACH is claimed in this guide.
+
+References:
+
+- [GBIF — occurrence data quality requirements](https://www.gbif.org/data-quality-requirements-occurrences)
+
+### Knowledge, consent and attribution
+
+An introduction to respectful preparation for discussions about plant knowledge, with attention to permission, restricted information and fair arrangements.
+
+## Begin with the knowledge holders
+
+Discuss the purpose and intended uses of any documentation in an accessible way before seeking permission. Participation must not be inferred from a conversation, a photograph or a public reference to a community.
+
+## Agree what may be shared
+
+People and communities may place limits on recording, attribution and reuse. Agree those limits, who may access the material and how requests to change permission will be handled. Some knowledge is not appropriate for publication.
+
+## Establish fair arrangements
+
+The Convention on Biological Diversity's Nagoya Protocol addresses traditional knowledge associated with genetic resources, including consent and mutually agreed terms in accordance with domestic law. Applicable requirements and benefit-sharing arrangements need to be established for the particular activity. This guide is educational and does not assert that EACH has obtained any community's consent.
+
+References:
+
+- [Convention on Biological Diversity — Nagoya Protocol Article 7](https://www.cbd.int/abs/text/articles?sec=abs-07)
+- [Convention on Biological Diversity — Nagoya Protocol Article 12](https://www.cbd.int/abs/text/articles?sec=abs-12)

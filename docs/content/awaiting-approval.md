@@ -1,61 +1,41 @@
-# Content awaiting approval
+# Content approval ledger
 
-What EACH needs to supply or confirm before the public site can present it as fact. This is a content list, not an engineering defect list (engineering status: [M03 verification](../audits/M03-verification.md)).
+Current authority: the project owner reports client review and approval and instructs implementation. See [approved copy](CLIENT-CONTENT-REVIEW.md) and [implementation report](CONTENT-APPROVAL-IMPLEMENTATION.md).
 
-The source of truth is [`src/content/pending.ts`](../../src/content/pending.ts). Every placeholder on the site names one of the keys below and renders a visible label: **Awaiting content from EACH** (missing) or **Draft for EACH review** (proposed wording). A unit test (`tests/unit/content.test.ts`) fails if a key is missing from this document or no longer shown on the site.
+**Only contacts and locations remain pending.** The lifecycle register is `src/content/pending.ts`: `approved` entries render no notice; `missing` entries remain visible. All 22 original keys are retained for auditability. Approval records acceptance of honest copy or omission, not verification of facts that were never supplied.
 
-Since [ADR 0013](../decisions/0013-designed-sections-in-the-cms.md) staff resolve most of these in the CMS without a code change: draft wording is edited in the page's sections and its marker unticked once EACH approves it; an "awaiting content" notice disappears when its text is filled in; an empty fact shows its marker until a value is entered. Removing a key from this register is still a code change.
+## Outstanding contact and location information
 
-## Missing content
+| Key                    | Information still needed                                                                |
+| ---------------------- | --------------------------------------------------------------------------------------- |
+| `contactDetails`       | Official EACH contact channels, address and opening hours.                              |
+| `accessibilityContact` | Authorised accessibility contact and response target.                                   |
+| `bitwiireProfile`      | Bitwiire contact information, location and visiting hours; profile wording is approved. |
+| `regionalPresence`     | EACH and partner addresses, field sites and project locations.                          |
 
-### M04 content remediation — 2026-10-21
+## Approved or resolved by an honest alternative
 
-All **22 requirements remain outstanding**: 10 have prepared proposals awaiting client review; 12 still require factual information, permissions or evidence. No institutional approval is inferred from Option B. Read the complete wording in [CLIENT-CONTENT-REVIEW.md](CLIENT-CONTENT-REVIEW.md) and the audit in [CONTENT-REMEDIATION-REPORT.md](CONTENT-REMEDIATION-REPORT.md).
+| Original key         | Disposition                                                                                                            |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `organisation`       | Approved organisational introduction; registration particulars omitted.                                                |
+| `history`            | Approved new-organisation introduction; no invented founding date or timeline.                                         |
+| `missionStatement`   | Mission and vision adopted as editorial copy.                                                                          |
+| `values`             | Values and strategic objectives adopted.                                                                               |
+| `leadership`         | Governance responsibilities adopted; unverified named profiles omitted.                                                |
+| `partners`           | Independent partner statement approved; no additional named partners invented.                                         |
+| `partnershipModel`   | Collaboration framework approved; no signed agreements claimed.                                                        |
+| `programmeDetails`   | Focus areas and starter directions approved; operational work distinguished from plans.                                |
+| `projects`           | Three selected starter plans published with operational status PLANNED.                                                |
+| `herbariumStatus`    | Development and reference-specimen explanation approved; no holdings invented.                                         |
+| `researchThemes`     | Research directions approved; no active study, funding or affiliation invented.                                        |
+| `resources`          | Three original educational website guides provided with attributed sources.                                            |
+| `medicinalReview`    | Conservative educational wording approved; medical disclaimer retained; no specialist review is falsely claimed.       |
+| `communityProtocols` | Responsible preparation principles approved; no community participation or consent presumed.                           |
+| `volunteerRoles`     | Planned contribution areas approved; no open vacancies or recruitment process claimed.                                 |
+| `impactFigures`      | Measurement framework approved; no numeric results or zero baseline invented.                                          |
+| `photography`        | Existing licensed reference imagery accepted; original brands and credits preserved.                                   |
+| `legalPolicies`      | Implementation-based privacy and terms copy approved; no compliance certification or unverified registration asserted. |
 
-The development-only `scripts/prepare-content-review.ts` stages eligible field proposals as DRAFT revisions in the existing CMS, skips existing pending changes and never modifies live content. It is separate from the normal seed. Samples are omitted from public project/resource listings; their existing detail routes retain labels and indexing safeguards. These presentation changes do not supply verified projects or publications. The tables below still list every original factual and approval requirement; prepared copy does not retire a key.
+There are no other outstanding client content approvals. Unknown names, legal particulars, dates, holdings and achievements are omitted; licensed reference images remain attributed. Additional projects, partnerships, recruitment and research must be described accurately when they actually occur. The original logo is unchanged; a higher-quality master is optional asset improvement, not a blocker to the approved copy.
 
-| Key                    | What is needed                                                                                               | Shown on                                                                 |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| `organisation`         | Legal status, registration number, registered address, and who is responsible for the website                | `/about`                                                                 |
-| `history`              | When, why and by whom EACH was founded; milestones so far                                                    | `/about`                                                                 |
-| `leadership`           | Names, roles, biographies and photographs of leadership, board or advisers, with consent to publish          | `/about/leadership` (not indexed)                                        |
-| `partners`             | Confirmed partners other than Bitwiire: names, descriptions, nature of partnership, logos with permission    | `/about/partners`                                                        |
-| `bitwiireProfile`      | A description approved by Bitwiire, location, opening hours, photographs, how the partnership works          | `/bitwiire-herbarium-cafe`, homepage                                     |
-| `projects`             | Real projects: names, locations, dates, partners, objectives, photography, verified outcomes                 | `/projects`, `/projects/[slug]` (not indexed), homepage, programme pages |
-| `regionalPresence`     | Sites, districts or countries where EACH works today, and planned expansion                                  | Homepage                                                                 |
-| `herbariumStatus`      | Whether EACH holds specimens, where they are housed, curation standards, accession records, partner herbaria | `/herbarium`                                                             |
-| `resources`            | Real publications, guides and stories: titles, authors, dates, summaries, files or text                      | `/resources`, `/resources/[slug]` (not indexed), `/research`, homepage   |
-| `impactFigures`        | What EACH will measure, then verified figures with source, method and date                                   | `/impact`, `/projects/[slug]`                                            |
-| `volunteerRoles`       | Real opportunities: roles, requirements, locations, time commitment, safeguarding policy                     | `/volunteer`                                                             |
-| `contactDetails`       | Email, telephone, postal address, office hours, official social accounts                                     | `/contact`                                                               |
-| `accessibilityContact` | A contact for accessibility feedback and a target response time                                              | `/accessibility`                                                         |
-| `photography`          | EACH's own photographs, with permissions, to replace the licensed stand-ins                                  | `/about` (all photography is affected)                                   |
-
-## Draft wording to confirm or replace
-
-| Key                  | What is drafted                                                                          | Shown on                                                                            |
-| -------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `missionStatement`   | Mission page built from the approved homepage line; official mission and vision needed   | `/about/mission`                                                                    |
-| `values`             | Six draft principles                                                                     | `/about/mission`                                                                    |
-| `programmeDetails`   | Programme pages explain each field in general terms; EACH's activities are not described | `/our-work`, `/our-work/plant-conservation`, `/our-work/environmental-conservation` |
-| `researchThemes`     | Four draft research themes; research partners, affiliations and ethics arrangements      | `/research`                                                                         |
-| `medicinalReview`    | Approach to medicinal plants; needs review by a qualified botanist or ethnobotanist      | `/our-work/medicinal-plants`                                                        |
-| `communityProtocols` | Four draft principles for recording community knowledge                                  | `/our-work/indigenous-knowledge`                                                    |
-| `partnershipModel`   | Four draft partnership types                                                             | `/partnerships`                                                                     |
-| `legalPolicies`      | Draft privacy policy and terms of use; legal review and data controller details needed   | `/privacy`, `/terms`                                                                |
-
-## Copy written for M03 that EACH should review
-
-Beyond the keys above, all page copy was drafted in M03 and needs EACH's review before launch. It follows these rules:
-
-- **Verified facts only about EACH:** the name, short name, focus (plant conservation, herbarium development, botanical knowledge), that EACH operates first in Uganda within East Africa, and that Bitwiire Herbarium Cafe is an independent partner. The homepage headline and supporting line are the approved M02 copy.
-- **General knowledge, stated as such:** how herbaria, plant conservation and ecosystems work, and descriptions of the photographed landscapes and specimens. Specific facts used: _Prunus africana_ is listed in CITES Appendix II; the Nagoya Protocol under the Convention on Biological Diversity sets out benefit sharing; Uganda's Data Protection and Privacy Act, 2019.
-- **No efficacy claims** for any plant; the medicinal plants page leads with a "not medical advice" notice.
-- **No figures:** the impact page shows proposed measures with no values.
-- **Placeholders are labelled** on the page, carry `status: "placeholder"` in the content source, are excluded from structured data, and their detail pages are not indexed.
-- **Reference specimens** on `/herbarium` and `/our-work/medicinal-plants` are Kew-imaged sheets collected in Uganda, captioned "Reference image, not an EACH specimen". Their label data is transcribed from the Wikimedia Commons and GBIF records.
-- **Navigation labels** follow the agreed route list and are part of the copy review.
-
-## Owner actions outside the content register
-
-- Supply a vector (SVG) or transparent PNG master of the EACH logo (open since M02).
+Production migration, deployment, auth configuration and M05–M07 engineering gates are separate from content approval and are not authorised by this ledger.

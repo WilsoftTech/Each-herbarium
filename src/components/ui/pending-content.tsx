@@ -30,6 +30,7 @@ export function PendingContent({
   className,
 }: PendingContentProps) {
   const entry = pendingContent[item];
+  if (entry.kind === "approved") return null;
   const label = labels[entry.kind];
 
   if (variant === "badge") {
