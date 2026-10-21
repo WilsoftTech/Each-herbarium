@@ -67,6 +67,7 @@ M03 added no dependencies. Measured in Chromium against `next start`: every scri
 
 ## M05 notes
 
+- **Images:** every image renders through `next/image` (sized `sizes`, `preload` on the hero and page headers). The optimiser serves AVIF to browsers that accept it and WebP otherwise (`images.formats` in `next.config.ts`; Next.js defaults to WebP only). Each format is encoded and cached separately, so first requests are slower and the cache holds both.
 - **No dependency added.** Email goes to Resend's HTTP API with native `fetch` (`src/services/email.ts`); the `resend` SDK is not installed. Configure `RESEND_API_KEY`, `EMAIL_FROM` and `ENQUIRY_NOTIFICATION_EMAIL` to send; without them enquiries are stored and marked "Email not configured" ([ADR 0015](../decisions/0015-public-enquiries.md)).
 
 ## Planned (not installed)

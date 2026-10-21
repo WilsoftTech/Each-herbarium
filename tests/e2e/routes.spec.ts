@@ -14,6 +14,18 @@ test("hero and default image qualities are supported by the optimiser", async ({
   }
 });
 
+test("the optimiser serves AVIF where accepted and WebP otherwise", async ({ request }) => {
+  const url = "/_next/image?url=%2Fimages%2Fpapyrus-swamp-fog.jpg&w=640&q=75";
+  for (const [accept, type] of [
+    ["image/avif,image/webp,*/*", "image/avif"],
+    ["image/webp,*/*", "image/webp"],
+  ] as const) {
+    const response = await request.get(url, { headers: { Accept: accept } });
+    expect(response.status()).toBe(200);
+    expect(response.headers()["content-type"]).toBe(type);
+  }
+});
+
 test.describe("every public route", () => {
   for (const route of publicRoutes) {
     test(`${route} renders with metadata, one h1 and no errors`, async ({ page }) => {

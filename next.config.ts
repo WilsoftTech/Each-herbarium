@@ -23,6 +23,9 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
+    // AVIF where the browser accepts it (about 20% smaller than WebP), else
+    // WebP. Each format is encoded and cached separately on first request.
+    formats: ["image/avif", "image/webp"],
     qualities: [70, 75],
     // Only optimise files that are meant to be images, never with a query string.
     localPatterns: [
