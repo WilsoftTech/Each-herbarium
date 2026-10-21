@@ -1,6 +1,6 @@
 # M04 — Database, CMS and editorial workflows
 
-**Status:** PASS WITH CONDITIONS (production migration awaits owner approval; see the exit gate) · **Depends on:** M03
+**Status:** PASS WITH CONDITIONS — closed 2026-10-21 (production migration awaits owner approval; see the exit gate) · **Depends on:** M03
 
 Neon setup authorized by the owner on 2026-10-20. Backend choices: [ADR 0010](../decisions/0010-neon-managed-backend.md) (Prisma on Neon, Managed Auth, private Object Storage, a liveness Function). Integration tests use the `dev` branch. Setup and operational checks: [Neon verification report](../audits/M04-neon-verification.md). CMS completion and its evidence: [M04 CMS verification report](../audits/M04-cms-verification.md).
 
@@ -108,6 +108,8 @@ Run on 2026-10-21 (Windows 11, Node 24.13.0, npm 11.6.2) against the Neon `dev` 
 | E2E                | `npm run test:e2e`                  | Pass: 142 passed, 3 skipped (opt-in screenshots)   |
 | Production         | `prisma migrate status` (read-only) | 4 migrations pending; not applied (needs approval) |
 | Milestone commit   | `git log`                           | `40ae825`                                          |
+
+**Closeout re-run (2026-10-21, tree `0947f86`):** format, typecheck, lint pass; `npm test` 27 files, 477 tests pass; build 85/85 pages; public e2e 124 passed, 3 skipped. Full `npm run test:e2e` **NOT VERIFIED**: its global setup needs an interactive Neon CLI login. Details: [closeout re-verification](../audits/M04-cms-verification.md#closeout-re-verification--2026-10-21).
 
 ## Risks
 

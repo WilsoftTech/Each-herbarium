@@ -86,3 +86,21 @@ Integration tests cover the same rules on the server: landing sections are priva
 2. Production auth email configuration and MFA remain pending (ADR 0010).
 3. The dev branch expires on 2026-10-26.
 4. Content awaiting EACH: [awaiting-approval.md](../content/awaiting-approval.md). Most placeholders can now be resolved in the CMS.
+
+## Closeout re-verification — 2026-10-21
+
+Run on the tree at `0947f86` (after the approved-content and read-latency follow-ups), Windows 11, Node 24.12.0, npm 11.6.2, against the Neon `dev` branch. Before the run, `node_modules` was incomplete (Prisma packages missing); `npm install` restored it from the unchanged lockfile and regenerated the client.
+
+| Check              | Command                                 | Result                                                                                                                                                          |
+| ------------------ | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Format             | `npm run format:check`                  | Pass                                                                                                                                                            |
+| Typecheck          | `npm run typecheck`                     | Pass                                                                                                                                                            |
+| Lint               | `npm run lint`                          | Pass, no findings                                                                                                                                               |
+| Unit + integration | `npm test`                              | Pass: 27 files, 477 tests                                                                                                                                       |
+| Build              | `npm run build`                         | Pass: 85/85 static pages generated                                                                                                                              |
+| E2E (full)         | `npm run test:e2e`                      | **NOT VERIFIED**: global setup stopped at `neon neon-auth user set-role` ("Authentication timed out after 60 seconds"); the Neon CLI needs an interactive login |
+| E2E (public)       | `E2E_PUBLIC_ONLY=1 npx playwright test` | Pass: 124 passed, 3 skipped (opt-in screenshots)                                                                                                                |
+
+The admin e2e flows last passed at `40ae825`. They are re-run after `npx neon auth` on a machine with a browser. Server-side authorisation and editorial rules for the follow-up commits are covered by the integration tests above.
+
+**Closeout verdict:** PASS WITH CONDITIONS. Conditions: production migration and seeding (owner approval), the admin e2e re-run above, and the open conditions listed earlier.

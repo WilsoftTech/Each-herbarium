@@ -6,7 +6,7 @@ Progress dashboard for the **East African Community Herbariums** website. Detail
 
 |                            |                                                                                                                                                            |
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Current milestone**      | M04 PASS WITH CONDITIONS (production migration awaits owner approval); M05 not started, awaiting approval                                                  |
+| **Current milestone**      | M05 approved to start (2026-10-21). M04 closed PASS WITH CONDITIONS (production migration awaits owner approval; admin e2e re-run needs a Neon CLI login)  |
 | **Overall progress**       | 4 of 7 milestones passed (M01 completed; M02–M04 pass with conditions)                                                                                     |
 | **M04 verified core hash** | `40ae825` — feat(m04): designed page sections in the CMS and verified milestone closeout                                                                   |
 | **Previous milestone**     | M03 `dc8578f`; M02 `07684f9`; M01 `0de7d2c`, revision 2 `68c4aca`                                                                                          |
@@ -53,7 +53,10 @@ Neon backend: see [ADR 0010](docs/decisions/0010-neon-managed-backend.md). Desig
 | Production database is 4 migrations behind (`content_revisions`, `cms_content_fields`, `programme_seo_descriptions`, `designed_page_content`) and lacks the M04 seed.   | Current code must not run against production until `prisma migrate deploy` and `npm run db:seed` are approved and run. | Owner / M04     |
 | Neon Managed Auth and the production administrator are configured; production auth email configuration remains pending.                                                 | Configure identity emails before launch.                                                                               | M04             |
 | The Neon `dev` branch expires on 2026-10-26 (CLI branch policy).                                                                                                        | Recreate or extend it before further database or browser tests.                                                        | Owner / M05     |
+| Admin e2e flows were not re-run at the M04 closeout: the e2e setup needs an interactive Neon CLI login (`npx neon auth`).                                               | Admin UI regressions after `40ae825` are covered only by integration tests until re-run.                               | Owner / M05     |
 | CI workflow has not run on GitHub (no remote configured).                                                                                                               | CI is verified locally only.                                                                                           | M07             |
 | Globe blue (`#087DB9`) on ivory is 4.20:1, below AA for body text.                                                                                                      | Use it for large text or decoration only (current components follow this).                                             | Ongoing         |
 
 M04 request-latency follow-up: configured the existing hero image quality, reduced Prisma relation round trips and removed duplicate/sequential page reads. [Decision](docs/decisions/0014-cms-relation-loading.md) and [measurements/verification](docs/audits/M04-request-latency.md). M05–M07 statuses are unchanged.
+
+M04 closeout (2026-10-21): re-verified at `0947f86` and closed PASS WITH CONDITIONS; full e2e not verified because its setup needs an interactive Neon CLI login ([record](docs/audits/M04-cms-verification.md#closeout-re-verification--2026-10-21)). The owner approved starting M05.
